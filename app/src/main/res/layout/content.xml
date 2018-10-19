@@ -1,21 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
 
     <com.google.android.gms.maps.MapView
         android:id="@+id/route_map"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_weight="0.1" />
 
     <ImageButton
-        android:id="@+id/imageButton"
-        app:srcCompat="@android:drawable/star_big_off"
+        android:id="@+id/save_route_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="openDrawer" />
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="50dp"
+        android:onClick="saveRoute"
+        android:visibility="gone"
+        app:srcCompat="@android:drawable/ic_menu_save" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/navigationMenuBack"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/imageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="@null"
+            android:onClick="openDrawer"
+            app:srcCompat="@drawable/round_menu_black_36" />
+
+        <ImageButton
+            android:id="@+id/imageButton2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="@null"
+            android:onClick="startMakeRoute"
+            app:srcCompat="@drawable/round_outlined_flag_black_48" />
+
+        <ImageButton
+            android:id="@+id/imageButton3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:background="@color/colorAccent"
+            android:onClick="playSport"
+            app:srcCompat="@drawable/baseline_play_arrow_black_36" />
+
+    </LinearLayout>
 
 
 </FrameLayout>
