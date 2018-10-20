@@ -2,9 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/menu_routes"
         android:menuCategory="container"
-        android:title="Маршруты" />
-    <item android:title="История" />
-    <item android:title="Статистика" />
-    <item android:title="Настройки" />
+        android:title="@string/routes" />
+    <item android:title="@string/history" />
+    <item android:title="@string/statistic" />
+    <item android:title="@string/settings" />
 </menu>

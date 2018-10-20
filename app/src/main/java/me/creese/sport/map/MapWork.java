@@ -14,6 +14,9 @@ import com.google.android.gms.maps.model.Polyline;
 
 import java.util.ArrayList;
 
+import me.creese.sport.App;
+import me.creese.sport.models.RouteModel;
+
 
 public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMapClickListener, GoogleMap.OnMarkerDragListener {
     private static final String TAG = MapWork.class.getSimpleName();
@@ -33,12 +36,35 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
     }
 
     /**
+     * Добавление на карту ранее созданного маршрута
+     *
+     * @param model
+     */
+    private void showRoute(RouteModel model) {
+        getGoogleMap().clear();
+        poly.clear();
+
+        clearRoute();
+
+        for (LatLng latLng : model.getPoints()) {
+            addPointRoute(latLng);
+        }
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(lastLine.getPoints().get(0), 15));
+    }
+
+    /**
      * Функция создания маршрута
      */
     public void makeRoute() {
+        clearRoute();
         googleMap.clear();
-
+        poly.clear();
         isRouteMode = true;
+    }
+
+    private void addPointRoute(LatLng latLng) {
+        googleMap.addMarker(currentRoute.addPoint(latLng));
+        lastLine = googleMap.addPolyline(currentRoute.getLine());
     }
 
     @Override
@@ -49,7 +75,10 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
 
         googleMap.setOnMapClickListener(this);
         googleMap.setOnMarkerDragListener(this);
-        showStartPosition();
+        if (App.get().getModel() != null) {
+            showRoute(App.get().getModel());
+            App.get().setModel(null);
+        } else showStartPosition();
 
 
     }
@@ -76,19 +105,17 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
 
     @Override
     public void whenFindStartPos(LatLng pos) {
-        googleMap.addMarker(new MarkerOptions()
-                .position(pos)
-                .icon(BitmapDescriptorFactory
-                        .defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
+        googleMap.addMarker(new MarkerOptions().position(pos).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pos, 17));
 
     }
 
+
+
     @Override
     public void onMapClick(LatLng latLng) {
         if (isRouteMode) {
-            googleMap.addMarker(currentRoute.addPoint(latLng));
-            lastLine = googleMap.addPolyline(currentRoute.getLine());
+            addPointRoute(latLng);
         }
     }
 
@@ -99,13 +126,13 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
 
     @Override
     public void onMarkerDrag(Marker marker) {
-        currentRoute.update(marker.getPosition());
+        currentRoute.update(marker);
 
 
         lastLine.remove();
         lastLine = googleMap.addPolyline(currentRoute.getLine());
 
-        Log.w(TAG, "onMarkerDrag: "+ marker.getPosition());
+
     }
 
     @Override

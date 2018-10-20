@@ -3,10 +3,15 @@ package me.creese.sport.activities;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -16,8 +21,9 @@ import com.google.android.gms.maps.MapView;
 
 import me.creese.sport.R;
 import me.creese.sport.map.MapWork;
+import me.creese.sport.models.RouteModel;
 
-public class StartActivity extends AppCompatActivity {
+public class StartActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = StartActivity.class.getSimpleName();
     private MapView map;
@@ -28,11 +34,18 @@ public class StartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
+
         map = findViewById(R.id.route_map);
         map.onCreate(savedInstanceState);
         mapWork = new MapWork(this);
 
         map.getMapAsync(mapWork);
+
+        NavigationView nav = findViewById(R.id.nav_bar);
+        nav.setNavigationItemSelectedListener(this);
+        nav.bringToFront();
+
+
     }
 
     /**
@@ -55,7 +68,6 @@ public class StartActivity extends AppCompatActivity {
                 if(!text.getText().toString().equals("")) {
                     mapWork.getCurrentRoute().saveRoute(text.getText().toString());
                     mapWork.getGoogleMap().clear();
-                    mapWork.clearRoute();
                     mapWork.showStartPosition();
 
                     findViewById(R.id.save_route_btn).setVisibility(View.GONE);
@@ -108,6 +120,7 @@ public class StartActivity extends AppCompatActivity {
         mapWork.makeRoute();
     }
 
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -124,5 +137,17 @@ public class StartActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         map.onDestroy();
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        Log.w(TAG, "onNavigationItemSelected:"+menuItem );
+        switch (menuItem.getItemId()) {
+            case R.id.menu_routes:
+                startActivity(new Intent(this,ListRoutesActivity.class));
+                break;
+        }
+
+        return true;
     }
 }
