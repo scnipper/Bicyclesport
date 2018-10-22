@@ -7,15 +7,16 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 import me.creese.sport.App;
 
 public class RouteModel {
     private String name;
-    private ArrayList<LatLng> points;
+    private List<LatLng> points;
     private long time;
 
-    public RouteModel(String name, ArrayList<LatLng> points, long time) {
+    public RouteModel(String name, List<LatLng> points, long time) {
         this.name = name;
         this.points = points;
         this.time = time;
@@ -28,7 +29,7 @@ public class RouteModel {
         return name;
     }
 
-    public ArrayList<LatLng> getPoints() {
+    public List<LatLng> getPoints() {
         return points;
     }
 

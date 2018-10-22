@@ -3,14 +3,17 @@ package me.creese.sport.map;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.SphericalUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import me.creese.sport.App;
 import me.creese.sport.R;
@@ -21,34 +24,49 @@ public class Route {
     private static final int COLOR_LINE = 0xffffff00;
     private static final String TAG = Route.class.getSimpleName();
 
-    private final ArrayList<LatLng> points;
     private final MarkerOptions marker;
-    private final PolylineOptions line;
+    private final PolylineOptions lineOptions;
     private double distance = 0.0D;
+    private GoogleMap googleMap;
+    private ArrayList<Marker> markers;
+
+    private Polyline line;
+    private ArrayList<LatLng> tmpPoints;
 
     public Route(Context context) {
-        points = new ArrayList<>();
+        markers = new ArrayList<>();
         marker = new MarkerOptions().draggable(true).flat(true).icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.dot)));
 
 
-        line = new PolylineOptions()
+        lineOptions = new PolylineOptions()
 
                 .color(COLOR_LINE);
 
+        tmpPoints = new ArrayList<>();
     }
 
-    public MarkerOptions addPoint(LatLng point) {
-        if (points.size() > 0) {
-            distance += SphericalUtil.computeDistanceBetween(points.get(points.size() - 1), point);
+    public void addPoint(LatLng point) {
+        if (lineOptions.getPoints().size() > 0) {
+            distance += SphericalUtil.computeDistanceBetween(lineOptions.getPoints().get(lineOptions.getPoints().size() - 1), point);
         }
-        points.add(point);
+        // points.add(point);
         marker.position(point);
-        line.add(point);
+
+
+        lineOptions.add(point);
         marker.title(makeDistance());
 
+        if (line != null) {
+            line.remove();
+        }
 
-        return marker;
+
+        markers.add(googleMap.addMarker(marker));
+        line = googleMap.addPolyline(lineOptions);
+
+
     }
+
 
     /**
      * Сохранение маршрута
@@ -56,7 +74,7 @@ public class Route {
      * @param name
      */
     public void saveRoute(String name) {
-        RouteModel model = new RouteModel(name, points, System.currentTimeMillis());
+        RouteModel model = new RouteModel(name, lineOptions.getPoints(), System.currentTimeMillis());
 
         String json = App.get().getGson().toJson(model);
 
@@ -76,25 +94,24 @@ public class Route {
     /**
      * Обновление линии маршрута при перетаскивании маркера
      *
-     * @param marker
      */
-    public void update(Marker marker) {
-        points.set(points.size() - 1, marker.getPosition());
-        line.getPoints().set(points.size() - 1, marker.getPosition());
-
-        marker.setTitle(makeDistance());
+    public void update() {
+        if (markers.size() < 2) return;
+        distance = 0;
+        for (int i = 1; i < markers.size(); i++) {
+            distance += SphericalUtil.computeDistanceBetween(markers.get(i - 1).getPosition(), markers.get(i).getPosition());
+            markers.get(i).setTitle(makeDistance());
+        }
+        tmpPoints.clear();
+        for (Marker m : markers) {
+            tmpPoints.add(m.getPosition());
+        }
+        line.setPoints(tmpPoints);
 
     }
 
-    public void clear() {
-
+    public void setGoogleMap(GoogleMap googleMap) {
+        this.googleMap = googleMap;
     }
 
-    public PolylineOptions getLine() {
-        return line;
-    }
-
-    public ArrayList<LatLng> getPoints() {
-        return points;
-    }
 }

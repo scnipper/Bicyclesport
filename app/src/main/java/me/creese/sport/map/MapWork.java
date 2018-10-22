@@ -26,7 +26,6 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
     private Route currentRoute;
     private GoogleMap googleMap;
     private boolean isRouteMode;
-    private Polyline lastLine;
 
     public MapWork(Context context) {
         this.context = context;
@@ -41,15 +40,18 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
      * @param model
      */
     private void showRoute(RouteModel model) {
-        getGoogleMap().clear();
+        googleMap.clear();
         poly.clear();
 
         clearRoute();
-
+        LatLng last = null;
         for (LatLng latLng : model.getPoints()) {
-            addPointRoute(latLng);
+            currentRoute.addPoint(latLng);
+            last = latLng;
         }
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(lastLine.getPoints().get(0), 15));
+        if (last != null) {
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(last, 15));
+        }
     }
 
     /**
@@ -62,16 +64,13 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
         isRouteMode = true;
     }
 
-    private void addPointRoute(LatLng latLng) {
-        googleMap.addMarker(currentRoute.addPoint(latLng));
-        lastLine = googleMap.addPolyline(currentRoute.getLine());
-    }
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {
 
         this.googleMap = googleMap;
         googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        currentRoute.setGoogleMap(googleMap);
 
         googleMap.setOnMapClickListener(this);
         googleMap.setOnMarkerDragListener(this);
@@ -89,6 +88,7 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
 
     public void clearRoute() {
         currentRoute = new Route(context);
+        currentRoute.setGoogleMap(googleMap);
     }
 
     public GoogleMap getGoogleMap() {
@@ -115,23 +115,19 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
     @Override
     public void onMapClick(LatLng latLng) {
         if (isRouteMode) {
-            addPointRoute(latLng);
+            currentRoute.addPoint(latLng);
         }
     }
 
     @Override
     public void onMarkerDragStart(Marker marker) {
 
+
     }
 
     @Override
     public void onMarkerDrag(Marker marker) {
-        currentRoute.update(marker);
-
-
-        lastLine.remove();
-        lastLine = googleMap.addPolyline(currentRoute.getLine());
-
+        currentRoute.update();
 
     }
 
