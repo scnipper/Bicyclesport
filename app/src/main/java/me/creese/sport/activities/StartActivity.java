@@ -1,8 +1,6 @@
 package me.creese.sport.activities;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,13 +13,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.MapView;
 
 import me.creese.sport.R;
 import me.creese.sport.map.MapWork;
-import me.creese.sport.models.RouteModel;
 
 public class StartActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -37,7 +34,7 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
 
         map = findViewById(R.id.route_map);
         map.onCreate(savedInstanceState);
-        mapWork = new MapWork(this);
+        mapWork = new MapWork(this, (TextView) findViewById(R.id.dist_text));
 
         map.getMapAsync(mapWork);
 
@@ -65,7 +62,7 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
             @Override
             public void onClick(View v) {
                 EditText text = dialog.findViewById(R.id.name_route);
-                if(!text.getText().toString().equals("")) {
+                if (!text.getText().toString().equals("")) {
                     mapWork.getCurrentRoute().saveRoute(text.getText().toString());
                     mapWork.getGoogleMap().clear();
                     mapWork.showStartPosition();
@@ -115,8 +112,11 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
      * @param v
      */
     public void startMakeRoute(View v) {
-       ImageButton button = findViewById(R.id.save_route_btn);
+        ImageButton button = findViewById(R.id.save_route_btn);
         button.setVisibility(View.VISIBLE);
+
+
+
         mapWork.makeRoute();
     }
 
@@ -141,10 +141,10 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        Log.w(TAG, "onNavigationItemSelected:"+menuItem );
+        Log.w(TAG, "onNavigationItemSelected:" + menuItem);
         switch (menuItem.getItemId()) {
             case R.id.menu_routes:
-                startActivity(new Intent(this,ListRoutesActivity.class));
+                startActivity(new Intent(this, ListRoutesActivity.class));
                 break;
         }
 

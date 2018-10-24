@@ -2,6 +2,7 @@ package me.creese.sport.map;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -26,9 +27,11 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
     private Route currentRoute;
     private GoogleMap googleMap;
     private boolean isRouteMode;
+    private TextView distText;
 
-    public MapWork(Context context) {
+    public MapWork(Context context,TextView distText) {
         this.context = context;
+        this.distText = distText;
         gps = new Gps(context);
         poly = new ArrayList<>();
         currentRoute = new Route(context);
@@ -45,6 +48,7 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
 
         clearRoute();
         LatLng last = null;
+        currentRoute.setViewText(distText);
         for (LatLng latLng : model.getPoints()) {
             currentRoute.addPoint(latLng);
             last = latLng;
@@ -56,12 +60,15 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
 
     /**
      * Функция создания маршрута
+     *
      */
     public void makeRoute() {
+
         clearRoute();
         googleMap.clear();
         poly.clear();
         isRouteMode = true;
+        currentRoute.setViewText(distText);
     }
 
 
@@ -87,8 +94,7 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
     }
 
     public void clearRoute() {
-        currentRoute = new Route(context);
-        currentRoute.setGoogleMap(googleMap);
+        currentRoute.getMarkers().clear();
     }
 
     public GoogleMap getGoogleMap() {

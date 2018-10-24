@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder;
 
 import java.util.Random;
 
+import me.creese.sport.data.DataHelper;
 import me.creese.sport.models.RouteModel;
 import me.creese.sport.util.Files;
 import me.creese.sport.util.RouteModelConvert;
@@ -17,6 +18,7 @@ public class App extends Application {
     private Gson gson;
     private Random random;
     private RouteModel model;
+    private DataHelper data;
 
     public App() {
         instanse = this;
@@ -35,7 +37,12 @@ public class App extends Application {
                 .registerTypeAdapter(RouteModel.class,new RouteModelConvert())
                 .create();
         random = new Random();
+        data = new DataHelper(this);
 
+    }
+
+    public DataHelper getData() {
+        return data;
     }
 
     public Random getRandom() {
