@@ -2,6 +2,7 @@ package me.creese.sport.activities;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -25,6 +26,7 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
     private static final String TAG = StartActivity.class.getSimpleName();
     private MapView map;
     private MapWork mapWork;
+    private LocationManager locationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +45,13 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
         nav.bringToFront();
 
 
+        createLocationManager();
+
+    }
+
+    private void createLocationManager() {
+
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
     }
 
     /**
@@ -63,7 +72,7 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
             public void onClick(View v) {
                 EditText text = dialog.findViewById(R.id.name_route);
                 if (!text.getText().toString().equals("")) {
-                    mapWork.getCurrentRoute().saveRoute(text.getText().toString());
+                    mapWork.getRoutes().get(mapWork.getRoutes().size()-1).saveRoute(text.getText().toString());
                     mapWork.getGoogleMap().clear();
                     mapWork.showStartPosition();
 
@@ -91,8 +100,17 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
     public void playSport(View v) {
         ImageButton button = (ImageButton) v;
 
+        if(button.getTag().equals("stop")) {
 
-        button.setImageResource(R.drawable.baseline_stop_black_36);
+            button.setImageResource(R.drawable.baseline_stop_black_36);
+            button.setTag("play");
+
+            mapWork.getGps().startUpdatePosition();
+        } else {
+            button.setImageResource(R.drawable.baseline_play_arrow_black_36);
+            button.setTag("stop");
+            mapWork.getGps().stopUpdatePosition();
+        }
     }
 
     /**

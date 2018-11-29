@@ -1,7 +1,7 @@
 package me.creese.sport.map;
 
+import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -11,7 +11,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
 
 import java.util.ArrayList;
 
@@ -24,17 +23,18 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
     private final Gps gps;
     private final Context context;
     private final ArrayList<LatLng> poly;
-    private Route currentRoute;
+    //private Route currentRoute;
     private GoogleMap googleMap;
     private boolean isRouteMode;
     private TextView distText;
+    private ArrayList<Route> routes;
 
-    public MapWork(Context context,TextView distText) {
+    public MapWork(Activity context, TextView distText) {
         this.context = context;
         this.distText = distText;
-        gps = new Gps(context);
+        gps = new Gps(context,this);
         poly = new ArrayList<>();
-        currentRoute = new Route(context);
+        routes = new ArrayList<>();
     }
 
     /**
@@ -46,16 +46,24 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
         googleMap.clear();
         poly.clear();
 
-        clearRoute();
+        clearRoutes();
         LatLng last = null;
-        currentRoute.setViewText(distText);
+
+        Route route = new Route(context);
         for (LatLng latLng : model.getPoints()) {
-            currentRoute.addPoint(latLng);
+            route.addPointOnMap(latLng);
             last = latLng;
         }
         if (last != null) {
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(last, 15));
         }
+    }
+
+
+    public void addRoute(Route route) {
+        route.setGoogleMap(googleMap);
+
+        routes.add(route);
     }
 
     /**
@@ -64,37 +72,25 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
      */
     public void makeRoute() {
 
-        clearRoute();
+        clearRoutes();
         googleMap.clear();
         poly.clear();
         isRouteMode = true;
-        currentRoute.setViewText(distText);
     }
 
 
-    @Override
-    public void onMapReady(final GoogleMap googleMap) {
-
-        this.googleMap = googleMap;
-        googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-        currentRoute.setGoogleMap(googleMap);
-
-        googleMap.setOnMapClickListener(this);
-        googleMap.setOnMarkerDragListener(this);
-        if (App.get().getModel() != null) {
-            showRoute(App.get().getModel());
-            App.get().setModel(null);
-        } else showStartPosition();
-
-
-    }
-
+    /**
+     * Определение стартовой позиции
+     */
     public void showStartPosition() {
         gps.getStartPosition(this);
     }
 
-    public void clearRoute() {
-        currentRoute.getMarkers().clear();
+    public void clearRoutes() {
+        for (Route route : routes) {
+            route.getMarkers().clear();
+        }
+        routes.clear();
     }
 
     public GoogleMap getGoogleMap() {
@@ -105,8 +101,27 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
         return gps;
     }
 
-    public Route getCurrentRoute() {
-        return currentRoute;
+
+    public ArrayList<Route> getRoutes() {
+        return routes;
+    }
+
+    @Override
+    public void onMapReady(final GoogleMap googleMap) {
+
+        this.googleMap = googleMap;
+        googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        //currentRoute.setGoogleMap(googleMap);
+
+        googleMap.setOnMapClickListener(this);
+        googleMap.setOnMarkerDragListener(this);
+        if (App.get().getModel() != null) {
+            showRoute(App.get().getModel());
+            App.get().setModel(null);
+        }
+        showStartPosition();
+
+
     }
 
     @Override
@@ -121,7 +136,7 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
     @Override
     public void onMapClick(LatLng latLng) {
         if (isRouteMode) {
-            currentRoute.addPoint(latLng);
+            routes.get(routes.size()-1).addPoint(latLng);
         }
     }
 
@@ -133,7 +148,7 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
 
     @Override
     public void onMarkerDrag(Marker marker) {
-        currentRoute.update();
+        routes.get(routes.size()-1).update();
 
     }
 

@@ -71,6 +71,7 @@
                 android:layout_weight="1"
                 android:background="@color/colorAccent"
                 android:onClick="playSport"
+                android:tag="stop"
                 app:srcCompat="@drawable/baseline_play_arrow_black_36" />
 
         </LinearLayout>

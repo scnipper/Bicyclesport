@@ -1,12 +1,9 @@
 package me.creese.sport.map;
 
-import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
-import android.view.View;
-import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -18,62 +15,86 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.SphericalUtil;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import me.creese.sport.App;
 import me.creese.sport.R;
 import me.creese.sport.data.PointsTable;
 import me.creese.sport.data.RoutesTable;
 import me.creese.sport.models.RouteModel;
-import me.creese.sport.util.FilterRoutes;
 
 public class Route {
-    private static final int COLOR_LINE = 0xffffff00;
+
     private static final String TAG = Route.class.getSimpleName();
 
-    private final MarkerOptions marker;
+    private final MarkerOptions markerOptions;
     private final PolylineOptions lineOptions;
-    private final Context context;
+   // private final Context context;
+    private int colorLine;
     private double distance = 0.0D;
     private GoogleMap googleMap;
     private ArrayList<Marker> markers;
 
     private Polyline line;
     private ArrayList<LatLng> tmpPoints;
-    private TextView viewText;
+    private ArrayList<String> markerTitles;
+    private boolean isMarker;
+    //private TextView viewText;
 
     public Route(Context context) {
-        this.context = context;
+
+
         markers = new ArrayList<>();
-        marker = new MarkerOptions().draggable(true).flat(true).icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.dot)));
+        markerOptions = new MarkerOptions().draggable(true).flat(true).icon(BitmapDescriptorFactory
+                .fromBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.dot)));
+        markerTitles = new ArrayList<>();
 
+        lineOptions = new PolylineOptions();
 
-        lineOptions = new PolylineOptions()
-
-                .color(COLOR_LINE);
+        setColorLine(0xffffff00);
 
         tmpPoints = new ArrayList<>();
     }
 
+    /**
+     * Показать маршрут на карте
+     */
+    public void showOnMap() {
+        if (line != null) {
+            line.remove();
+        }
+        line = googleMap.addPolyline(lineOptions);
+
+        for (int i = 0; i < lineOptions.getPoints().size(); i++) {
+            markerOptions.position(lineOptions.getPoints().get(i));
+            markerOptions.title(markerTitles.get(i));
+            if(isMarker)
+            markers.add(googleMap.addMarker(markerOptions));
+        }
+
+
+    }
+    /**
+     * Добавление точки на маршрут
+     * @param point
+     */
     public void addPoint(LatLng point) {
         if (lineOptions.getPoints().size() > 0) {
             distance += SphericalUtil.computeDistanceBetween(lineOptions.getPoints().get(lineOptions.getPoints().size() - 1), point);
         }
-        marker.position(point);
-
-
         lineOptions.add(point);
-        marker.title(makeDistance());
+        markerTitles.add(makeDistance());
+        //viewText.setVisibility(View.VISIBLE);
+        //viewText.setText(context.getString(R.string.distance)+" "+markers.get(markers.size()-1).getTitle());
 
-        if (line != null) {
-            line.remove();
-        }
+    }
 
-
-        markers.add(googleMap.addMarker(marker));
-        line = googleMap.addPolyline(lineOptions);
-        viewText.setVisibility(View.VISIBLE);
-        viewText.setText(context.getString(R.string.distance)+" "+markers.get(markers.size()-1).getTitle());
+    /**
+     * Добавление точки на маршрут и отображение на карте
+     * @param point
+     */
+    public void addPointOnMap(LatLng point) {
+        addPoint(point);
+        showOnMap();
 
     }
 
@@ -126,24 +147,30 @@ public class Route {
         distance = 0;
         for (int i = 1; i < markers.size(); i++) {
             distance += SphericalUtil.computeDistanceBetween(markers.get(i - 1).getPosition(), markers.get(i).getPosition());
-            markers.get(i).setTitle(makeDistance());
+            String dist = makeDistance();
+            markers.get(i).setTitle(dist);
+            markerTitles.set(i,dist);
         }
         tmpPoints.clear();
         for (Marker m : markers) {
             tmpPoints.add(m.getPosition());
         }
         line.setPoints(tmpPoints);
-        viewText.setText(context.getString(R.string.distance)+" "+markers.get(markers.size()-1).getTitle());
+        //viewText.setText(context.getString(R.string.distance)+" "+markers.get(markers.size()-1).getTitle());
 
+    }
+
+    public void setColorLine(int colorLine) {
+        this.colorLine = colorLine;
+        lineOptions.color(colorLine);
     }
 
     public void setGoogleMap(GoogleMap googleMap) {
         this.googleMap = googleMap;
     }
 
-
-    public void setViewText(TextView viewText) {
-        this.viewText = viewText;
+    public void setViewMarker(boolean marker) {
+        isMarker = marker;
     }
 
     public ArrayList<Marker> getMarkers() {
