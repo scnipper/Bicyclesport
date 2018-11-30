@@ -63,7 +63,7 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            App.get().getLocationManager().registerGnssStatusCallback(new GNSSListener());
+            App.get().getLocationManager().registerGnssStatusCallback(new GNSSListener(this));
         } else {
             App.get().getLocationManager().addGpsStatusListener(this);
         }
@@ -176,7 +176,7 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
      *
      * @param levelSignal
      */
-    private void updateSignal(float levelSignal) {
+    public void updateSignal(float levelSignal) {
         if (gpsStatusView == null) {
             gpsStatusView = context.findViewById(R.id.gps_stauts);
         }
@@ -187,7 +187,10 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
         if (levelSignal > 40) gpsStatusView.setImageResource(R.drawable.full_gps);
     }
 
-    private void firstFixGps() {
+    /**
+     * Соединение со спутником
+     */
+    public void firstFixGps() {
         isFixGps = true;
         mapWork.addRoute(new Route(context));
         DialogFindGps findGps = (DialogFindGps) context.getSupportFragmentManager().findFragmentByTag("f_gps");
@@ -210,6 +213,11 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
         return isStartWay;
     }
 
+
+    public void stopedStatus() {
+        isStartWay = false;
+        isFixGps = false;
+    }
 
     @Override
     public void onLocationResult(LocationResult locationResult) {
@@ -278,12 +286,10 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
                 break;
             case GpsStatus.GPS_EVENT_STOPPED:
                 Log.w(TAG, "onGpsStatusChanged: gps event stop");
-                isStartWay = false;
-                isFixGps = false;
+                stopedStatus();
                 break;
 
 
         }
     }
-
 }
