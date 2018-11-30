@@ -4,7 +4,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
+import android.os.Parcel;
+import android.os.Parcelable;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -22,7 +25,7 @@ import me.creese.sport.data.PointsTable;
 import me.creese.sport.data.RoutesTable;
 import me.creese.sport.models.RouteModel;
 
-public class Route {
+public class Route implements Parcelable {
 
     private static final String TAG = Route.class.getSimpleName();
 
@@ -55,6 +58,44 @@ public class Route {
         tmpPoints = new ArrayList<>();
     }
 
+    protected Route(Parcel in) {
+        markerOptions = in.readParcelable(MarkerOptions.class.getClassLoader());
+        lineOptions = in.readParcelable(PolylineOptions.class.getClassLoader());
+        colorLine = in.readInt();
+        distance = in.readDouble();
+        tmpPoints = in.createTypedArrayList(LatLng.CREATOR);
+        markerTitles = in.createStringArrayList();
+        isMarker = in.readByte() != 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelable(markerOptions, flags);
+        dest.writeParcelable(lineOptions, flags);
+        dest.writeInt(colorLine);
+        dest.writeDouble(distance);
+        dest.writeTypedList(tmpPoints);
+        dest.writeStringList(markerTitles);
+        dest.writeByte((byte) (isMarker ? 1 : 0));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Route> CREATOR = new Creator<Route>() {
+        @Override
+        public Route createFromParcel(Parcel in) {
+            return new Route(in);
+        }
+
+        @Override
+        public Route[] newArray(int size) {
+            return new Route[size];
+        }
+    };
+
     /**
      * Показать маршрут на карте
      */
@@ -86,6 +127,10 @@ public class Route {
         //viewText.setVisibility(View.VISIBLE);
         //viewText.setText(context.getString(R.string.distance)+" "+markers.get(markers.size()-1).getTitle());
 
+    }
+
+    public void focusOnPoint(LatLng point) {
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 17));
     }
 
     /**

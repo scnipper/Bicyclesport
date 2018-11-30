@@ -1,6 +1,7 @@
 package me.creese.sport;
 
 import android.app.Application;
+import android.location.LocationManager;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -19,6 +20,7 @@ public class App extends Application {
     private Random random;
     private RouteModel model;
     private DataHelper data;
+    private LocationManager locationManager;
 
     public App() {
         instanse = this;
@@ -38,11 +40,16 @@ public class App extends Application {
                 .create();
         random = new Random();
         data = new DataHelper(this);
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
     }
 
     public DataHelper getData() {
         return data;
+    }
+
+    public LocationManager getLocationManager() {
+        return locationManager;
     }
 
     public Random getRandom() {

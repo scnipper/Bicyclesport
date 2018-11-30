@@ -1,10 +1,10 @@
-package me.creese.sport.activities;
+package me.creese.sport.ui.activities;
 
 import android.app.Dialog;
 import android.content.Intent;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -23,36 +23,41 @@ import me.creese.sport.map.MapWork;
 
 public class StartActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    public static final int CHECK_GPS_ENABLED = 1122;
     private static final String TAG = StartActivity.class.getSimpleName();
     private MapView map;
     private MapWork mapWork;
-    private LocationManager locationManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
-
         map = findViewById(R.id.route_map);
         map.onCreate(savedInstanceState);
-        mapWork = new MapWork(this, (TextView) findViewById(R.id.dist_text));
 
+        if(getLastNonConfigurationInstance() == null)
+        mapWork = new MapWork( (TextView) findViewById(R.id.dist_text));
+        else mapWork = (MapWork) getLastCustomNonConfigurationInstance();
+        mapWork.setContext(this);
         map.getMapAsync(mapWork);
+
 
         NavigationView nav = findViewById(R.id.nav_bar);
         nav.setNavigationItemSelectedListener(this);
         nav.bringToFront();
 
-
-        createLocationManager();
+        if(mapWork.getGps().isStartWay()) {
+            ImageButton button = findViewById(R.id.play_button);
+            button.setImageResource(R.drawable.baseline_stop_black_36);
+            button.setTag("play");
+        }
 
     }
 
-    private void createLocationManager() {
 
-        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-    }
+
 
     /**
      * Кнопка сохранения маршрута
@@ -72,7 +77,7 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
             public void onClick(View v) {
                 EditText text = dialog.findViewById(R.id.name_route);
                 if (!text.getText().toString().equals("")) {
-                    mapWork.getRoutes().get(mapWork.getRoutes().size()-1).saveRoute(text.getText().toString());
+                    mapWork.getRoutes().get(mapWork.getRoutes().size() - 1).saveRoute(text.getText().toString());
                     mapWork.getGoogleMap().clear();
                     mapWork.showStartPosition();
 
@@ -100,12 +105,14 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
     public void playSport(View v) {
         ImageButton button = (ImageButton) v;
 
-        if(button.getTag().equals("stop")) {
+        if (button.getTag().equals("stop")) {
 
             button.setImageResource(R.drawable.baseline_stop_black_36);
             button.setTag("play");
 
             mapWork.getGps().startUpdatePosition();
+
+
         } else {
             button.setImageResource(R.drawable.baseline_play_arrow_black_36);
             button.setTag("stop");
@@ -132,7 +139,6 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
     public void startMakeRoute(View v) {
         ImageButton button = findViewById(R.id.save_route_btn);
         button.setVisibility(View.VISIBLE);
-
 
 
         mapWork.makeRoute();
@@ -167,5 +173,23 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
         }
 
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        Log.w(TAG, "onActivityResult: " + requestCode + " " + resultCode);
+
+        if (requestCode == CHECK_GPS_ENABLED && resultCode == -1) {
+            mapWork.getGps().startUpdatePosition();
+        }
+
+    }
+
+
+    @Override
+    public Object onRetainCustomNonConfigurationInstance() {
+        return mapWork;
     }
 }

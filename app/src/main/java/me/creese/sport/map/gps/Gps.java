@@ -1,21 +1,21 @@
-package me.creese.sport.map;
+package me.creese.sport.map.gps;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Context;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
-import android.location.GnssStatus;
+import android.location.GpsSatellite;
+import android.location.GpsStatus;
 import android.location.Location;
-import android.support.annotation.NonNull;
+import android.os.Build;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.ImageView;
 
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationAvailability;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -29,40 +29,51 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
-public class Gps extends LocationCallback {
+import me.creese.sport.App;
+import me.creese.sport.R;
+import me.creese.sport.map.MapWork;
+import me.creese.sport.map.Route;
+import me.creese.sport.ui.DialogFindGps;
+import me.creese.sport.ui.activities.StartActivity;
+
+
+@SuppressLint("MissingPermission")
+public class Gps extends LocationCallback implements GpsStatus.Listener {
     private static final String TAG = "Gps";
     private static final long DELTA_TIME = 30 * 1000; // 30 sec
-    private final Activity context;
     private final LocationRequest locationRequest;
-    private final FusedLocationProviderClient client;
-    private final MapWork mapWork;
+    private AppCompatActivity context;
+    private FusedLocationProviderClient client;
+    private MapWork mapWork;
+    private ImageView gpsStatusView;
     private LatLng startPos;
     private GpsListener gpsListener;
 
+    private boolean isStartWay;
+    private boolean isFixGps;
 
-    @SuppressLint("MissingPermission")
-    public Gps(final Activity context, MapWork mapWork) {
-        this.context = context;
+
+    public Gps(MapWork mapWork) {
+
         this.mapWork = mapWork;
         locationRequest = LocationRequest.create();
-        locationRequest.setInterval(100);
+        locationRequest.setInterval(3000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setFastestInterval(50);
-        client = LocationServices.getFusedLocationProviderClient(context);
+        locationRequest.setFastestInterval(500);
 
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            App.get().getLocationManager().registerGnssStatusCallback(new GNSSListener());
+        } else {
+            App.get().getLocationManager().addGpsStatusListener(this);
+        }
 
-
-
-
-
-
-
-        //client.flushLocations();
-        //client.requestLocationUpdates()
     }
 
 
+    /**
+     * Проверка на то что включен gps или нет
+     */
     private void checkAccessGps() {
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
         builder.addLocationRequest(locationRequest);
@@ -76,7 +87,7 @@ public class Gps extends LocationCallback {
                     LocationSettingsResponse response = task.getResult(ApiException.class);
                     // All location settings are satisfied. The client can initialize location
                     // requests here.
-                    mapWork.addRoute(new Route(context));
+                    isStartWay = true;
                     client.requestLocationUpdates(locationRequest, Gps.this, null);
 
                 } catch (ApiException exception) {
@@ -89,9 +100,7 @@ public class Gps extends LocationCallback {
                                 ResolvableApiException resolvable = (ResolvableApiException) exception;
                                 // Show the dialog by calling startResolutionForResult(),
                                 // and check the result in onActivityResult().
-                                resolvable.startResolutionForResult(
-                                        context,
-                                        12);
+                                resolvable.startResolutionForResult(context, StartActivity.CHECK_GPS_ENABLED);
                             } catch (IntentSender.SendIntentException e) {
                                 // Ignore the error.
                             } catch (ClassCastException e) {
@@ -108,6 +117,7 @@ public class Gps extends LocationCallback {
             }
         });
     }
+
 
     public void getStartPosition(final GpsListener gpsListener) {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -128,11 +138,10 @@ public class Gps extends LocationCallback {
                 Log.w(TAG, "onSuccess: time " + (System.currentTimeMillis() - location.getTime()));
 
 
-                if(System.currentTimeMillis() - location.getTime() > DELTA_TIME) {
+                if (System.currentTimeMillis() - location.getTime() > DELTA_TIME) {
                     client.requestLocationUpdates(locationRequest, Gps.this, null);
-                }
-                else
-                gpsListener.whenFindStartPos(new LatLng(location.getLatitude(),location.getLongitude()));
+                } else
+                    gpsListener.whenFindStartPos(new LatLng(location.getLatitude(), location.getLongitude()));
 
 
             }
@@ -142,9 +151,13 @@ public class Gps extends LocationCallback {
     /**
      * Обновление позиции и посторение пути
      */
-    @SuppressLint("MissingPermission")
+
     public void startUpdatePosition() {
 
+        new DialogFindGps().show(context.getSupportFragmentManager(), "f_gps");
+
+        mapWork.getGoogleMap().clear();
+        gpsListener = null;
         checkAccessGps();
 
 
@@ -158,22 +171,61 @@ public class Gps extends LocationCallback {
     }
 
 
-    @SuppressLint("MissingPermission")
+    /**
+     * Обновление графического отображения сигнала
+     *
+     * @param levelSignal
+     */
+    private void updateSignal(float levelSignal) {
+        if (gpsStatusView == null) {
+            gpsStatusView = context.findViewById(R.id.gps_stauts);
+        }
+
+        if (levelSignal > 10) gpsStatusView.setImageResource(R.drawable.one_gps);
+        else gpsStatusView.setImageResource(R.drawable.no_gps);
+        if (levelSignal > 20) gpsStatusView.setImageResource(R.drawable.half_gps);
+        if (levelSignal > 40) gpsStatusView.setImageResource(R.drawable.full_gps);
+    }
+
+    private void firstFixGps() {
+        isFixGps = true;
+        mapWork.addRoute(new Route(context));
+        DialogFindGps findGps = (DialogFindGps) context.getSupportFragmentManager().findFragmentByTag("f_gps");
+        if (findGps != null) {
+            findGps.dismiss();
+        }
+
+    }
+
+    public void setContext(AppCompatActivity context) {
+        this.context = context;
+        client = LocationServices.getFusedLocationProviderClient(context);
+    }
+
+    public void setMapWork(MapWork mapWork) {
+        this.mapWork = mapWork;
+    }
+
+    public boolean isStartWay() {
+        return isStartWay;
+    }
+
+
     @Override
     public void onLocationResult(LocationResult locationResult) {
-        Log.w(TAG, "onLocationResult: "+locationResult.getLastLocation());
+        Log.w(TAG, "onLocationResult: " + locationResult.getLastLocation());
         Location location = locationResult.getLastLocation();
 
 
-
         if (gpsListener != null) {
-            gpsListener.whenFindStartPos(new LatLng(location.getLatitude(),location.getLongitude()));
+            gpsListener.whenFindStartPos(new LatLng(location.getLatitude(), location.getLongitude()));
             gpsListener = null;
             client.removeLocationUpdates(this);
-        } else {
+        } else if (isFixGps) {
             Route lastRoute = mapWork.getRoutes().get(mapWork.getRoutes().size() - 1);
-
-            lastRoute.addPointOnMap(new LatLng(location.getLatitude(),location.getLongitude()));
+            LatLng point = new LatLng(location.getLatitude(), location.getLongitude());
+            lastRoute.addPointOnMap(point);
+            lastRoute.focusOnPoint(point);
         }
 
 
@@ -181,6 +233,57 @@ public class Gps extends LocationCallback {
 
     @Override
     public void onLocationAvailability(LocationAvailability locationAvailability) {
-        Log.w(TAG, "onLocationAvailability: "+locationAvailability.isLocationAvailable());
+        Log.w(TAG, "onLocationAvailability: " + locationAvailability.isLocationAvailable());
     }
+
+    /**
+     * Если API < 24
+     *
+     * @param event
+     */
+
+    @Override
+    public void onGpsStatusChanged(int event) {
+        GpsStatus status = App.get().getLocationManager().getGpsStatus(null);
+
+        int num = 0;
+        float levelSignal = 0;
+        for (GpsSatellite gpsSatellite : status.getSatellites()) {
+            if (gpsSatellite.usedInFix()) {
+                float tmp = gpsSatellite.getSnr();
+                if (tmp > 0) {
+                    levelSignal += tmp;
+                    num++;
+                }
+
+            }
+        }
+        levelSignal /= num;
+
+        updateSignal(levelSignal);
+
+        Log.w(TAG, "onGpsStatusChanged: signal " + levelSignal);
+        switch (event) {
+            case GpsStatus.GPS_EVENT_FIRST_FIX:
+                Log.w(TAG, "onGpsStatusChanged: gps first fix");
+
+                if (isStartWay) firstFixGps();
+
+                break;
+            case GpsStatus.GPS_EVENT_SATELLITE_STATUS:
+                Log.w(TAG, "onGpsStatusChanged: gps event satellite status");
+                break;
+            case GpsStatus.GPS_EVENT_STARTED:
+                Log.w(TAG, "onGpsStatusChanged: gps event started");
+                break;
+            case GpsStatus.GPS_EVENT_STOPPED:
+                Log.w(TAG, "onGpsStatusChanged: gps event stop");
+                isStartWay = false;
+                isFixGps = false;
+                break;
+
+
+        }
+    }
+
 }

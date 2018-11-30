@@ -1,4 +1,4 @@
-package me.creese.sport.activities;
+package me.creese.sport.ui.activities;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;

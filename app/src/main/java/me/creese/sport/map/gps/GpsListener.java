@@ -1,4 +1,4 @@
-package me.creese.sport.map;
+package me.creese.sport.map.gps;
 
 import com.google.android.gms.maps.model.LatLng;
 
