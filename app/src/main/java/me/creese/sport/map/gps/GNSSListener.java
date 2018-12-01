@@ -3,9 +3,11 @@ package me.creese.sport.map.gps;
 import android.annotation.TargetApi;
 import android.location.GnssStatus;
 import android.os.Build;
+import android.util.Log;
 
 @TargetApi(Build.VERSION_CODES.N)
 public class GNSSListener extends GnssStatus.Callback {
+    private static final String TAG = GNSSListener.class.getSimpleName();
     private final Gps gps;
 
     public GNSSListener(Gps gps) {
@@ -14,7 +16,7 @@ public class GNSSListener extends GnssStatus.Callback {
 
     @Override
     public void onStarted() {
-
+        gps.onStartGps();
     }
 
     @Override
@@ -45,6 +47,7 @@ public class GNSSListener extends GnssStatus.Callback {
         }
         levelSignal /= num;
 
+        Log.w(TAG, "onGpsStatusChanged: signal " + levelSignal);
         gps.updateSignal(levelSignal);
     }
 }

@@ -135,10 +135,13 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
             @SuppressLint("MissingPermission")
             @Override
             public void onSuccess(Location location) {
-                Log.w(TAG, "onSuccess: time " + (System.currentTimeMillis() - location.getTime()));
+                if(location == null) return;
+                long time = System.currentTimeMillis() - location.getTime();
+
+                Log.w(TAG, "onSuccess: time " + time);
 
 
-                if (System.currentTimeMillis() - location.getTime() > DELTA_TIME) {
+                if (time > DELTA_TIME) {
                     client.requestLocationUpdates(locationRequest, Gps.this, null);
                 } else
                     gpsListener.whenFindStartPos(new LatLng(location.getLatitude(), location.getLongitude()));
@@ -191,8 +194,12 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
      * Соединение со спутником
      */
     public void firstFixGps() {
+        Log.w(TAG, "onGpsStatusChanged: gps first fix");
+
         isFixGps = true;
-        mapWork.addRoute(new Route(context));
+        Route route = new Route(context);
+        route.setFocusRoute(true);
+        mapWork.addRoute(route);
         DialogFindGps findGps = (DialogFindGps) context.getSupportFragmentManager().findFragmentByTag("f_gps");
         if (findGps != null) {
             findGps.dismiss();
@@ -214,7 +221,12 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
     }
 
 
+    public void onStartGps() {
+        Log.w(TAG, "onGpsStatusChanged: gps event started");
+    }
+
     public void stopedStatus() {
+        Log.w(TAG, "onGpsStatusChanged: gps event stop");
         isStartWay = false;
         isFixGps = false;
     }
@@ -233,7 +245,8 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
             Route lastRoute = mapWork.getRoutes().get(mapWork.getRoutes().size() - 1);
             LatLng point = new LatLng(location.getLatitude(), location.getLongitude());
             lastRoute.addPointOnMap(point);
-            lastRoute.focusOnPoint(point);
+
+
         }
 
 
@@ -273,7 +286,7 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
         Log.w(TAG, "onGpsStatusChanged: signal " + levelSignal);
         switch (event) {
             case GpsStatus.GPS_EVENT_FIRST_FIX:
-                Log.w(TAG, "onGpsStatusChanged: gps first fix");
+
 
                 if (isStartWay) firstFixGps();
 
@@ -282,14 +295,19 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
                 Log.w(TAG, "onGpsStatusChanged: gps event satellite status");
                 break;
             case GpsStatus.GPS_EVENT_STARTED:
-                Log.w(TAG, "onGpsStatusChanged: gps event started");
+                onStartGps();
                 break;
             case GpsStatus.GPS_EVENT_STOPPED:
-                Log.w(TAG, "onGpsStatusChanged: gps event stop");
+
                 stopedStatus();
                 break;
 
 
         }
     }
+
+    public boolean isFirstFix() {
+        return isFixGps;
+    }
+
 }

@@ -3,6 +3,7 @@ package me.creese.sport.map;
 import android.app.Activity;
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -24,7 +25,6 @@ import me.creese.sport.models.RouteModel;
 public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMapClickListener, GoogleMap.OnMarkerDragListener {
     private static final String TAG = MapWork.class.getSimpleName();
     private final Gps gps;
-    private final ArrayList<LatLng> poly;
     private Activity context;
     //private Route currentRoute;
     private GoogleMap googleMap;
@@ -37,7 +37,6 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
 
         this.distText = distText;
         gps = new Gps(this);
-        poly = new ArrayList<>();
         routes = new ArrayList<>();
     }
 
@@ -49,7 +48,6 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
      */
     private void showRoute(RouteModel model) {
         googleMap.clear();
-        poly.clear();
 
         clearRoutes();
         LatLng last = null;
@@ -64,7 +62,10 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
         }
     }
 
-
+    /**
+     * Добавление маршрута
+     * @param route
+     */
     public void addRoute(Route route) {
         route.setGoogleMap(googleMap);
 
@@ -78,8 +79,11 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
 
         clearRoutes();
         googleMap.clear();
-        poly.clear();
         isRouteMode = true;
+        Route route = new Route(context);
+        route.setMarker(true);
+        addRoute(route);
+
     }
 
 
@@ -122,6 +126,10 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
         googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         //currentRoute.setGoogleMap(googleMap);
 
+        for (Route route : routes) {
+            route.setGoogleMap(googleMap);
+        }
+
         googleMap.setOnMapClickListener(this);
         googleMap.setOnMarkerDragListener(this);
         if (App.get().getModel() != null) {
@@ -129,20 +137,20 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
             App.get().setModel(null);
         }
 
-        if (startMarker != null) {
-            startMarker = googleMap.addMarker(new MarkerOptions().position(startMarker.getPosition()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startMarker.getPosition(), 17));
-        } else showStartPosition();
+        if(routes.size() == 0) {
+            if (startMarker != null) {
+                startMarker = googleMap.addMarker(new MarkerOptions().position(startMarker.getPosition()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startMarker.getPosition(), 17));
+            } else showStartPosition();
+        } else {
 
-        /*if (gps.getDialogFindGps() != null) {
-            context.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    gps.getDialogFindGps().show();
-                }
-            });
+            for (Route route : routes) {
+                route.showOnMap();
+                if(!route.isFocusRoute())
+                route.focusOnPoint(route.getMarkers().get(route.getMarkers().size()-1).getPosition());
+            }
 
-        }*/
+        }
 
 
     }
@@ -158,7 +166,7 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
     @Override
     public void onMapClick(LatLng latLng) {
         if (isRouteMode) {
-            routes.get(routes.size() - 1).addPoint(latLng);
+            routes.get(routes.size() - 1).addPointOnMap(latLng);
         }
     }
 
@@ -170,6 +178,7 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
 
     @Override
     public void onMarkerDrag(Marker marker) {
+
         routes.get(routes.size() - 1).update();
 
     }

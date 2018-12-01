@@ -19,8 +19,8 @@ public class DialogFindGps extends DialogFragment {
 
         dialogFindGps = new Dialog(getContext());
         dialogFindGps.setContentView(R.layout.dialog_find_gps);
-        dialogFindGps.setCancelable(false);
-        dialogFindGps.show();
+        setCancelable(false);
+
 
 
         return dialogFindGps;
