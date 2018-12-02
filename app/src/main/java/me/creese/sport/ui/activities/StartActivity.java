@@ -20,6 +20,7 @@ import com.google.android.gms.maps.MapView;
 
 import me.creese.sport.R;
 import me.creese.sport.map.MapWork;
+import me.creese.sport.ui.fragments.SettingsFragment;
 
 public class StartActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -54,9 +55,8 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
             button.setTag("play");
         }
 
+
     }
-
-
 
 
     /**
@@ -131,6 +131,7 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
         drawerLayout.openDrawer(GravityCompat.START);
     }
 
+
     /**
      * Кнопка начала создания маршрута
      *
@@ -165,13 +166,19 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        Log.w(TAG, "onNavigationItemSelected:" + menuItem);
+
         switch (menuItem.getItemId()) {
             case R.id.menu_routes:
                 startActivity(new Intent(this, ListRoutesActivity.class));
                 break;
+            case R.id.menu_settings:
+                startActivity(new Intent(this,SettingsActivity.class));
+                break;
         }
 
+        DrawerLayout drawerLayout = findViewById(R.id.drawer);
+
+        drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 

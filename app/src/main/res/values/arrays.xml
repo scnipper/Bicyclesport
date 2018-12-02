@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="type_map">
+        <item>гибрид</item>
+        <item>спутник</item>
+        <item>схема</item>
+    </string-array>
+    <string-array name="sex_array">
+        <item>Мужской</item>
+        <item>Женский</item>
+    </string-array>
+
+    <string-array name="sex_values">
+        <item>MEN</item>
+        <item>FEM</item>
+    </string-array>
+</resources>

@@ -2,6 +2,7 @@ package me.creese.sport;
 
 import android.app.Application;
 import android.location.LocationManager;
+import android.preference.PreferenceManager;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -41,6 +42,8 @@ public class App extends Application {
         random = new Random();
         data = new DataHelper(this);
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
     }
 

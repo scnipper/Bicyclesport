@@ -247,6 +247,8 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
             lastRoute.addPointOnMap(point);
 
 
+
+
         }
 
 
