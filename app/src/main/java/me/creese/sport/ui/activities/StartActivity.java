@@ -132,6 +132,7 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
             button.setImageResource(R.drawable.baseline_play_arrow_black_36);
             button.setTag("stop");
             mapWork.getGps().stopUpdatePosition();
+            mapWork.getLastRoute().saveRoute();
 
         }
     }
@@ -193,6 +194,9 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
                 break;
             case R.id.menu_settings:
                 startActivity(new Intent(this,SettingsActivity.class));
+                break;
+            case R.id.menu_history:
+                startActivity(new Intent(this,UserHistoryActivity.class));
                 break;
         }
 

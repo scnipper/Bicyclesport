@@ -6,7 +6,9 @@
         android:id="@+id/menu_routes"
         android:menuCategory="container"
         android:title="@string/routes" />
-    <item android:title="@string/history" />
+    <item
+        android:id="@+id/menu_history"
+        android:title="@string/history" />
     <item android:title="@string/statistic" />
     <item
         android:id="@+id/menu_settings"

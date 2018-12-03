@@ -18,6 +18,7 @@ import me.creese.sport.data.PointsTable;
 import me.creese.sport.data.RoutesTable;
 import me.creese.sport.models.RouteModel;
 import me.creese.sport.models.adapters.ListRouteAdapter;
+import me.creese.sport.util.RouteFromDb;
 
 public class ListRoutesActivity extends AppCompatActivity {
 
@@ -33,45 +34,12 @@ public class ListRoutesActivity extends AppCompatActivity {
         adapter = new ListRouteAdapter();
         recyclerView.setAdapter(adapter);
 
-        addItems();
-    }
+        ArrayList<RouteModel> models = RouteFromDb.addItems(false);
 
-    private void addItems() {
-        SQLiteDatabase db = App.get().getData().getReadableDatabase();
-
-
-        Cursor cursor = db.query(RoutesTable.NAME_TABLE, null, null,
-                null, null, null, null);
-
-        if(cursor.moveToFirst()) {
-            do {
-                ArrayList<LatLng> points = new ArrayList<>();
-                Cursor cursor2 = db.query(PointsTable.NAME_TABLE, null,
-                        PointsTable.ID_ROUTE + "=" + cursor.getInt(cursor.getColumnIndex(DataHelper.ID)), null, null, null, null);
-
-                if(cursor2.moveToFirst()) {
-                    do {
-                        int i1 = cursor2.getColumnIndex(PointsTable.LATITUDE);
-                        int i2 = cursor2.getColumnIndex(PointsTable.LONGTITUDE);
-                        double lat = cursor2.getDouble(i1);
-                        double lng = cursor2.getDouble(i2);
-                        LatLng point = new LatLng(lat, lng);
-                        points.add(point);
-                    } while (cursor2.moveToNext());
-                }
-
-                cursor2.close();
-
-                RouteModel model = new RouteModel(cursor.getString(cursor.getColumnIndex(RoutesTable.NAME)), points, cursor.getLong(cursor.getColumnIndex(RoutesTable.TIME)));
-
-                adapter.addItem(model);
-
-            } while (cursor.moveToNext());
+        for (RouteModel model : models) {
+            adapter.addItem(model);
         }
-
-        cursor.close();
-
-        adapter.notifyDataSetChanged();
-
     }
+
+
 }

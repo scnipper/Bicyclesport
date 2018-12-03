@@ -120,6 +120,9 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
         gps.setContext(context);
     }
 
+    public Route getLastRoute(){
+        return routes.get(routes.size()-1);
+    }
     @Override
     public void onMapReady(final GoogleMap googleMap) {
 

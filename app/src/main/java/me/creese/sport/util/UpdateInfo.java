@@ -71,7 +71,7 @@ public class UpdateInfo extends TimerTask {
         timeView.setText(startActivity.getString(R.string.time)+" -- "+formatTime());
 
         speedView.setText(((int) gps.getSpeed())+" "+startActivity.getString(R.string.km_peer_hour));
-        distanceView.setText(startActivity.getString(R.string.distance)+" -- "+route.makeDistance());
+        distanceView.setText(startActivity.getString(R.string.distance)+" -- "+Route.makeDistance(route.getDistance()));
     }
 
     private String formatTime() {

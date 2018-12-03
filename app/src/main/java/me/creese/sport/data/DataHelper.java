@@ -24,6 +24,9 @@ public class DataHelper extends SQLiteOpenHelper {
         final String ROUTES = "CREATE TABLE "+RoutesTable.NAME_TABLE+" (" +
                 ID+" INTEGER PRIMARY KEY AUTOINCREMENT," +
                 RoutesTable.TIME+" BIGINT," +
+                RoutesTable.DEST+ " DOUBLE DEFAULT (0),"+
+                RoutesTable.IS_RIDE+ " INTEGER DEFAULT (0),"+
+                RoutesTable.TIME_ROUTE+ " BIGINT,"+
                 RoutesTable.NAME+" VARCHAR (255));";
 
         final String POINTS = "CREATE TABLE "+PointsTable.NAME_TABLE+" (" +

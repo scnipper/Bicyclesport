@@ -20,6 +20,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.SphericalUtil;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import me.creese.sport.App;
 import me.creese.sport.R;
@@ -60,6 +61,14 @@ public class Route {
         setColorLine(0xffffff00);
 
         tmpPoints = new ArrayList<>();
+    }
+
+    public static String makeDistance(double distance) {
+        if (distance < 1000) {
+            return (int) distance + " m";
+        } else {
+            return Math.round((distance / 1000) * 10) / 10D + " km";
+        }
     }
 
 
@@ -107,7 +116,7 @@ public class Route {
         }
         lineOptions.add(point);
 
-        if (isMarker) markerTitles.add(makeDistance());
+        if (isMarker) markerTitles.add(makeDistance(distance));
 
 
     }
@@ -135,6 +144,13 @@ public class Route {
 
     }
 
+    public void saveRoute() {
+        Random random = new Random();
+        byte[] bytes = new byte[10];
+        random.nextBytes(bytes);
+
+        saveRoute(new String(bytes));
+    }
 
     /**
      * Сохранение маршрута
@@ -142,13 +158,15 @@ public class Route {
      * @param name
      */
     public void saveRoute(String name) {
-        RouteModel model = new RouteModel(name, lineOptions.getPoints(), System.currentTimeMillis());
+        RouteModel model = new RouteModel(name, lineOptions.getPoints(), System.currentTimeMillis(),distance,isFocusRoute,0);
 
         SQLiteDatabase db = App.get().getData().getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(RoutesTable.NAME, model.getName());
         contentValues.put(RoutesTable.TIME, model.getTime());
+        contentValues.put(RoutesTable.DEST, model.getDistance());
+        contentValues.put(RoutesTable.IS_RIDE, model.isFocusRoute() ? 1 : 0);
 
         long id = db.insert(RoutesTable.NAME_TABLE, null, contentValues);
 
@@ -166,14 +184,6 @@ public class Route {
 
     }
 
-    public String makeDistance() {
-        if (distance < 1000) {
-            return (int) distance + " m";
-        } else {
-            return Math.round((distance / 1000) * 10) / 10D + " km";
-        }
-    }
-
     /**
      * Обновление линии маршрута при перетаскивании маркера
      */
@@ -184,7 +194,7 @@ public class Route {
         distance = 0;
         for (int i = 1; i < markers.size(); i++) {
             distance += SphericalUtil.computeDistanceBetween(markers.get(i - 1).getPosition(), markers.get(i).getPosition());
-            String dist = makeDistance();
+            String dist = makeDistance(distance);
 
             markers.get(i).setTitle(dist);
             markerTitles.set(i, dist);
