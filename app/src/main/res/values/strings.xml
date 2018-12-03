@@ -13,5 +13,7 @@
     <string name="sex">Пол</string>
     <string name="age">Возраст</string>
     <string name="wieght">Вес</string>
+    <string name="km_peer_hour">км/ч</string>
+    <string name="time">Время</string>
 
 </resources>

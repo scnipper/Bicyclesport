@@ -20,12 +20,13 @@ import me.creese.sport.App;
 import me.creese.sport.map.gps.Gps;
 import me.creese.sport.map.gps.GpsListener;
 import me.creese.sport.models.RouteModel;
+import me.creese.sport.ui.activities.StartActivity;
 
 
 public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMapClickListener, GoogleMap.OnMarkerDragListener {
     private static final String TAG = MapWork.class.getSimpleName();
     private final Gps gps;
-    private Activity context;
+    private AppCompatActivity context;
     //private Route currentRoute;
     private GoogleMap googleMap;
     private boolean isRouteMode;
@@ -114,7 +115,7 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
         return routes;
     }
 
-    public void setContext(AppCompatActivity context) {
+    public void setContext(StartActivity context) {
         this.context = context;
         gps.setContext(context);
     }

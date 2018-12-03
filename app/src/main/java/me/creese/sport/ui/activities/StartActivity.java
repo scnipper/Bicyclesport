@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.MapView;
@@ -21,6 +22,7 @@ import com.google.android.gms.maps.MapView;
 import me.creese.sport.R;
 import me.creese.sport.map.MapWork;
 import me.creese.sport.ui.fragments.SettingsFragment;
+import me.creese.sport.util.UpdateInfo;
 
 public class StartActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -28,6 +30,7 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
     private static final String TAG = StartActivity.class.getSimpleName();
     private MapView map;
     private MapWork mapWork;
+    private UpdateInfo updateInfo;
 
 
     @Override
@@ -35,6 +38,12 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
+        if(savedInstanceState != null) {
+            int visTable = savedInstanceState.getInt(""+R.id.view_table);
+            findViewById(R.id.view_table).setVisibility(visTable);
+        }
+
+        UpdateInfo.get().setStartActivity(this);
         map = findViewById(R.id.route_map);
         map.onCreate(savedInstanceState);
 
@@ -105,6 +114,7 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
     public void playSport(View v) {
         ImageButton button = (ImageButton) v;
 
+
         if (button.getTag().equals("stop")) {
 
             button.setImageResource(R.drawable.baseline_stop_black_36);
@@ -113,10 +123,16 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
             mapWork.getGps().startUpdatePosition();
 
 
+
+
+
+
+
         } else {
             button.setImageResource(R.drawable.baseline_play_arrow_black_36);
             button.setTag("stop");
             mapWork.getGps().stopUpdatePosition();
+
         }
     }
 
@@ -143,6 +159,10 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
 
 
         mapWork.makeRoute();
+    }
+
+    public MapWork getMapWork() {
+        return mapWork;
     }
 
 
@@ -198,5 +218,14 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
     @Override
     public Object onRetainCustomNonConfigurationInstance() {
         return mapWork;
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        int visTable = findViewById(R.id.view_table).getVisibility();
+
+        outState.putInt(""+R.id.view_table,visTable);
     }
 }

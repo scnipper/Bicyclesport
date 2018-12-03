@@ -4,7 +4,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -30,6 +33,7 @@ public class Route {
 
     private final MarkerOptions markerOptions;
     private final PolylineOptions lineOptions;
+    private final AppCompatActivity context;
     // private final Context context;
     private int colorLine;
     private double distance = 0.0D;
@@ -41,10 +45,11 @@ public class Route {
     private ArrayList<String> markerTitles;
     private boolean isMarker;
     private boolean isFocusRoute;
+    private TextView distanceView;
     //private TextView viewText;
 
-    public Route(Context context) {
-
+    public Route(AppCompatActivity context) {
+        this.context = context;
 
         markers = new ArrayList<>();
         markerOptions = new MarkerOptions().draggable(true).flat(true).icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.dot)));
@@ -98,6 +103,7 @@ public class Route {
 
         if (lineOptions.getPoints().size() > 0) {
             distance += SphericalUtil.computeDistanceBetween(lineOptions.getPoints().get(lineOptions.getPoints().size() - 1), point);
+
         }
         lineOptions.add(point);
 
@@ -160,7 +166,7 @@ public class Route {
 
     }
 
-    private String makeDistance() {
+    public String makeDistance() {
         if (distance < 1000) {
             return (int) distance + " m";
         } else {
@@ -222,5 +228,9 @@ public class Route {
 
     public void setMarker(boolean marker) {
         isMarker = marker;
+    }
+
+    public double getDistance() {
+        return distance;
     }
 }

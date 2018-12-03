@@ -11,7 +11,10 @@ import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -35,6 +38,7 @@ import me.creese.sport.map.MapWork;
 import me.creese.sport.map.Route;
 import me.creese.sport.ui.DialogFindGps;
 import me.creese.sport.ui.activities.StartActivity;
+import me.creese.sport.util.UpdateInfo;
 
 
 @SuppressLint("MissingPermission")
@@ -42,7 +46,7 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
     private static final String TAG = "Gps";
     private static final long DELTA_TIME = 30 * 1000; // 30 sec
     private final LocationRequest locationRequest;
-    private AppCompatActivity context;
+    private StartActivity context;
     private FusedLocationProviderClient client;
     private MapWork mapWork;
     private ImageView gpsStatusView;
@@ -51,6 +55,8 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
 
     private boolean isStartWay;
     private boolean isFixGps;
+    private float speed;
+    private TextView speedView;
 
 
     public Gps(MapWork mapWork) {
@@ -196,6 +202,10 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
     public void firstFixGps() {
         Log.w(TAG, "onGpsStatusChanged: gps first fix");
 
+        LinearLayout viewTable = context.findViewById(R.id.view_table);
+        viewTable.setVisibility(View.VISIBLE);
+        UpdateInfo.get().start();
+
         isFixGps = true;
         Route route = new Route(context);
         route.setFocusRoute(true);
@@ -207,7 +217,7 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
 
     }
 
-    public void setContext(AppCompatActivity context) {
+    public void setContext(StartActivity context) {
         this.context = context;
         client = LocationServices.getFusedLocationProviderClient(context);
     }
@@ -229,6 +239,17 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
         Log.w(TAG, "onGpsStatusChanged: gps event stop");
         isStartWay = false;
         isFixGps = false;
+        UpdateInfo.get().stop();
+        LinearLayout viewTable = context.findViewById(R.id.view_table);
+        viewTable.setVisibility(View.GONE);
+    }
+
+    public boolean isFirstFix() {
+        return isFixGps;
+    }
+
+    public float getSpeed() {
+        return speed;
     }
 
     @Override
@@ -246,6 +267,8 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
             LatLng point = new LatLng(location.getLatitude(), location.getLongitude());
             lastRoute.addPointOnMap(point);
 
+
+            speed = location.getSpeed()*3.6f;
 
 
 
@@ -306,10 +329,6 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
 
 
         }
-    }
-
-    public boolean isFirstFix() {
-        return isFixGps;
     }
 
 }
