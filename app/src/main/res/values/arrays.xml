@@ -14,4 +14,6 @@
         <item>MEN</item>
         <item>FEM</item>
     </string-array>
+    <string-array name="zoom_map">awdawddw</string-array>
+    <string-array name="zoom_map_values">faawgawg</string-array>
 </resources>

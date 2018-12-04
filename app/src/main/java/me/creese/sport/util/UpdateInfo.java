@@ -68,10 +68,10 @@ public class UpdateInfo extends TimerTask {
 
         Route route = mapWork.getRoutes().get(mapWork.getRoutes().size()-1);
 
-        timeView.setText(startActivity.getString(R.string.time)+" -- "+formatTime());
+        timeView.setText(formatTime());
 
         speedView.setText(((int) gps.getSpeed())+" "+startActivity.getString(R.string.km_peer_hour));
-        distanceView.setText(startActivity.getString(R.string.distance)+" -- "+Route.makeDistance(route.getDistance()));
+        distanceView.setText(Route.makeDistance(route.getDistance()));
     }
 
     private String formatTime() {

@@ -1,5 +1,6 @@
 package me.creese.sport.ui.fragments;
 
+import android.os.Build;
 import android.os.Bundle;
 
 
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
+import me.creese.sport.BuildConfig;
 import me.creese.sport.R;
 
 import static android.support.constraint.Constraints.TAG;
@@ -28,7 +30,17 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         addPreferencesFromResource(R.xml.preferences);
 
 
+        Preference version_app = findPreference("version_app");
 
+        version_app.setSummary(BuildConfig.VERSION_NAME);
+
+
+    }
+
+    @Override
+    public boolean onPreferenceTreeClick(Preference preference) {
+        Log.w(TAG, "onPreferenceTreeClick: "+preference );
+        return super.onPreferenceTreeClick(preference);
 
     }
 

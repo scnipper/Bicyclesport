@@ -22,6 +22,7 @@ import com.google.android.gms.maps.MapView;
 import me.creese.sport.R;
 import me.creese.sport.map.MapWork;
 import me.creese.sport.ui.fragments.SettingsFragment;
+import me.creese.sport.ui.fragments.StatFragment;
 import me.creese.sport.util.UpdateInfo;
 
 public class StartActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -31,6 +32,7 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
     private MapView map;
     private MapWork mapWork;
     private UpdateInfo updateInfo;
+    private View bottomMenu;
 
 
     @Override
@@ -38,6 +40,7 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
+        bottomMenu = findViewById(R.id.bottom_menu);
         if(savedInstanceState != null) {
             int visTable = savedInstanceState.getInt(""+R.id.view_table);
             findViewById(R.id.view_table).setVisibility(visTable);
@@ -116,23 +119,23 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
 
 
         if (button.getTag().equals("stop")) {
-
             button.setImageResource(R.drawable.baseline_stop_black_36);
             button.setTag("play");
-
             mapWork.getGps().startUpdatePosition();
-
-
-
-
-
-
 
         } else {
             button.setImageResource(R.drawable.baseline_play_arrow_black_36);
             button.setTag("stop");
             mapWork.getGps().stopUpdatePosition();
             mapWork.getLastRoute().saveRoute();
+
+            bottomMenu.setVisibility(View.GONE);
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.root_linear,new StatFragment())
+                    .addToBackStack(null)
+                    .commit();
+
+
 
         }
     }
@@ -166,6 +169,12 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
         return mapWork;
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if(bottomMenu.getVisibility() == View.GONE)
+        bottomMenu.setVisibility(View.VISIBLE);
+    }
 
     @Override
     protected void onPause() {

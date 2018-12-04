@@ -11,7 +11,7 @@
     <string name="settings_app">Настройки приложения</string>
     <string name="user_data">Пользовательские данные</string>
     <string name="sex">Пол</string>
-    <string name="age">Возраст</string>
+    <string name="age">Дата рождения</string>
     <string name="wieght">Вес</string>
     <string name="km_peer_hour">км/ч</string>
     <string name="time">Время</string>

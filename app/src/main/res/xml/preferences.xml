@@ -1,13 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:title="@string/settings_app">
-    <ListPreference
-        android:entryValues="@array/type_map"
-        android:entries="@array/type_map"
-        android:title="Тип карты"
-        android:key="type_map">
+    <PreferenceCategory android:title="Карта">
 
-    </ListPreference>
+        <ListPreference
+            android:entries="@array/type_map"
+            android:entryValues="@array/type_map"
+            android:key="type_map"
+            android:summary="Выберите тип карты"
+            android:title="Тип карты">
+
+        </ListPreference>
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/zoom_map"
+            android:entryValues="@array/zoom_map_values"
+            android:key="list_preference_1"
+            android:title="Приближение" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="switch_preference_1"
+            android:summary="Ставить на паузу когда нет активности"
+            android:title="Автопауза" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Цели">
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="switch_preference_1"
+            android:summary="Включить цель"
+            android:title="Цель" />
+        <EditTextPreference
+            android:defaultValue="Default value"
+            android:enabled="false"
+            android:key="edit_text_preference_1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Цель по раастоянию" />
+        <EditTextPreference
+            android:defaultValue="Default value"
+            android:enabled="false"
+            android:key="edit_text_preference_1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Цель по каллориям" />
+    </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/user_data">
 
@@ -30,5 +68,14 @@
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:title="@string/wieght" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Дополнительно">
+        <Preference
+            android:title="Связь с разработчиком"
+            android:summary="Напишите нам E-Mail"/>
+        <Preference
+            android:key="version_app"
+            android:summary="1.0.1"
+            android:title="Версия приложения" />
     </PreferenceCategory>
 </PreferenceScreen>
