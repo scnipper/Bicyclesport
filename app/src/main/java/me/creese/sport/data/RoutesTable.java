@@ -8,4 +8,5 @@ public class RoutesTable {
     public static final String DEST = "destantion";
     public static final String IS_RIDE = "is_ride";
     public static final String TIME_ROUTE = "time_route";
+    public static final String KAL = "calories";
 }

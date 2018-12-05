@@ -1,11 +1,7 @@
 package me.creese.sport.util;
 
-import android.util.Log;
-import android.view.View;
 import android.widget.TextView;
 
-import java.text.SimpleDateFormat;
-import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -31,16 +27,16 @@ public class UpdateInfo extends TimerTask {
     private TextView kallView;
 
 
+    private UpdateInfo() {
+        time = 0;
+    }
+
     public static UpdateInfo get() {
-        if(inst == null) {
+        if (inst == null) {
             inst = new UpdateInfo();
         }
 
         return inst;
-    }
-
-    private UpdateInfo() {
-        time = 0;
     }
 
     private void createViews() {
@@ -51,10 +47,10 @@ public class UpdateInfo extends TimerTask {
     }
 
     public void start() {
-        if(mapWork == null) mapWork = startActivity.getMapWork();
+        if (mapWork == null) mapWork = startActivity.getMapWork();
 
         timer = new Timer();
-        timer.scheduleAtFixedRate(this,0,1000);
+        timer.scheduleAtFixedRate(this, 0, 1000);
     }
 
     public void stop() {
@@ -66,27 +62,28 @@ public class UpdateInfo extends TimerTask {
 
         Gps gps = mapWork.getGps();
 
-        Route route = mapWork.getRoutes().get(mapWork.getRoutes().size()-1);
+        Route route = mapWork.getRoutes().get(mapWork.getRoutes().size() - 1);
 
         timeView.setText(formatTime());
 
-        speedView.setText(((int) gps.getSpeed())+" "+startActivity.getString(R.string.km_peer_hour));
+        speedView.setText(((int) gps.getSpeed()) + " " + startActivity.getString(R.string.km_peer_hour));
         distanceView.setText(Route.makeDistance(route.getDistance()));
+        kallView.setText(route.calculateCalories(gps.getSpeed())+"");
     }
 
     private String formatTime() {
         long tmp = time;
-        int hour = (int) (time/3600);
-        tmp -= hour*3600;
-        int min = (int) (tmp/60);
-        int sec = (int) (tmp-min*60);
+        int hour = (int) (time / 3600);
+        tmp -= hour * 3600;
+        int min = (int) (tmp / 60);
+        int sec = (int) (tmp - min * 60);
 
-        String hourText = hour < 10 ? "0"+hour:""+hour;
-        String minText = min < 10 ? "0"+min:""+min;
-        String secText = sec < 10 ? "0"+sec:""+sec;
+        String hourText = hour < 10 ? "0" + hour : "" + hour;
+        String minText = min < 10 ? "0" + min : "" + min;
+        String secText = sec < 10 ? "0" + sec : "" + sec;
 
 
-        return hourText+":"+minText+":"+secText;
+        return hourText + ":" + minText + ":" + secText;
     }
 
     public void setStartActivity(StartActivity startActivity) {
@@ -103,9 +100,6 @@ public class UpdateInfo extends TimerTask {
                 updateViews();
             }
         });
-
-
-
         time++;
     }
 }

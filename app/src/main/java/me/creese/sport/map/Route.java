@@ -27,6 +27,7 @@ import me.creese.sport.R;
 import me.creese.sport.data.PointsTable;
 import me.creese.sport.data.RoutesTable;
 import me.creese.sport.models.RouteModel;
+import me.creese.sport.util.UserData;
 
 public class Route {
 
@@ -47,6 +48,7 @@ public class Route {
     private boolean isMarker;
     private boolean isFocusRoute;
     private TextView distanceView;
+    private float calories;
     //private TextView viewText;
 
     public Route(AppCompatActivity context) {
@@ -61,6 +63,7 @@ public class Route {
         setColorLine(0xffffff00);
 
         tmpPoints = new ArrayList<>();
+        calories = 0;
     }
 
     public static String makeDistance(double distance) {
@@ -214,6 +217,16 @@ public class Route {
     public void setColorLine(int colorLine) {
         this.colorLine = colorLine;
         lineOptions.color(colorLine);
+    }
+
+    /**
+     * Расчет калорий в секуду
+     * @param speed
+     * @return
+     */
+    public float calculateCalories(float speed) {
+        calories+= speed * 0.00006944f * UserData.WEIGHT;
+        return calories;
     }
 
     public void setGoogleMap(GoogleMap googleMap) {

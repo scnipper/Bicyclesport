@@ -7,10 +7,10 @@ import android.support.v7.widget.RecyclerView;
 
 import java.util.ArrayList;
 
+import me.creese.sport.App;
 import me.creese.sport.R;
 import me.creese.sport.models.RouteModel;
 import me.creese.sport.models.adapters.HistoryAdapter;
-import me.creese.sport.util.RouteFromDb;
 
 public class UserHistoryActivity extends AppCompatActivity {
 
@@ -26,7 +26,7 @@ public class UserHistoryActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        ArrayList<RouteModel> models = RouteFromDb.addItems(true);
+        ArrayList<RouteModel> models = App.get().getData().addItems(true);
 
         for (RouteModel model : models) {
             adapter.addItem(model);

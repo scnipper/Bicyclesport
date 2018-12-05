@@ -13,6 +13,7 @@ import me.creese.sport.data.DataHelper;
 import me.creese.sport.models.RouteModel;
 import me.creese.sport.util.Files;
 import me.creese.sport.util.RouteModelConvert;
+import me.creese.sport.util.UserData;
 
 public class App extends Application {
     private static App instanse;
@@ -45,8 +46,16 @@ public class App extends Application {
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
+        setUserData();
     }
 
+    private void setUserData() {
+        // TODO: 05.12.2018 Считать с базы данных
+
+        UserData.WEIGHT = 80;
+        UserData.SEX = 0;
+
+    }
     public DataHelper getData() {
         return data;
     }

@@ -57,6 +57,7 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
     private boolean isFixGps;
     private float speed;
     private TextView speedView;
+    private DialogFindGps dialogWait;
 
 
     public Gps(MapWork mapWork) {
@@ -163,7 +164,11 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
 
     public void startUpdatePosition() {
 
-        new DialogFindGps().show(context.getSupportFragmentManager(), "f_gps");
+        if(dialogWait == null)
+        dialogWait = new DialogFindGps();
+
+        if(!dialogWait.isAdded())
+        dialogWait.show(context.getSupportFragmentManager(), "f_gps");
 
         mapWork.getGoogleMap().clear();
         gpsListener = null;
