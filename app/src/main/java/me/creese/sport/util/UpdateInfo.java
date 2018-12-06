@@ -12,7 +12,7 @@ import me.creese.sport.map.gps.Gps;
 import me.creese.sport.ui.activities.StartActivity;
 
 
-public class UpdateInfo extends TimerTask {
+public class UpdateInfo implements Runnable {
 
     private static final String TAG = UpdateInfo.class.getSimpleName();
     private static UpdateInfo inst;
@@ -27,10 +27,6 @@ public class UpdateInfo extends TimerTask {
     private TextView kallView;
 
 
-    private UpdateInfo() {
-        time = 0;
-    }
-
     public static UpdateInfo get() {
         if (inst == null) {
             inst = new UpdateInfo();
@@ -39,39 +35,7 @@ public class UpdateInfo extends TimerTask {
         return inst;
     }
 
-    private void createViews() {
-        speedView = startActivity.findViewById(R.id.speed_view);
-        distanceView = startActivity.findViewById(R.id.distance_view);
-        timeView = startActivity.findViewById(R.id.time_view);
-        kallView = startActivity.findViewById(R.id.kall_view);
-    }
-
-    public void start() {
-        if (mapWork == null) mapWork = startActivity.getMapWork();
-
-        timer = new Timer();
-        timer.scheduleAtFixedRate(this, 0, 1000);
-    }
-
-    public void stop() {
-        timer.cancel();
-        timer = null;
-    }
-
-    private void updateViews() {
-
-        Gps gps = mapWork.getGps();
-
-        Route route = mapWork.getRoutes().get(mapWork.getRoutes().size() - 1);
-
-        timeView.setText(formatTime());
-
-        speedView.setText(((int) gps.getSpeed()) + " " + startActivity.getString(R.string.km_peer_hour));
-        distanceView.setText(Route.makeDistance(route.getDistance()));
-        kallView.setText(route.calculateCalories(gps.getSpeed())+"");
-    }
-
-    private String formatTime() {
+    public static String formatTime(long time) {
         long tmp = time;
         int hour = (int) (time / 3600);
         tmp -= hour * 3600;
@@ -86,10 +50,62 @@ public class UpdateInfo extends TimerTask {
         return hourText + ":" + minText + ":" + secText;
     }
 
+    private UpdateInfo() {
+        time = 0;
+    }
+
+    private void createViews() {
+        speedView = startActivity.findViewById(R.id.speed_view);
+        distanceView = startActivity.findViewById(R.id.distance_view);
+        timeView = startActivity.findViewById(R.id.time_view);
+        kallView = startActivity.findViewById(R.id.kall_view);
+    }
+
+    public void start() {
+        if (mapWork == null) mapWork = startActivity.getMapWork();
+
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                UpdateInfo.this.run();
+            }
+        }, 0, 1000);
+
+    }
+
+    public void stop() {
+        if (timer != null) {
+            time = 0;
+            timer.cancel();
+            timer = null;
+        }
+
+    }
+
+    private void updateViews() {
+
+        Gps gps = mapWork.getGps();
+        if(mapWork.getRoutes().size() > 0) {
+            Route route = mapWork.getRoutes().get(mapWork.getRoutes().size() - 1);
+
+
+            timeView.setText(formatTime(time));
+
+            speedView.setText(((int) gps.getSpeed()) + " " + startActivity.getString(R.string.km_peer_hour));
+            distanceView.setText(Route.makeDistance(route.getDistance()));
+            kallView.setText(((int) route.calculateCalories(gps.getSpeed())) + "");
+        }
+    }
+
     public void setStartActivity(StartActivity startActivity) {
         this.startActivity = startActivity;
 
         createViews();
+    }
+
+    public long getTime() {
+        return time;
     }
 
     @Override

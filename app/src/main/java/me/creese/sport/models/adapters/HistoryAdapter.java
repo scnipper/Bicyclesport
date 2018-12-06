@@ -1,6 +1,8 @@
 package me.creese.sport.models.adapters;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +18,8 @@ import java.util.Locale;
 import me.creese.sport.R;
 import me.creese.sport.map.Route;
 import me.creese.sport.models.RouteModel;
+import me.creese.sport.ui.activities.StartActivity;
+import me.creese.sport.util.UpdateInfo;
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryHolder> {
     private final ArrayList<RouteModel> items;
@@ -37,12 +41,15 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryH
 
     @Override
     public void onBindViewHolder(@NonNull HistoryHolder historyHolder, int i) {
-        SimpleDateFormat format = new SimpleDateFormat("dd.mm.yyyy",Locale.getDefault());
+        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy",Locale.getDefault());
         Date date = new Date();
         date.setTime(items.get(i).getTime());
         historyHolder.date.setText(format.format(date));
         historyHolder.dist.setText(Route.makeDistance(items.get(i).getDistance()));
-        historyHolder.time.setText(items.get(i).getTimeRoute()+"");
+        historyHolder.time.setText(UpdateInfo.formatTime(items.get(i).getTimeRoute()));
+        historyHolder.idModel = i;
+
+
     }
 
     @Override
@@ -54,9 +61,19 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryH
         private final TextView time;
         private final TextView date;
         private final TextView dist;
+        private int idModel;
 
-        public HistoryHolder(@NonNull View itemView) {
+        public HistoryHolder(@NonNull final View itemView) {
             super(itemView);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(itemView.getContext(),StartActivity.class);
+                    intent.putExtra(RouteModel.class.getSimpleName(),items.get(idModel));
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    itemView.getContext().startActivity(intent);
+                }
+            });
 
             time = itemView.findViewById(R.id.history_time);
             date = itemView.findViewById(R.id.history_date);

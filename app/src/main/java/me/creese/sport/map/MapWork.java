@@ -33,6 +33,7 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
     private TextView distText;
     private ArrayList<Route> routes;
     private Marker startMarker;
+    private Runnable showRouteWhenReady;
 
     public MapWork( TextView distText) {
 
@@ -47,20 +48,24 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
      *
      * @param model
      */
-    private void showRoute(RouteModel model) {
-        googleMap.clear();
+    public void showRoute(final RouteModel model) {
+        showRouteWhenReady = new Runnable(){
+            @Override
+            public void run() {
+                googleMap.clear();
+                clearRoutes();
+                Route route = new Route(context);
+                addRoute(route);
+                for (LatLng latLng : model.getPoints()) {
+                    route.addPoint(latLng);
+                }
+                route.setMarker(model.isMarker());
 
-        clearRoutes();
-        LatLng last = null;
-
-        Route route = new Route(context);
-        for (LatLng latLng : model.getPoints()) {
-            route.addPointOnMap(latLng);
-            last = latLng;
-        }
-        if (last != null) {
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(last, 15));
-        }
+              /*  if (last != null) {
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(last, 15));
+                }*/
+            }
+        };
     }
 
     /**
@@ -127,7 +132,7 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
     public void onMapReady(final GoogleMap googleMap) {
 
         this.googleMap = googleMap;
-        googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        googleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
         //currentRoute.setGoogleMap(googleMap);
 
         for (Route route : routes) {
@@ -136,9 +141,13 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
 
         googleMap.setOnMapClickListener(this);
         googleMap.setOnMarkerDragListener(this);
-        if (App.get().getModel() != null) {
+/*        if (App.get().getModel() != null) {
             showRoute(App.get().getModel());
             App.get().setModel(null);
+        }*/
+        if (showRouteWhenReady != null) {
+            showRouteWhenReady.run();
+            showRouteWhenReady = null;
         }
 
         if(routes.size() == 0) {
@@ -151,7 +160,7 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
             for (Route route : routes) {
                 route.showOnMap();
                 if(!route.isFocusRoute())
-                route.focusOnPoint(route.getMarkers().get(route.getMarkers().size()-1).getPosition());
+                route.focusOnPoint(route.getLine().getPoints().get(route.getLine().getPoints().size()-1));
             }
 
         }

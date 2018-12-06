@@ -19,8 +19,6 @@ public class App extends Application {
     private static App instanse;
     private Files files;
     private Gson gson;
-    private Random random;
-    private RouteModel model;
     private DataHelper data;
     private LocationManager locationManager;
 
@@ -40,7 +38,6 @@ public class App extends Application {
                 .setPrettyPrinting()
                 .registerTypeAdapter(RouteModel.class,new RouteModelConvert())
                 .create();
-        random = new Random();
         data = new DataHelper(this);
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
@@ -64,10 +61,6 @@ public class App extends Application {
         return locationManager;
     }
 
-    public Random getRandom() {
-        return random;
-    }
-
     public Files getFiles() {
         return files;
     }
@@ -76,11 +69,4 @@ public class App extends Application {
         return gson;
     }
 
-    public void setModel(RouteModel model) {
-        this.model = model;
-    }
-
-    public RouteModel getModel() {
-        return model;
-    }
 }

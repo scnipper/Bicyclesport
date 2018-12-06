@@ -1,25 +1,31 @@
 package me.creese.sport.models.adapters;
 
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
+import me.creese.sport.models.RouteModel;
 import me.creese.sport.ui.fragments.PageStatFragment;
 
-public class StatPageAdapter extends FragmentPagerAdapter {
+public class StatPageAdapter extends FragmentStatePagerAdapter {
 
     private static final int COUNT_PAGE = 2;
+    private final RouteModel model;
 
     private String[] titles = new String[]{"Статистика","Графики"};
 
-    public StatPageAdapter(FragmentManager fm) {
+    public StatPageAdapter(FragmentManager fm, RouteModel model) {
         super(fm);
+
+        this.model = model;
     }
 
     @Override
     public Fragment getItem(int i) {
-        return PageStatFragment.newInstanse(i);
+        return PageStatFragment.newInstanse(i,model);
     }
 
     @Override

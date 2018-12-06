@@ -14,6 +14,7 @@ import java.util.Calendar;
 
 import me.creese.sport.App;
 import me.creese.sport.R;
+import me.creese.sport.map.Route;
 import me.creese.sport.ui.activities.ListRoutesActivity;
 import me.creese.sport.ui.activities.StartActivity;
 import me.creese.sport.models.RouteModel;
@@ -67,9 +68,9 @@ public class ListRouteAdapter extends RecyclerView.Adapter<ListRouteAdapter.Rout
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(root.getContext(),StartActivity.class);
-
+                    intent.putExtra(RouteModel.class.getSimpleName(),model);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    App.get().setModel(model);
+
                     root.getContext().startActivity(intent);
                 }
             });

@@ -34,6 +34,7 @@ public class DataHelper extends SQLiteOpenHelper {
                 RoutesTable.TIME+" BIGINT," +
                 RoutesTable.DEST+ " DOUBLE DEFAULT (0),"+
                 RoutesTable.IS_RIDE+ " INTEGER DEFAULT (0),"+
+                RoutesTable.IS_MARKER+ " INTEGER DEFAULT (0),"+
                 RoutesTable.TIME_ROUTE+ " BIGINT,"+
                 RoutesTable.KAL+ " INTEGER DEFAULT(0),"+
                 RoutesTable.NAME+" VARCHAR (255));";
@@ -84,7 +85,9 @@ public class DataHelper extends SQLiteOpenHelper {
                         points, cursor.getLong(cursor.getColumnIndex(RoutesTable.TIME)),
                         cursor.getDouble(cursor.getColumnIndex(RoutesTable.DEST)),
                         cursor.getInt(cursor.getColumnIndex(RoutesTable.IS_RIDE)) == 1,
-                        cursor.getLong(cursor.getColumnIndex(RoutesTable.TIME_ROUTE)));
+                        cursor.getLong(cursor.getColumnIndex(RoutesTable.TIME_ROUTE)),
+                        cursor.getFloat(cursor.getColumnIndex(RoutesTable.KAL)),
+                        cursor.getFloat(cursor.getColumnIndex(RoutesTable.IS_MARKER))==1);
 
                 models.add(model);
 

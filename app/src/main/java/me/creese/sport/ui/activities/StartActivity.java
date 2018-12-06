@@ -3,9 +3,11 @@ package me.creese.sport.ui.activities;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -19,11 +21,16 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.MapView;
 
+import java.util.List;
+
 import me.creese.sport.R;
 import me.creese.sport.map.MapWork;
+import me.creese.sport.map.Route;
+import me.creese.sport.models.RouteModel;
 import me.creese.sport.ui.fragments.SettingsFragment;
 import me.creese.sport.ui.fragments.StatFragment;
 import me.creese.sport.util.UpdateInfo;
+import me.creese.sport.util.impl.OnBackPressed;
 
 public class StartActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -38,6 +45,7 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.w(TAG, "onCreate: " );
         setContentView(R.layout.activity_start);
 
         bottomMenu = findViewById(R.id.bottom_menu);
@@ -67,6 +75,11 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
             button.setTag("play");
         }
 
+        RouteModel model = getIntent().getParcelableExtra(RouteModel.class.getSimpleName());
+
+        if (model != null) {
+            showStatFragment(model);
+        }
 
     }
 
@@ -126,18 +139,32 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
         } else {
             button.setImageResource(R.drawable.baseline_play_arrow_black_36);
             button.setTag("stop");
+            RouteModel model = mapWork.getLastRoute().saveRoute();
             mapWork.getGps().stopUpdatePosition();
-            mapWork.getLastRoute().saveRoute();
 
-            bottomMenu.setVisibility(View.GONE);
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.root_linear,new StatFragment())
-                    .addToBackStack(null)
-                    .commit();
+
+            showStatFragment(model);
 
 
 
         }
+    }
+
+    private void showStatFragment(RouteModel model) {
+
+        if(mapWork.getRoutes().size() == 0)
+        mapWork.showRoute(model);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(RouteModel.class.getSimpleName(),model);
+
+        StatFragment statFragment = new StatFragment();
+        statFragment.setArguments(bundle);
+
+        bottomMenu.setVisibility(View.GONE);
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.root_linear,statFragment)
+                .addToBackStack(null)
+                .commit();
     }
 
     /**
@@ -171,9 +198,23 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
 
     @Override
     public void onBackPressed() {
+
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        for (Fragment fragment : fragments) {
+            if(fragment instanceof StatFragment) {
+                if(((StatFragment) fragment).isShowStartPosWhenClose()) {
+                    mapWork.getGoogleMap().clear();
+                    mapWork.clearRoutes();
+                    mapWork.showStartPosition();
+                }
+            }
+        }
+
         super.onBackPressed();
         if(bottomMenu.getVisibility() == View.GONE)
         bottomMenu.setVisibility(View.VISIBLE);
+
+
     }
 
     @Override

@@ -27,6 +27,7 @@ import me.creese.sport.R;
 import me.creese.sport.data.PointsTable;
 import me.creese.sport.data.RoutesTable;
 import me.creese.sport.models.RouteModel;
+import me.creese.sport.util.UpdateInfo;
 import me.creese.sport.util.UserData;
 
 public class Route {
@@ -147,12 +148,12 @@ public class Route {
 
     }
 
-    public void saveRoute() {
+    public RouteModel saveRoute() {
         Random random = new Random();
         byte[] bytes = new byte[10];
         random.nextBytes(bytes);
 
-        saveRoute(new String(bytes));
+        return saveRoute(new String(bytes));
     }
 
     /**
@@ -160,8 +161,9 @@ public class Route {
      *
      * @param name
      */
-    public void saveRoute(String name) {
-        RouteModel model = new RouteModel(name, lineOptions.getPoints(), System.currentTimeMillis(),distance,isFocusRoute,0);
+    public RouteModel saveRoute(String name) {
+        RouteModel model = new RouteModel(name, lineOptions.getPoints(), System.currentTimeMillis(),
+                distance,isFocusRoute,UpdateInfo.get().getTime(),calories,isMarker);
 
         SQLiteDatabase db = App.get().getData().getWritableDatabase();
 
@@ -170,6 +172,9 @@ public class Route {
         contentValues.put(RoutesTable.TIME, model.getTime());
         contentValues.put(RoutesTable.DEST, model.getDistance());
         contentValues.put(RoutesTable.IS_RIDE, model.isFocusRoute() ? 1 : 0);
+        contentValues.put(RoutesTable.IS_MARKER, model.isMarker() ? 1 : 0);
+        contentValues.put(RoutesTable.TIME_ROUTE, model.getTimeRoute());
+        contentValues.put(RoutesTable.KAL, model.getCalories());
 
         long id = db.insert(RoutesTable.NAME_TABLE, null, contentValues);
 
@@ -184,7 +189,7 @@ public class Route {
 
         db.close();
 
-
+        return model;
     }
 
     /**
@@ -233,12 +238,12 @@ public class Route {
         this.googleMap = googleMap;
     }
 
-    public void setViewMarker(boolean marker) {
-        isMarker = marker;
-    }
-
     public ArrayList<Marker> getMarkers() {
         return markers;
+    }
+
+    public Polyline getLine() {
+        return line;
     }
 
     public boolean isFocusRoute() {
