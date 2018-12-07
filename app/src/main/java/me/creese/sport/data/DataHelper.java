@@ -45,9 +45,17 @@ public class DataHelper extends SQLiteOpenHelper {
                 PointsTable.LONGTITUDE+" DOUBLE," +
                 PointsTable.ID_ROUTE+" INTEGER);";
 
+        final String USER_DATA = "CREATE TABLE "+UserTable.NAME_TABLE+" (" +
+                ID+" INTEGER DEFAULT(1)," +
+                UserTable.WIEGHT+" DOUBLE DEFAULT(70)," +
+                UserTable.HEIGHT+" DOUBLE DEFAULT(170)," +
+                UserTable.TIME_BIRTH+" BIGINT DEFAULT(0)," +
+                UserTable.SEX+" INTEGER DEFAULT(0));";
+
 
         db.execSQL(ROUTES);
         db.execSQL(POINTS);
+        db.execSQL(USER_DATA);
     }
 
     @Override
@@ -56,7 +64,7 @@ public class DataHelper extends SQLiteOpenHelper {
     }
 
     public ArrayList<RouteModel> addItems(boolean isHistory) {
-        SQLiteDatabase db = App.get().getData().getReadableDatabase();
+        SQLiteDatabase db = getReadableDatabase();
         ArrayList<RouteModel> models = new ArrayList<>();
 
         Cursor cursor = db.query(RoutesTable.NAME_TABLE, null, RoutesTable.IS_RIDE+"='"+(isHistory?1:0)+"'",

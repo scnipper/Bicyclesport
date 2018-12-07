@@ -49,25 +49,9 @@
     <PreferenceCategory
         android:title="@string/user_data">
 
+        <Preference android:title="Ввод данных"
+            android:key="enter_data"/>
 
-        <ListPreference
-            android:defaultValue="1"
-            android:entries="@array/sex_array"
-            android:entryValues="@array/sex_values"
-            android:key="list_preference_1"
-            android:title="@string/sex" />
-        <EditTextPreference
-            android:defaultValue="20"
-            android:key="age_key"
-            android:selectAllOnFocus="true"
-            android:singleLine="true"
-            android:title="@string/age" />
-        <EditTextPreference
-            android:defaultValue="60"
-            android:key="weight_key"
-            android:selectAllOnFocus="true"
-            android:singleLine="true"
-            android:title="@string/wieght" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Дополнительно">
         <Preference

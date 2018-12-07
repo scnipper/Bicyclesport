@@ -23,6 +23,7 @@ import com.google.android.gms.maps.MapView;
 
 import java.util.List;
 
+import me.creese.sport.App;
 import me.creese.sport.R;
 import me.creese.sport.map.MapWork;
 import me.creese.sport.map.Route;
@@ -30,6 +31,7 @@ import me.creese.sport.models.RouteModel;
 import me.creese.sport.ui.fragments.SettingsFragment;
 import me.creese.sport.ui.fragments.StatFragment;
 import me.creese.sport.util.UpdateInfo;
+import me.creese.sport.util.UserData;
 import me.creese.sport.util.impl.OnBackPressed;
 
 public class StartActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {

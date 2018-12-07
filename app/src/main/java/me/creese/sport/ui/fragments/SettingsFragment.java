@@ -1,5 +1,6 @@
 package me.creese.sport.ui.fragments;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -18,6 +19,7 @@ import android.widget.ListView;
 
 import me.creese.sport.BuildConfig;
 import me.creese.sport.R;
+import me.creese.sport.ui.activities.EnterDataUserActivity;
 
 import static android.support.constraint.Constraints.TAG;
 
@@ -39,7 +41,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @Override
     public boolean onPreferenceTreeClick(Preference preference) {
-        Log.w(TAG, "onPreferenceTreeClick: "+preference );
+        switch (preference.getKey()) {
+            case "enter_data":
+                preference.getContext().startActivity(new Intent(getContext(),EnterDataUserActivity.class));
+                break;
+        }
         return super.onPreferenceTreeClick(preference);
 
     }

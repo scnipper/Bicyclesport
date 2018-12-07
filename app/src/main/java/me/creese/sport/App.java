@@ -1,6 +1,9 @@
 package me.creese.sport;
 
 import android.app.Application;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.LocationManager;
 import android.preference.PreferenceManager;
 
@@ -10,6 +13,7 @@ import com.google.gson.GsonBuilder;
 import java.util.Random;
 
 import me.creese.sport.data.DataHelper;
+import me.creese.sport.data.UserTable;
 import me.creese.sport.models.RouteModel;
 import me.creese.sport.util.Files;
 import me.creese.sport.util.RouteModelConvert;
@@ -46,11 +50,32 @@ public class App extends Application {
         setUserData();
     }
 
-    private void setUserData() {
-        // TODO: 05.12.2018 Считать с базы данных
+    /**
+     * Загрузка пользовательских данных и БД
+     */
+    public void setUserData() {
 
-        UserData.WEIGHT = 80;
-        UserData.SEX = 0;
+        SQLiteDatabase readDb = data.getWritableDatabase();
+
+        Cursor cursor = readDb.query(UserTable.NAME_TABLE,null,null,
+                null,null,null,null);
+
+        if(cursor.moveToFirst()) {
+            UserData.WEIGHT = cursor.getDouble(cursor.getColumnIndex(UserTable.WIEGHT));
+            UserData.SEX = cursor.getInt(cursor.getColumnIndex(UserTable.SEX));
+            UserData.BIRTH_DATE = cursor.getLong(cursor.getColumnIndex(UserTable.TIME_BIRTH));
+            UserData.HEIGHT = cursor.getLong(cursor.getColumnIndex(UserTable.HEIGHT));
+        } else {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(DataHelper.ID,1);
+            long i = readDb.insert(UserTable.NAME_TABLE,null,contentValues);
+            if(i != -1) {
+                cursor.close();
+                setUserData();
+            }
+        }
+
+        cursor.close();
 
     }
     public DataHelper getData() {
