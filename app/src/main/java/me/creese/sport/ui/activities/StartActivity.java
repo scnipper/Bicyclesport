@@ -80,7 +80,12 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
         RouteModel model = getIntent().getParcelableExtra(RouteModel.class.getSimpleName());
 
         if (model != null) {
+            if(model.isFocusRoute())
             showStatFragment(model);
+            else {
+                if(mapWork.getRoutes().size() == 0)
+                mapWork.showRoute(model);
+            }
         }
 
     }
@@ -139,10 +144,8 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
             mapWork.getGps().startUpdatePosition();
 
         } else {
-            button.setImageResource(R.drawable.baseline_play_arrow_black_36);
-            button.setTag("stop");
+            stopGps(button);
             RouteModel model = mapWork.getLastRoute().saveRoute();
-            mapWork.getGps().stopUpdatePosition();
 
 
             showStatFragment(model);
@@ -150,6 +153,13 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
 
 
         }
+    }
+
+    private void stopGps(ImageButton button) {
+        button.setImageResource(R.drawable.baseline_play_arrow_black_36);
+        button.setTag("stop");
+
+        mapWork.getGps().stopUpdatePosition();
     }
 
     private void showStatFragment(RouteModel model) {
@@ -266,6 +276,9 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
 
         if (requestCode == CHECK_GPS_ENABLED && resultCode == -1) {
             mapWork.getGps().startUpdatePosition();
+        }
+        if (requestCode == CHECK_GPS_ENABLED && resultCode == 0) {
+            stopGps((ImageButton) findViewById(R.id.play_button));
         }
 
     }

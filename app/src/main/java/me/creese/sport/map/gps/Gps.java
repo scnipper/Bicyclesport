@@ -181,6 +181,9 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
      * Остановка обновления позиции
      */
     public void stopUpdatePosition() {
+        if (dialogWait != null) {
+            dialogWait.dismiss();
+        }
         client.removeLocationUpdates(this);
     }
 
