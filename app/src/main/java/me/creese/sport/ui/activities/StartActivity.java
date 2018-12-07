@@ -1,6 +1,7 @@
 package me.creese.sport.ui.activities;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -10,6 +11,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -40,7 +42,6 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
     private static final String TAG = StartActivity.class.getSimpleName();
     private MapView map;
     private MapWork mapWork;
-    private UpdateInfo updateInfo;
     private View bottomMenu;
 
 
@@ -86,6 +87,8 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
                 if(mapWork.getRoutes().size() == 0)
                 mapWork.showRoute(model);
             }
+
+
         }
 
     }
@@ -164,19 +167,23 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
 
     private void showStatFragment(RouteModel model) {
 
-        if(mapWork.getRoutes().size() == 0)
-        mapWork.showRoute(model);
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(RouteModel.class.getSimpleName(),model);
+        Fragment stat = getSupportFragmentManager().findFragmentByTag("stat");
+        if (stat == null) {
 
-        StatFragment statFragment = new StatFragment();
-        statFragment.setArguments(bundle);
 
-        bottomMenu.setVisibility(View.GONE);
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.root_linear,statFragment)
-                .addToBackStack(null)
-                .commit();
+            if (mapWork.getRoutes().size() == 0) mapWork.showRoute(model);
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(RouteModel.class.getSimpleName(), model);
+
+            StatFragment statFragment = new StatFragment();
+            statFragment.setArguments(bundle);
+
+            bottomMenu.setVisibility(View.GONE);
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.root_linear, statFragment, "stat")
+                    .addToBackStack(null).commit();
+        }
     }
 
     /**
@@ -211,20 +218,43 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
     @Override
     public void onBackPressed() {
 
-        List<Fragment> fragments = getSupportFragmentManager().getFragments();
-        for (Fragment fragment : fragments) {
-            if(fragment instanceof StatFragment) {
-                if(((StatFragment) fragment).isShowStartPosWhenClose()) {
-                    mapWork.getGoogleMap().clear();
-                    mapWork.clearRoutes();
-                    mapWork.showStartPosition();
+        if(mapWork.getGps().isStartWay()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+            builder.setTitle(R.string.are_you_sure_to_exit);
+            builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    StartActivity.super.onBackPressed();
+                }
+            });
+            builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            builder.create().show();
+
+        } else {
+
+
+            List<Fragment> fragments = getSupportFragmentManager().getFragments();
+            for (Fragment fragment : fragments) {
+                if (fragment instanceof StatFragment) {
+                    if (((StatFragment) fragment).isShowStartPosWhenClose()) {
+                        mapWork.getGoogleMap().clear();
+                        mapWork.clearRoutes();
+                        mapWork.showStartPosition();
+                    }
                 }
             }
+
+
+            super.onBackPressed();
+            if (bottomMenu.getVisibility() == View.GONE) bottomMenu.setVisibility(View.VISIBLE);
         }
 
-        super.onBackPressed();
-        if(bottomMenu.getVisibility() == View.GONE)
-        bottomMenu.setVisibility(View.VISIBLE);
 
 
     }

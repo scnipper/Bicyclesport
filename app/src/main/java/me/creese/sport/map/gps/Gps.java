@@ -58,6 +58,7 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
     private float speed;
     private TextView speedView;
     private DialogFindGps dialogWait;
+    private float maxSpeed;
 
 
     public Gps(MapWork mapWork) {
@@ -250,6 +251,8 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
         UpdateInfo.get().stop();
         LinearLayout viewTable = context.findViewById(R.id.view_table);
         viewTable.setVisibility(View.GONE);
+        speed = 0;
+        maxSpeed = 0;
     }
 
     public boolean isFirstFix() {
@@ -260,6 +263,10 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
         return speed;
     }
 
+    /**
+     * Обновление данных позиции со спутников
+     * @param locationResult
+     */
     @Override
     public void onLocationResult(LocationResult locationResult) {
         Log.w(TAG, "onLocationResult: " + locationResult.getLastLocation());
@@ -277,6 +284,7 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
 
 
             speed = location.getSpeed()*3.6f;
+            if(speed > maxSpeed) maxSpeed = speed;
 
 
 

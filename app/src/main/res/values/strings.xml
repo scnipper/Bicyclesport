@@ -15,5 +15,8 @@
     <string name="wieght">Вес</string>
     <string name="km_peer_hour">км/ч</string>
     <string name="time">Время</string>
+    <string name="are_you_sure_to_exit">Вы уверены что хотите выйти?</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
 
 </resources>
