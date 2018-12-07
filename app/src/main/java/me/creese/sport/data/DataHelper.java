@@ -10,6 +10,7 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 
 import me.creese.sport.App;
+import me.creese.sport.models.RideModel;
 import me.creese.sport.models.RouteModel;
 
 public class DataHelper extends SQLiteOpenHelper {
@@ -32,13 +33,18 @@ public class DataHelper extends SQLiteOpenHelper {
         final String ROUTES = "CREATE TABLE "+RoutesTable.NAME_TABLE+" (" +
                 ID+" INTEGER PRIMARY KEY AUTOINCREMENT," +
                 RoutesTable.TIME+" BIGINT," +
-                RoutesTable.DEST+ " DOUBLE DEFAULT (0),"+
                 RoutesTable.IS_RIDE+ " INTEGER DEFAULT (0),"+
                 RoutesTable.IS_MARKER+ " INTEGER DEFAULT (0),"+
-                RoutesTable.TIME_ROUTE+ " BIGINT,"+
-                RoutesTable.KAL+ " INTEGER DEFAULT(0),"+
                 RoutesTable.NAME+" VARCHAR (255));";
 
+
+        final String RIDES = "CREATE TABLE "+RideTable.NAME_TABLE+" (" +
+                ID+" INTEGER PRIMARY KEY AUTOINCREMENT," +
+                RideTable.TIME_RIDE+" BIGINT," +
+                RideTable.ID_ROUTE+" INTEGER NOT NULL," +
+                RideTable.MAX_SPEED+" INTEGER," +
+                RideTable.CAL+" INTEGER," +
+                RideTable.DISTANCE+" DOUBLE);";
         final String POINTS = "CREATE TABLE "+PointsTable.NAME_TABLE+" (" +
                 ID+" INTEGER PRIMARY KEY AUTOINCREMENT," +
                 PointsTable.LATITUDE+" DOUBLE," +
@@ -54,6 +60,7 @@ public class DataHelper extends SQLiteOpenHelper {
 
 
         db.execSQL(ROUTES);
+        db.execSQL(RIDES);
         db.execSQL(POINTS);
         db.execSQL(USER_DATA);
     }
@@ -63,7 +70,7 @@ public class DataHelper extends SQLiteOpenHelper {
 
     }
 
-    public ArrayList<RouteModel> addItems(boolean isHistory) {
+    public ArrayList<RouteModel> getRoutesModelFromDB(boolean isHistory) {
         SQLiteDatabase db = getReadableDatabase();
         ArrayList<RouteModel> models = new ArrayList<>();
 
@@ -89,12 +96,10 @@ public class DataHelper extends SQLiteOpenHelper {
 
                 cursor2.close();
 
-                RouteModel model = new RouteModel(cursor.getString(cursor.getColumnIndex(RoutesTable.NAME)),
+                RouteModel model = new RouteModel(cursor.getInt(cursor.getColumnIndex(DataHelper.ID)),
+                        cursor.getString(cursor.getColumnIndex(RoutesTable.NAME)),
                         points, cursor.getLong(cursor.getColumnIndex(RoutesTable.TIME)),
-                        cursor.getDouble(cursor.getColumnIndex(RoutesTable.DEST)),
                         cursor.getInt(cursor.getColumnIndex(RoutesTable.IS_RIDE)) == 1,
-                        cursor.getLong(cursor.getColumnIndex(RoutesTable.TIME_ROUTE)),
-                        cursor.getFloat(cursor.getColumnIndex(RoutesTable.KAL)),
                         cursor.getFloat(cursor.getColumnIndex(RoutesTable.IS_MARKER))==1);
 
                 models.add(model);
@@ -107,7 +112,29 @@ public class DataHelper extends SQLiteOpenHelper {
         return models;
     }
 
+    public ArrayList<RideModel> getRidesFromDB() {
+        SQLiteDatabase db = getReadableDatabase();
+        ArrayList<RideModel> models = new ArrayList<>();
 
+        Cursor cursor = db.query(RideTable.NAME_TABLE, null, null,
+                null, null, null, null);
+        if(cursor.moveToFirst()) {
+            do {
+                RideModel model = new RideModel(cursor.getInt(cursor.getColumnIndex(RideTable.CAL)),
+                        cursor.getLong(cursor.getColumnIndex(RideTable.TIME_RIDE)),
+                        cursor.getInt(cursor.getColumnIndex(RideTable.MAX_SPEED)),
+                        cursor.getDouble(cursor.getColumnIndex(RideTable.DISTANCE)),
+                        cursor.getInt(cursor.getColumnIndex(RideTable.ID_ROUTE)));
+
+                models.add(model);
+
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+        return models;
+    }
 
 
 }

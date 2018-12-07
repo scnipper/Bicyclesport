@@ -263,6 +263,10 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
         return speed;
     }
 
+    public float getMaxSpeed() {
+        return maxSpeed;
+    }
+
     /**
      * Обновление данных позиции со спутников
      * @param locationResult

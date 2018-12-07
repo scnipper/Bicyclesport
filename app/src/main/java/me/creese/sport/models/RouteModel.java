@@ -13,48 +13,40 @@ import java.util.List;
 import me.creese.sport.App;
 
 public class RouteModel implements Parcelable{
-    private final double distance;
+
     private final boolean isFocusRoute;
-    private final float calories;
+    private int id;
+
     private boolean isMarker;
     private String name;
     private List<LatLng> points;
     private long time;
-    private long timeRoute;
 
-    public RouteModel(String name, List<LatLng> points, long time, double distance,
-                      boolean isFocusRoute, long timeRoute, float calories, boolean isMarker) {
+
+    public RouteModel(int id,String name, List<LatLng> points, long time, boolean isFocusRoute, boolean isMarker) {
+        this.id = id;
         this.isMarker = isMarker;
-        this.calories = calories;
-        this.timeRoute = timeRoute;
         this.name = name;
         this.points = points;
         this.time = time;
-        this.distance = distance;
         this.isFocusRoute = isFocusRoute;
         //int id = App.get().
     }
 
 
     protected RouteModel(Parcel in) {
-        distance = in.readDouble();
         isFocusRoute = in.readByte() != 0;
         name = in.readString();
         points = in.createTypedArrayList(LatLng.CREATOR);
         time = in.readLong();
-        timeRoute = in.readLong();
-        calories = in.readFloat();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeDouble(distance);
         dest.writeByte((byte) (isFocusRoute ? 1 : 0));
         dest.writeString(name);
         dest.writeTypedList(points);
         dest.writeLong(time);
-        dest.writeLong(timeRoute);
-        dest.writeFloat(calories);
     }
 
     @Override
@@ -74,9 +66,6 @@ public class RouteModel implements Parcelable{
         }
     };
 
-    public float getCalories() {
-        return calories;
-    }
 
     public String getName() {
         return name;
@@ -95,15 +84,15 @@ public class RouteModel implements Parcelable{
         return isMarker;
     }
 
-    public double getDistance() {
-        return distance;
+    public int getId() {
+        return id;
     }
 
     public boolean isFocusRoute() {
         return isFocusRoute;
     }
 
-    public long getTimeRoute() {
-        return timeRoute;
+    public void setId(int id) {
+        this.id = id;
     }
 }

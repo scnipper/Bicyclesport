@@ -162,22 +162,21 @@ public class Route {
      * @param name
      */
     public RouteModel saveRoute(String name) {
-        RouteModel model = new RouteModel(name, lineOptions.getPoints(), System.currentTimeMillis(),
-                distance,isFocusRoute,UpdateInfo.get().getTime(),calories,isMarker);
+        RouteModel model = new RouteModel(0,name, lineOptions.getPoints(), System.currentTimeMillis(),isFocusRoute,isMarker);
 
         SQLiteDatabase db = App.get().getData().getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(RoutesTable.NAME, model.getName());
         contentValues.put(RoutesTable.TIME, model.getTime());
-        contentValues.put(RoutesTable.DEST, model.getDistance());
+
         contentValues.put(RoutesTable.IS_RIDE, model.isFocusRoute() ? 1 : 0);
         contentValues.put(RoutesTable.IS_MARKER, model.isMarker() ? 1 : 0);
-        contentValues.put(RoutesTable.TIME_ROUTE, model.getTimeRoute());
-        contentValues.put(RoutesTable.KAL, model.getCalories());
+
 
         long id = db.insert(RoutesTable.NAME_TABLE, null, contentValues);
 
+        model.setId((int) id);
 
         for (LatLng latLng : model.getPoints()) {
             contentValues.clear();

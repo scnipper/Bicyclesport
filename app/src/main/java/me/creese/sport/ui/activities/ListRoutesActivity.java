@@ -26,7 +26,7 @@ public class ListRoutesActivity extends AppCompatActivity {
         adapter = new ListRouteAdapter();
         recyclerView.setAdapter(adapter);
 
-        ArrayList<RouteModel> models = App.get().getData().addItems(false);
+        ArrayList<RouteModel> models = App.get().getData().getRoutesModelFromDB(false);
 
         for (RouteModel model : models) {
             adapter.addItem(model);

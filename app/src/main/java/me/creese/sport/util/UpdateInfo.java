@@ -1,14 +1,19 @@
 package me.creese.sport.util;
 
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.widget.TextView;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
+import me.creese.sport.App;
 import me.creese.sport.R;
+import me.creese.sport.data.RideTable;
 import me.creese.sport.map.MapWork;
 import me.creese.sport.map.Route;
 import me.creese.sport.map.gps.Gps;
+import me.creese.sport.models.RideModel;
 import me.creese.sport.ui.activities.StartActivity;
 
 
@@ -16,6 +21,7 @@ public class UpdateInfo implements Runnable {
 
     private static final String TAG = UpdateInfo.class.getSimpleName();
     private static UpdateInfo inst;
+    private RideModel rideModel;
     private StartActivity startActivity;
     private Timer timer;
     private MapWork mapWork;
@@ -61,9 +67,26 @@ public class UpdateInfo implements Runnable {
         kallView = startActivity.findViewById(R.id.kall_view);
     }
 
+    public RideModel saveRide(int idRoute) {
+
+        SQLiteDatabase database = App.get().getData().getWritableDatabase();
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(RideTable.CAL,rideModel.getCalories());
+        contentValues.put(RideTable.DISTANCE,rideModel.getDistance());
+        contentValues.put(RideTable.MAX_SPEED,rideModel.getMaxSpeed());
+        contentValues.put(RideTable.ID_ROUTE,idRoute);
+        contentValues.put(RideTable.TIME_RIDE,rideModel.getTimeRide());
+
+        database.insert(RideTable.NAME_TABLE,null,contentValues);
+
+        rideModel.setIdRoute(idRoute);
+
+        return rideModel;
+    }
     public void start() {
         if (mapWork == null) mapWork = startActivity.getMapWork();
-
+        rideModel = new RideModel();
         timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -88,13 +111,15 @@ public class UpdateInfo implements Runnable {
         Gps gps = mapWork.getGps();
         if(mapWork.getRoutes().size() > 0) {
             Route route = mapWork.getRoutes().get(mapWork.getRoutes().size() - 1);
-
-
+            rideModel.setDistance(route.getDistance());
+            rideModel.setCalories((int) route.calculateCalories(gps.getSpeed()));
+            rideModel.setMaxSpeed((int) gps.getMaxSpeed());
+            rideModel.setTimeRide(time);
             timeView.setText(formatTime(time));
 
             speedView.setText(((int) gps.getSpeed()) + " " + startActivity.getString(R.string.km_peer_hour));
-            distanceView.setText(Route.makeDistance(route.getDistance()));
-            kallView.setText(((int) route.calculateCalories(gps.getSpeed())) + "");
+            distanceView.setText(Route.makeDistance(rideModel.getDistance()));
+            kallView.setText(rideModel.getCalories() + "");
         }
     }
 
@@ -104,9 +129,6 @@ public class UpdateInfo implements Runnable {
         createViews();
     }
 
-    public long getTime() {
-        return time;
-    }
 
     @Override
     public void run() {

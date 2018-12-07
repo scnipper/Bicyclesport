@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
@@ -18,23 +17,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.MapView;
 
 import java.util.List;
 
-import me.creese.sport.App;
 import me.creese.sport.R;
 import me.creese.sport.map.MapWork;
-import me.creese.sport.map.Route;
+import me.creese.sport.models.RideModel;
+import me.creese.sport.models.RouteAndRide;
 import me.creese.sport.models.RouteModel;
-import me.creese.sport.ui.fragments.SettingsFragment;
 import me.creese.sport.ui.fragments.StatFragment;
 import me.creese.sport.util.UpdateInfo;
-import me.creese.sport.util.UserData;
-import me.creese.sport.util.impl.OnBackPressed;
 
 public class StartActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -48,12 +43,12 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.w(TAG, "onCreate: " );
+        Log.w(TAG, "onCreate: ");
         setContentView(R.layout.activity_start);
 
         bottomMenu = findViewById(R.id.bottom_menu);
-        if(savedInstanceState != null) {
-            int visTable = savedInstanceState.getInt(""+R.id.view_table);
+        if (savedInstanceState != null) {
+            int visTable = savedInstanceState.getInt("" + R.id.view_table);
             findViewById(R.id.view_table).setVisibility(visTable);
         }
 
@@ -61,8 +56,8 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
         map = findViewById(R.id.route_map);
         map.onCreate(savedInstanceState);
 
-        if(getLastNonConfigurationInstance() == null)
-        mapWork = new MapWork( (TextView) findViewById(R.id.dist_text));
+        if (getLastNonConfigurationInstance() == null)
+            mapWork = new MapWork((TextView) findViewById(R.id.dist_text));
         else mapWork = (MapWork) getLastCustomNonConfigurationInstance();
         mapWork.setContext(this);
         map.getMapAsync(mapWork);
@@ -72,23 +67,20 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
         nav.setNavigationItemSelectedListener(this);
         nav.bringToFront();
 
-        if(mapWork.getGps().isStartWay()) {
+        if (mapWork.getGps().isStartWay()) {
             ImageButton button = findViewById(R.id.play_button);
             button.setImageResource(R.drawable.baseline_stop_black_36);
             button.setTag("play");
         }
 
         RouteModel model = getIntent().getParcelableExtra(RouteModel.class.getSimpleName());
+        RouteAndRide routeAndRide = getIntent().getParcelableExtra(RouteAndRide.class.getSimpleName());
 
+        if (routeAndRide != null) {
+            showStatFragment(routeAndRide);
+        }
         if (model != null) {
-            if(model.isFocusRoute())
-            showStatFragment(model);
-            else {
-                if(mapWork.getRoutes().size() == 0)
-                mapWork.showRoute(model);
-            }
-
-
+            if (mapWork.getRoutes().size() == 0) mapWork.showRoute(model);
         }
 
     }
@@ -149,10 +141,10 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
         } else {
             stopGps(button);
             RouteModel model = mapWork.getLastRoute().saveRoute();
+            RideModel rideModel = UpdateInfo.get().saveRide(model.getId());
 
 
-            showStatFragment(model);
-
+            showStatFragment(new RouteAndRide(rideModel,model));
 
 
         }
@@ -165,24 +157,21 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
         mapWork.getGps().stopUpdatePosition();
     }
 
-    private void showStatFragment(RouteModel model) {
+    private void showStatFragment(RouteAndRide model) {
 
         Fragment stat = getSupportFragmentManager().findFragmentByTag("stat");
         if (stat == null) {
 
 
-            if (mapWork.getRoutes().size() == 0) mapWork.showRoute(model);
+            if (mapWork.getRoutes().size() == 0) mapWork.showRoute(model.getRouteModel());
             Bundle bundle = new Bundle();
-            bundle.putParcelable(RouteModel.class.getSimpleName(), model);
+            bundle.putParcelable(RideModel.class.getSimpleName(), model.getRideModel());
 
             StatFragment statFragment = new StatFragment();
             statFragment.setArguments(bundle);
 
             bottomMenu.setVisibility(View.GONE);
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .add(R.id.root_linear, statFragment, "stat")
-                    .addToBackStack(null).commit();
+            getSupportFragmentManager().beginTransaction().add(R.id.root_linear, statFragment, "stat").addToBackStack(null).commit();
         }
     }
 
@@ -218,7 +207,7 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
     @Override
     public void onBackPressed() {
 
-        if(mapWork.getGps().isStartWay()) {
+        if (mapWork.getGps().isStartWay()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
             builder.setTitle(R.string.are_you_sure_to_exit);
@@ -256,7 +245,6 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
         }
 
 
-
     }
 
     @Override
@@ -285,10 +273,10 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
                 startActivity(new Intent(this, ListRoutesActivity.class));
                 break;
             case R.id.menu_settings:
-                startActivity(new Intent(this,SettingsActivity.class));
+                startActivity(new Intent(this, SettingsActivity.class));
                 break;
             case R.id.menu_history:
-                startActivity(new Intent(this,UserHistoryActivity.class));
+                startActivity(new Intent(this, UserHistoryActivity.class));
                 break;
         }
 
@@ -325,6 +313,6 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
 
         int visTable = findViewById(R.id.view_table).getVisibility();
 
-        outState.putInt(""+R.id.view_table,visTable);
+        outState.putInt("" + R.id.view_table, visTable);
     }
 }

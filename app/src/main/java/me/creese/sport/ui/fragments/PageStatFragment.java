@@ -11,18 +11,19 @@ import android.widget.TextView;
 
 import me.creese.sport.R;
 import me.creese.sport.map.Route;
+import me.creese.sport.models.RideModel;
 import me.creese.sport.models.RouteModel;
 import me.creese.sport.util.UpdateInfo;
 
 public class PageStatFragment extends Fragment {
     private static final String PAGE = "page";
     private int page;
-    private RouteModel model;
+    private RideModel model;
 
-    public static Fragment newInstanse(int i, RouteModel model) {
+    public static Fragment newInstanse(int i, RideModel model) {
         Bundle bundle = new Bundle();
         bundle.putInt(PAGE, i);
-        bundle.putParcelable(RouteModel.class.getSimpleName(), model);
+        bundle.putParcelable(RideModel.class.getSimpleName(), model);
 
         Fragment fragment = new PageStatFragment();
         fragment.setArguments(bundle);
@@ -35,7 +36,7 @@ public class PageStatFragment extends Fragment {
         Bundle arguments = getArguments();
         if (arguments != null) {
             page = arguments.getInt(PAGE);
-            model = arguments.getParcelable(RouteModel.class.getSimpleName());
+            model = arguments.getParcelable(RideModel.class.getSimpleName());
         }
 
 
@@ -55,9 +56,10 @@ public class PageStatFragment extends Fragment {
                 dist.setText(Route.makeDistance(model.getDistance()) + "");
 
 
-                ((TextView) view.findViewById(R.id.stat_ride_time)).setText(UpdateInfo.formatTime(model.getTimeRoute()));
-                ((TextView) view.findViewById(R.id.stat_av_speed)).setText(((int) ((model.getDistance() / model.getTimeRoute()) / 3.6f)) + "");
-                ((TextView) view.findViewById(R.id.stat_cal)).setText(((int) model.getCalories()) + "");
+                ((TextView) view.findViewById(R.id.stat_ride_time)).setText(UpdateInfo.formatTime(model.getTimeRide()));
+                ((TextView) view.findViewById(R.id.stat_av_speed)).setText(((int) ((model.getDistance() / model.getTimeRide()) / 3.6f)) + "");
+                ((TextView) view.findViewById(R.id.stat_cal)).setText( model.getCalories() + "");
+                ((TextView) view.findViewById(R.id.stat_max_speed)).setText( model.getMaxSpeed() + "");
                 break;
             case 1:
                 view = inflater.inflate(R.layout.stat_fragment_page_2, container, false);

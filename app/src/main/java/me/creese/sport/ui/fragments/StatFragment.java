@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import me.creese.sport.R;
+import me.creese.sport.models.RideModel;
 import me.creese.sport.models.RouteModel;
 import me.creese.sport.models.adapters.StatPageAdapter;
 import me.creese.sport.ui.custom_view.CustomPager;
@@ -21,7 +22,7 @@ public class StatFragment extends Fragment {
 
     private void init(View view) {
         Bundle arguments = getArguments();
-        RouteModel model = arguments.getParcelable(RouteModel.class.getSimpleName());
+        RideModel model = arguments.getParcelable(RideModel.class.getSimpleName());
         CustomPager viewPager = view.findViewById(R.id.view_pager);
         viewPager.setAdapter(new StatPageAdapter(getActivity().getSupportFragmentManager(), model));
         viewPager.measure(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);

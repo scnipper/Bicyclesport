@@ -9,6 +9,8 @@ import java.util.ArrayList;
 
 import me.creese.sport.App;
 import me.creese.sport.R;
+import me.creese.sport.models.RideModel;
+import me.creese.sport.models.RouteAndRide;
 import me.creese.sport.models.RouteModel;
 import me.creese.sport.models.adapters.HistoryAdapter;
 
@@ -26,10 +28,18 @@ public class UserHistoryActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        ArrayList<RouteModel> models = App.get().getData().addItems(true);
+        ArrayList<RouteModel> models = App.get().getData().getRoutesModelFromDB(true);
+        ArrayList<RideModel> rideModels = App.get().getData().getRidesFromDB();
 
-        for (RouteModel model : models) {
-            adapter.addItem(model);
+        for (RideModel rideModel : rideModels) {
+            int idRoute = rideModel.getIdRoute();
+
+            for (RouteModel model : models) {
+                if(model.getId() == idRoute) {
+                    adapter.addItem(new RouteAndRide(rideModel,model));
+                    break;
+                }
+            }
         }
     }
 
