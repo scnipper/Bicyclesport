@@ -28,6 +28,7 @@ public class RideModel implements Parcelable {
         maxSpeed = in.readInt();
         distance = in.readDouble();
         idRoute = in.readInt();
+        idRide = in.readInt();
     }
 
     @Override
@@ -37,6 +38,7 @@ public class RideModel implements Parcelable {
         dest.writeInt(maxSpeed);
         dest.writeDouble(distance);
         dest.writeInt(idRoute);
+        dest.writeInt(idRide);
     }
 
     @Override

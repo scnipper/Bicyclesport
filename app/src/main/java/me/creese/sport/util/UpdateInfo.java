@@ -98,6 +98,7 @@ public class UpdateInfo implements Runnable {
         }
 
 
+        rideModel.setIdRide(idRide);
         rideModel.setIdRoute(idRoute);
 
         return rideModel;
