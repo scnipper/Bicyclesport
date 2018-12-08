@@ -4,15 +4,18 @@ import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import me.creese.sport.App;
 import me.creese.sport.R;
+import me.creese.sport.data.ChartTable;
 import me.creese.sport.data.RideTable;
 import me.creese.sport.map.MapWork;
 import me.creese.sport.map.Route;
 import me.creese.sport.map.gps.Gps;
+import me.creese.sport.models.ChartModel;
 import me.creese.sport.models.RideModel;
 import me.creese.sport.ui.activities.StartActivity;
 
@@ -21,6 +24,7 @@ public class UpdateInfo implements Runnable {
 
     private static final String TAG = UpdateInfo.class.getSimpleName();
     private static UpdateInfo inst;
+    private final ArrayList<ChartModel> chartInfo;
     private RideModel rideModel;
     private StartActivity startActivity;
     private Timer timer;
@@ -31,7 +35,15 @@ public class UpdateInfo implements Runnable {
     private TextView distanceView;
     private TextView timeView;
     private TextView kallView;
+    private double perKilometr;
+    private boolean isLoadChart;
 
+
+    private UpdateInfo() {
+        time = 0;
+        perKilometr = 1000;
+        chartInfo = new ArrayList<>();
+    }
 
     public static UpdateInfo get() {
         if (inst == null) {
@@ -56,10 +68,6 @@ public class UpdateInfo implements Runnable {
         return hourText + ":" + minText + ":" + secText;
     }
 
-    private UpdateInfo() {
-        time = 0;
-    }
-
     private void createViews() {
         speedView = startActivity.findViewById(R.id.speed_view);
         distanceView = startActivity.findViewById(R.id.distance_view);
@@ -69,21 +77,47 @@ public class UpdateInfo implements Runnable {
 
     public RideModel saveRide(int idRoute) {
 
-        SQLiteDatabase database = App.get().getData().getWritableDatabase();
+        final SQLiteDatabase database = App.get().getData().getWritableDatabase();
 
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(RideTable.CAL,rideModel.getCalories());
-        contentValues.put(RideTable.DISTANCE,rideModel.getDistance());
-        contentValues.put(RideTable.MAX_SPEED,rideModel.getMaxSpeed());
-        contentValues.put(RideTable.ID_ROUTE,idRoute);
-        contentValues.put(RideTable.TIME_RIDE,rideModel.getTimeRide());
+        final ContentValues contentValues = new ContentValues();
+        contentValues.put(RideTable.CAL, rideModel.getCalories());
+        contentValues.put(RideTable.DISTANCE, rideModel.getDistance());
+        contentValues.put(RideTable.MAX_SPEED, rideModel.getMaxSpeed());
+        contentValues.put(RideTable.ID_ROUTE, idRoute);
+        contentValues.put(RideTable.TIME_RIDE, rideModel.getTimeRide());
 
-        database.insert(RideTable.NAME_TABLE,null,contentValues);
+        final int idRide = (int) database.insert(RideTable.NAME_TABLE, null, contentValues);
+        if (chartInfo.size() > 0) {
+            isLoadChart = true;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    saveCharts(idRide, contentValues, database);
+                }
+            }).start();
+        }
+
 
         rideModel.setIdRoute(idRoute);
 
         return rideModel;
     }
+
+    private void saveCharts(int idRide, ContentValues contentValues, SQLiteDatabase database) {
+
+        contentValues.clear();
+        for (ChartModel chartModel : chartInfo) {
+
+            contentValues.put(ChartTable.CAL, chartModel.getCalories());
+            contentValues.put(ChartTable.TIME, chartModel.getTime());
+            contentValues.put(ChartTable.KM, chartModel.getKilometr());
+            contentValues.put(ChartTable.ID_RIDE, idRide);
+            database.insert(ChartTable.NAME_TABLE, null, contentValues);
+        }
+        isLoadChart = false;
+
+    }
+
     public void start() {
         if (mapWork == null) mapWork = startActivity.getMapWork();
         rideModel = new RideModel();
@@ -109,8 +143,8 @@ public class UpdateInfo implements Runnable {
     private void updateViews() {
 
         Gps gps = mapWork.getGps();
-        if(mapWork.getRoutes().size() > 0) {
-            Route route = mapWork.getRoutes().get(mapWork.getRoutes().size() - 1);
+        if (mapWork.getRoutes().size() > 0) {
+            Route route = mapWork.getLastRoute();
             rideModel.setDistance(route.getDistance());
             rideModel.setCalories((int) route.calculateCalories(gps.getSpeed()));
             rideModel.setMaxSpeed((int) gps.getMaxSpeed());
@@ -130,14 +164,25 @@ public class UpdateInfo implements Runnable {
     }
 
 
+    public boolean isLoadChart() {
+        return isLoadChart;
+    }
+
     @Override
     public void run() {
+
         startActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 updateViews();
             }
         });
+
+        if (rideModel.getDistance() >= perKilometr) {
+            chartInfo.add(new ChartModel(time, rideModel.getCalories(), (int) (perKilometr / 1000)));
+            perKilometr += 1000;
+        }
+
         time++;
     }
 }

@@ -9,6 +9,7 @@ public class RideModel implements Parcelable {
     private int maxSpeed;
     private double distance;
     private int idRoute;
+    private int idRide;
 
     public RideModel() {
     }
@@ -93,5 +94,13 @@ public class RideModel implements Parcelable {
 
     public void setIdRoute(int idRoute) {
         this.idRoute = idRoute;
+    }
+
+    public int getIdRide() {
+        return idRide;
+    }
+
+    public void setIdRide(int idRide) {
+        this.idRide = idRide;
     }
 }

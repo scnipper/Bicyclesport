@@ -115,7 +115,8 @@ public class Route {
     public void addPoint(LatLng point) {
 
         if (lineOptions.getPoints().size() > 0) {
-            distance += SphericalUtil.computeDistanceBetween(lineOptions.getPoints().get(lineOptions.getPoints().size() - 1), point);
+            double delta = SphericalUtil.computeDistanceBetween(lineOptions.getPoints().get(lineOptions.getPoints().size() - 1), point);
+            distance += delta;
 
         }
         lineOptions.add(point);

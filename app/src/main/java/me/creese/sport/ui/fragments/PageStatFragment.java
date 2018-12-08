@@ -1,5 +1,7 @@
 package me.creese.sport.ui.fragments;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -9,10 +11,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import me.creese.sport.App;
 import me.creese.sport.R;
+import me.creese.sport.data.ChartTable;
 import me.creese.sport.map.Route;
 import me.creese.sport.models.RideModel;
-import me.creese.sport.models.RouteModel;
 import me.creese.sport.util.UpdateInfo;
 
 public class PageStatFragment extends Fragment {
@@ -58,15 +69,68 @@ public class PageStatFragment extends Fragment {
 
                 ((TextView) view.findViewById(R.id.stat_ride_time)).setText(UpdateInfo.formatTime(model.getTimeRide()));
                 ((TextView) view.findViewById(R.id.stat_av_speed)).setText(((int) ((model.getDistance() / model.getTimeRide()) / 3.6f)) + "");
-                ((TextView) view.findViewById(R.id.stat_cal)).setText( model.getCalories() + "");
-                ((TextView) view.findViewById(R.id.stat_max_speed)).setText( model.getMaxSpeed() + "");
+                ((TextView) view.findViewById(R.id.stat_cal)).setText(model.getCalories() + "");
+                ((TextView) view.findViewById(R.id.stat_max_speed)).setText(model.getMaxSpeed() + "");
                 break;
             case 1:
                 view = inflater.inflate(R.layout.stat_fragment_page_2, container, false);
+
+                final View finalView = view;
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        while (UpdateInfo.get().isLoadChart()) {
+
+                            try {
+                                Thread.sleep(50);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                loadChart(finalView);
+                            }
+                        });
+                    }
+                }).start();
+
+
                 break;
 
         }
 
         return view;
+    }
+
+    private void loadChart(View view) {
+        view.findViewById(R.id.progress_in_chart).setVisibility(View.GONE);
+        LineChart chart = view.findViewById(R.id.line_chart);
+        chart.setVisibility(View.VISIBLE);
+
+        List<Entry> entries = new ArrayList<>();
+
+        SQLiteDatabase db = App.get().getData().getReadableDatabase();
+
+        Cursor cursor = db.query(ChartTable.NAME_TABLE, null, ChartTable.ID_RIDE + "=" + model.getIdRide(), null, null, null, ChartTable.KM, null);
+
+        if (cursor.moveToFirst()) {
+            long lastTime = 0;
+            do {
+
+                long time = cursor.getLong(cursor.getColumnIndex(ChartTable.TIME));
+
+                float speed = (float) ((1000 / (time - lastTime)) * 3.6);
+                lastTime = time;
+
+                entries.add(new Entry(time, speed));
+            } while (cursor.moveToNext());
+            LineDataSet dataSet = new LineDataSet(entries, "Скорость");
+            chart.setData(new LineData(dataSet));
+        }
+
+
+
     }
 }

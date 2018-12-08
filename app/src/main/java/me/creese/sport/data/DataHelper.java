@@ -51,6 +51,13 @@ public class DataHelper extends SQLiteOpenHelper {
                 PointsTable.LONGTITUDE+" DOUBLE," +
                 PointsTable.ID_ROUTE+" INTEGER);";
 
+        final String CHARTS = "CREATE TABLE "+ChartTable.NAME_TABLE+" (" +
+                ID+" INTEGER PRIMARY KEY AUTOINCREMENT," +
+                ChartTable.CAL+" INTEGER," +
+                ChartTable.KM+" INTEGER," +
+                ChartTable.TIME+" BIGINT," +
+                ChartTable.ID_RIDE+" INTEGER);";
+
         final String USER_DATA = "CREATE TABLE "+UserTable.NAME_TABLE+" (" +
                 ID+" INTEGER DEFAULT(1)," +
                 UserTable.WIEGHT+" DOUBLE DEFAULT(70)," +
@@ -60,6 +67,7 @@ public class DataHelper extends SQLiteOpenHelper {
 
 
         db.execSQL(ROUTES);
+        db.execSQL(CHARTS);
         db.execSQL(RIDES);
         db.execSQL(POINTS);
         db.execSQL(USER_DATA);
@@ -126,6 +134,7 @@ public class DataHelper extends SQLiteOpenHelper {
                         cursor.getDouble(cursor.getColumnIndex(RideTable.DISTANCE)),
                         cursor.getInt(cursor.getColumnIndex(RideTable.ID_ROUTE)));
 
+                model.setIdRide(cursor.getInt(cursor.getColumnIndex(DataHelper.ID)));
                 models.add(model);
 
             } while (cursor.moveToNext());

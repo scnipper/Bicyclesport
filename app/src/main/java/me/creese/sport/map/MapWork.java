@@ -34,6 +34,7 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
     private ArrayList<Route> routes;
     private Marker startMarker;
     private Runnable showRouteWhenReady;
+    private Route focusRoute;
 
     public MapWork( TextView distText) {
 
@@ -73,6 +74,8 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
      * @param route
      */
     public void addRoute(Route route) {
+
+
         route.setGoogleMap(googleMap);
 
         routes.add(route);
