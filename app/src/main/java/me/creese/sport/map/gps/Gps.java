@@ -9,7 +9,6 @@ import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -143,7 +142,7 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
             @SuppressLint("MissingPermission")
             @Override
             public void onSuccess(Location location) {
-                if(location == null) return;
+                if (location == null) return;
                 long time = System.currentTimeMillis() - location.getTime();
 
                 Log.w(TAG, "onSuccess: time " + time);
@@ -165,11 +164,9 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
 
     public void startUpdatePosition() {
 
-        if(dialogWait == null)
-        dialogWait = new DialogFindGps();
+        if (dialogWait == null) dialogWait = new DialogFindGps();
 
-        if(!dialogWait.isAdded())
-        dialogWait.show(context.getSupportFragmentManager(), "f_gps");
+        if (!dialogWait.isAdded()) dialogWait.show(context.getSupportFragmentManager(), "f_gps");
 
         mapWork.getGoogleMap().clear();
         gpsListener = null;
@@ -269,6 +266,7 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
 
     /**
      * Обновление данных позиции со спутников
+     *
      * @param locationResult
      */
     @Override
@@ -287,9 +285,8 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
             lastRoute.addPointOnMap(point);
 
 
-            speed = location.getSpeed()*3.6f;
-            if(speed > maxSpeed) maxSpeed = speed;
-
+            speed = location.getSpeed() * 3.6f;
+            if (speed > maxSpeed) maxSpeed = speed;
 
 
         }

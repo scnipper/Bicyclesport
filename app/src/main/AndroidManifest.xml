@@ -35,7 +35,8 @@
         <activity android:name=".ui.activities.ListRoutesActivity" />
         <activity android:name=".ui.activities.SettingsActivity" />
         <activity android:name=".ui.activities.UserHistoryActivity" />
-        <activity android:name=".ui.activities.EnterDataUserActivity"></activity>
+        <activity android:name=".ui.activities.EnterDataUserActivity" />
+        <activity android:name=".ui.activities.FullDataActivity"></activity>
     </application>
 
 </manifest>

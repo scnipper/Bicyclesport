@@ -278,6 +278,9 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
             case R.id.menu_history:
                 startActivity(new Intent(this, UserHistoryActivity.class));
                 break;
+            case R.id.menu_stat:
+                startActivity(new Intent(this, FullDataActivity.class));
+                break;
         }
 
         DrawerLayout drawerLayout = findViewById(R.id.drawer);

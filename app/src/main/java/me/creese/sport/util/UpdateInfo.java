@@ -1,6 +1,7 @@
 package me.creese.sport.util;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.widget.TextView;
 
@@ -11,6 +12,8 @@ import java.util.TimerTask;
 import me.creese.sport.App;
 import me.creese.sport.R;
 import me.creese.sport.data.ChartTable;
+import me.creese.sport.data.DataHelper;
+import me.creese.sport.data.FullTable;
 import me.creese.sport.data.RideTable;
 import me.creese.sport.map.MapWork;
 import me.creese.sport.map.Route;
@@ -87,6 +90,40 @@ public class UpdateInfo implements Runnable {
         contentValues.put(RideTable.TIME_RIDE, rideModel.getTimeRide());
 
         final int idRide = (int) database.insert(RideTable.NAME_TABLE, null, contentValues);
+
+
+        Cursor cursor = database.query(FullTable.NAME_TABLE, null, null, null, null, null, null);
+
+
+        contentValues.clear();
+
+
+
+
+
+        if (cursor.moveToFirst()) {
+
+            int tmpCal = cursor.getInt(cursor.getColumnIndex(FullTable.CALORIES));
+            long tmpTime = cursor.getLong(cursor.getColumnIndex(FullTable.TIME));
+            double tmpDis = cursor.getInt(cursor.getColumnIndex(FullTable.DISTANCE));
+            int tmpMaxSpeed = cursor.getInt(cursor.getColumnIndex(FullTable.MAX_SPEED));
+
+            contentValues.put(FullTable.CALORIES,rideModel.getCalories()+tmpCal);
+            contentValues.put(FullTable.TIME,rideModel.getTimeRide()+tmpTime);
+            contentValues.put(FullTable.DISTANCE,rideModel.getDistance()+tmpDis);
+            contentValues.put(FullTable.MAX_SPEED,rideModel.getMaxSpeed() > tmpMaxSpeed ? rideModel.getMaxSpeed() : tmpMaxSpeed);
+            database.update(FullTable.NAME_TABLE,contentValues,DataHelper.ID+"=1",null);
+        } else {
+            contentValues.put(FullTable.CALORIES,rideModel.getCalories());
+            contentValues.put(FullTable.TIME,rideModel.getTimeRide());
+            contentValues.put(FullTable.DISTANCE,rideModel.getDistance());
+            contentValues.put(FullTable.MAX_SPEED,rideModel.getMaxSpeed());
+            database.insert(FullTable.NAME_TABLE,null,contentValues);
+        }
+
+        cursor.close();
+
+
         if (chartInfo.size() > 0) {
             isLoadChart = true;
             new Thread(new Runnable() {

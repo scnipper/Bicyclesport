@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,7 @@ import me.creese.sport.util.UpdateInfo;
 
 public class PageStatFragment extends Fragment {
     private static final String PAGE = "page";
+    private static final String TAG = PageStatFragment.class.getSimpleName();
     private int page;
     private RideModel model;
 
@@ -68,9 +70,14 @@ public class PageStatFragment extends Fragment {
 
 
                 ((TextView) view.findViewById(R.id.stat_ride_time)).setText(UpdateInfo.formatTime(model.getTimeRide()));
-                ((TextView) view.findViewById(R.id.stat_av_speed)).setText(((int) ((model.getDistance() / model.getTimeRide()) / 3.6f)) + "");
+                ((TextView) view.findViewById(R.id.stat_av_speed)).setText(((int) ((model.getDistance() / model.getTimeRide()) * 3.6f)) +" "+ getString(R.string.km_peer_hour));
                 ((TextView) view.findViewById(R.id.stat_cal)).setText(model.getCalories() + "");
-                ((TextView) view.findViewById(R.id.stat_max_speed)).setText(model.getMaxSpeed() + "");
+                ((TextView) view.findViewById(R.id.stat_max_speed)).setText(model.getMaxSpeed() +" "+ getString(R.string.km_peer_hour));
+
+                double temp = ((model.getDistance() / model.getTimeRide()) * 60);
+                temp = Math.round((temp) * 10) / 10D;
+
+                ((TextView) view.findViewById(R.id.stat_temp)).setText(temp+" мин/км");
                 break;
             case 1:
                 view = inflater.inflate(R.layout.stat_fragment_page_2, container, false);

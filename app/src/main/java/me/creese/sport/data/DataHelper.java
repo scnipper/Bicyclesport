@@ -65,8 +65,16 @@ public class DataHelper extends SQLiteOpenHelper {
                 UserTable.TIME_BIRTH+" BIGINT DEFAULT(0)," +
                 UserTable.SEX+" INTEGER DEFAULT(0));";
 
+        final String FULL_STAT = "CREATE TABLE "+FullTable.NAME_TABLE+" (" +
+                ID+" INTEGER DEFAULT(1)," +
+                FullTable.DISTANCE+" DOUBLE DEFAULT(0)," +
+                FullTable.CALORIES+" INTEGER DEFAULT(0)," +
+                FullTable.MAX_SPEED+" INTEGER DEFAULT(0)," +
+                FullTable.TIME+" BIGINT DEFAULT(0));";
+
 
         db.execSQL(ROUTES);
+        db.execSQL(FULL_STAT);
         db.execSQL(CHARTS);
         db.execSQL(RIDES);
         db.execSQL(POINTS);
