@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pref_type_map">type_map</string>
+    <string name="pref_enter_data">enter_data</string>
+    <string name="pref_zoom">zoom</string>
+    <string name="pref_autopause">autopause</string>
+    <string name="pref_goal_switch">goal_switch</string>
+    <string name="pref_goal_dist">goal_dist</string>
+</resources>

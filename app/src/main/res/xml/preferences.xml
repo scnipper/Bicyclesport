@@ -1,26 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:title="@string/settings_app">
     <PreferenceCategory android:title="Карта">
 
         <ListPreference
+            android:defaultValue="1"
             android:entries="@array/type_map"
-            android:entryValues="@array/type_map"
-            android:key="type_map"
+            android:entryValues="@array/type_map_val"
+            android:key="@string/pref_type_map"
             android:summary="Выберите тип карты"
             android:title="Тип карты">
 
         </ListPreference>
         <ListPreference
-            android:defaultValue="1"
+            android:defaultValue="17"
             android:entries="@array/zoom_map"
             android:entryValues="@array/zoom_map_values"
-            android:key="list_preference_1"
+            android:key="@string/pref_zoom"
+            android:summary="Фокус расстояния по умолчанию"
             android:title="Приближение" />
         <SwitchPreference
             android:defaultValue="false"
-            android:key="switch_preference_1"
+            android:key="@string/pref_autopause"
             android:summary="Ставить на паузу когда нет активности"
             android:title="Автопауза" />
     </PreferenceCategory>
@@ -28,35 +29,38 @@
 
         <SwitchPreference
             android:defaultValue="false"
-            android:key="switch_preference_1"
+            android:key="@string/pref_goal_switch"
             android:summary="Включить цель"
             android:title="Цель" />
+
         <EditTextPreference
-            android:defaultValue="Default value"
-            android:enabled="false"
-            android:key="edit_text_preference_1"
+            android:defaultValue="0"
+            android:key="@string/pref_goal_dist"
+            android:numeric="signed"
             android:selectAllOnFocus="true"
             android:singleLine="true"
-            android:title="Цель по раастоянию" />
+            android:title="Цель по растоянию" />
         <EditTextPreference
-            android:defaultValue="Default value"
-            android:enabled="false"
-            android:key="edit_text_preference_1"
+            android:defaultValue="0"
+            android:key="@string/pref_goal_cal"
+            android:numeric="signed"
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:title="Цель по каллориям" />
     </PreferenceCategory>
-    <PreferenceCategory
-        android:title="@string/user_data">
 
-        <Preference android:title="Ввод данных"
-            android:key="enter_data"/>
+    <PreferenceCategory android:title="@string/user_data">
+
+        <Preference
+            android:key="@string/pref_enter_data"
+            android:summary="Укажите свои данные"
+            android:title="Ввод данных" />
 
     </PreferenceCategory>
     <PreferenceCategory android:title="Дополнительно">
         <Preference
-            android:title="Связь с разработчиком"
-            android:summary="Напишите нам E-Mail"/>
+            android:summary="Напишите нам E-Mail"
+            android:title="Связь с разработчиком" />
         <Preference
             android:key="version_app"
             android:summary="1.0.1"

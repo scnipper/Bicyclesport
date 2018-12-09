@@ -3,6 +3,7 @@ package me.creese.sport.ui.activities;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,6 +13,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,7 +23,9 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.MapView;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import me.creese.sport.R;
 import me.creese.sport.map.MapWork;
@@ -29,6 +33,7 @@ import me.creese.sport.models.RideModel;
 import me.creese.sport.models.RouteAndRide;
 import me.creese.sport.models.RouteModel;
 import me.creese.sport.ui.fragments.StatFragment;
+import me.creese.sport.util.Settings;
 import me.creese.sport.util.UpdateInfo;
 
 public class StartActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -45,6 +50,8 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
         super.onCreate(savedInstanceState);
         Log.w(TAG, "onCreate: ");
         setContentView(R.layout.activity_start);
+
+        initPrefs();
 
         bottomMenu = findViewById(R.id.bottom_menu);
         if (savedInstanceState != null) {
@@ -83,6 +90,21 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
             if (mapWork.getRoutes().size() == 0) mapWork.showRoute(model);
         }
 
+    }
+
+    /**
+     * Инициализация настрек
+     */
+    private void initPrefs() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        Map<String, ?> all = preferences.getAll();
+
+        for (Object obj : all.entrySet()) {
+            Map.Entry pair = (Map.Entry) obj;
+            Settings.init(String.valueOf(pair.getKey()), String.valueOf(pair.getValue()), this);
+
+        }
     }
 
 

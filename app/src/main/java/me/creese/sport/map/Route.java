@@ -13,6 +13,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
@@ -27,6 +28,7 @@ import me.creese.sport.R;
 import me.creese.sport.data.PointsTable;
 import me.creese.sport.data.RoutesTable;
 import me.creese.sport.models.RouteModel;
+import me.creese.sport.util.Settings;
 import me.creese.sport.util.UpdateInfo;
 import me.creese.sport.util.UserData;
 
@@ -132,9 +134,22 @@ public class Route {
         markers.add(googleMap.addMarker(markerOptions));
     }
 
+
+    /**
+     * Сделать фокус на точке
+     * @param point
+     */
     public void focusOnPoint(LatLng point) {
 
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 17));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, Settings.ZOOM));
+    }
+
+    /**
+     * Сделать фокус на центр маршрута
+     */
+    public void focusOnCenterRoute() {
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(new LatLngBounds(lineOptions.getPoints().get(0),
+                lineOptions.getPoints().get(lineOptions.getPoints().size()-1)), 10));
     }
 
     /**

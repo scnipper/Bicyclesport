@@ -64,7 +64,7 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
 
         this.mapWork = mapWork;
         locationRequest = LocationRequest.create();
-        locationRequest.setInterval(3000);
+        locationRequest.setInterval(5000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationRequest.setFastestInterval(500);
 

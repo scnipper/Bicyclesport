@@ -21,6 +21,7 @@ import me.creese.sport.map.gps.Gps;
 import me.creese.sport.map.gps.GpsListener;
 import me.creese.sport.models.RouteModel;
 import me.creese.sport.ui.activities.StartActivity;
+import me.creese.sport.util.Settings;
 
 
 public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMapClickListener, GoogleMap.OnMarkerDragListener {
@@ -61,6 +62,9 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
                     route.addPoint(latLng);
                 }
                 route.setMarker(model.isMarker());
+
+
+                //route.focusOnCenterRoute();
 
               /*  if (last != null) {
                     googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(last, 15));
@@ -135,7 +139,7 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
     public void onMapReady(final GoogleMap googleMap) {
 
         this.googleMap = googleMap;
-        googleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+        googleMap.setMapType(Settings.TYPE_MAP);
         //currentRoute.setGoogleMap(googleMap);
 
         for (Route route : routes) {
@@ -156,7 +160,7 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
         if(routes.size() == 0) {
             if (startMarker != null) {
                 startMarker = googleMap.addMarker(new MarkerOptions().position(startMarker.getPosition()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startMarker.getPosition(), 17));
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startMarker.getPosition(), Settings.ZOOM));
             } else showStartPosition();
         } else {
 
@@ -174,7 +178,7 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
     @Override
     public void whenFindStartPos(LatLng pos) {
         startMarker = googleMap.addMarker(new MarkerOptions().position(pos).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pos, 17));
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pos, Settings.ZOOM));
 
     }
 
