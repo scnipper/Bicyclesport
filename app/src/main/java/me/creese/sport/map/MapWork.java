@@ -1,9 +1,6 @@
 package me.creese.sport.map;
 
-import android.app.Activity;
-import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -16,7 +13,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 
-import me.creese.sport.App;
 import me.creese.sport.map.gps.Gps;
 import me.creese.sport.map.gps.GpsListener;
 import me.creese.sport.models.RouteModel;
@@ -37,7 +33,7 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
     private Runnable showRouteWhenReady;
     private Route focusRoute;
 
-    public MapWork( TextView distText) {
+    public MapWork(TextView distText) {
 
         this.distText = distText;
         gps = new Gps(this);
@@ -51,12 +47,13 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
      * @param model
      */
     public void showRoute(final RouteModel model) {
-        showRouteWhenReady = new Runnable(){
+        showRouteWhenReady = new Runnable() {
             @Override
             public void run() {
                 googleMap.clear();
                 clearRoutes();
                 Route route = new Route(context);
+                route.setFocusCenterRoute(true);
                 addRoute(route);
                 for (LatLng latLng : model.getPoints()) {
                     route.addPoint(latLng);
@@ -75,6 +72,7 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
 
     /**
      * Добавление маршрута
+     *
      * @param route
      */
     public void addRoute(Route route) {
@@ -132,9 +130,10 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
         gps.setContext(context);
     }
 
-    public Route getLastRoute(){
-        return routes.get(routes.size()-1);
+    public Route getLastRoute() {
+        return routes.get(routes.size() - 1);
     }
+
     @Override
     public void onMapReady(final GoogleMap googleMap) {
 
@@ -157,7 +156,7 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
             showRouteWhenReady = null;
         }
 
-        if(routes.size() == 0) {
+        if (routes.size() == 0) {
             if (startMarker != null) {
                 startMarker = googleMap.addMarker(new MarkerOptions().position(startMarker.getPosition()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startMarker.getPosition(), Settings.ZOOM));
@@ -166,8 +165,6 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
 
             for (Route route : routes) {
                 route.showOnMap();
-                if(!route.isFocusRoute())
-                route.focusOnPoint(route.getLine().getPoints().get(route.getLine().getPoints().size()-1));
             }
 
         }
@@ -208,4 +205,11 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
 
     }
 
+    public Marker getStartMarker() {
+        return startMarker;
+    }
+
+    public void setStartMarker(Marker startMarker) {
+        this.startMarker = startMarker;
+    }
 }

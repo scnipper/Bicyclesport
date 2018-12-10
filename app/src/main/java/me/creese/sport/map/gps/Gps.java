@@ -168,9 +168,16 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
 
         if (!dialogWait.isAdded()) dialogWait.show(context.getSupportFragmentManager(), "f_gps");
 
-        mapWork.getGoogleMap().clear();
+        //mapWork.getGoogleMap().clear();
+
+        if (mapWork.getStartMarker() != null) {
+
+            mapWork.getStartMarker().remove();
+        }
+
         gpsListener = null;
         checkAccessGps();
+
 
 
     }
@@ -214,6 +221,7 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
 
         isFixGps = true;
         Route route = new Route(context);
+        route.setColorLine(0xffff0000);
         route.setFocusRoute(true);
         mapWork.addRoute(route);
         DialogFindGps findGps = (DialogFindGps) context.getSupportFragmentManager().findFragmentByTag("f_gps");

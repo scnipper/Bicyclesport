@@ -52,6 +52,7 @@ public class Route {
     private boolean isFocusRoute;
     private TextView distanceView;
     private float calories;
+    private boolean isFocusCenterRoute;
     //private TextView viewText;
 
     public Route(AppCompatActivity context) {
@@ -92,12 +93,15 @@ public class Route {
             clearMarkers();
 
             for (int i = 0; i < lineOptions.getPoints().size(); i++) {
-
                 addMarker(lineOptions.getPoints().get(i), markerTitles.get(i));
             }
         }
         if (isFocusRoute)
             focusOnPoint(lineOptions.getPoints().get(lineOptions.getPoints().size() - 1));
+
+        if(isFocusCenterRoute) {
+            focusOnPoint(lineOptions.getPoints().get(lineOptions.getPoints().size() /2),12);
+        }
 
 
     }
@@ -134,23 +138,18 @@ public class Route {
         markers.add(googleMap.addMarker(markerOptions));
     }
 
-
+    public void focusOnPoint(LatLng point) {
+        focusOnPoint(point,Settings.ZOOM);
+    }
     /**
      * Сделать фокус на точке
      * @param point
      */
-    public void focusOnPoint(LatLng point) {
+    public void focusOnPoint(LatLng point,int zooom) {
 
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, Settings.ZOOM));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, zooom));
     }
 
-    /**
-     * Сделать фокус на центр маршрута
-     */
-    public void focusOnCenterRoute() {
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(new LatLngBounds(lineOptions.getPoints().get(0),
-                lineOptions.getPoints().get(lineOptions.getPoints().size()-1)), 10));
-    }
 
     /**
      * Добавление точки на маршрут и отображение на карте
@@ -267,6 +266,10 @@ public class Route {
 
     public void setFocusRoute(boolean focusRoute) {
         isFocusRoute = focusRoute;
+    }
+
+    public void setFocusCenterRoute(boolean focusCenterRoute) {
+        isFocusCenterRoute = focusCenterRoute;
     }
 
     public void setMarker(boolean marker) {
