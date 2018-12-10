@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
@@ -23,7 +24,6 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.MapView;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -166,7 +166,7 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
             RideModel rideModel = UpdateInfo.get().saveRide(model.getId());
 
 
-            showStatFragment(new RouteAndRide(rideModel,model));
+            showStatFragment(new RouteAndRide(rideModel, model));
 
 
         }
@@ -236,6 +236,10 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
             builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    mapWork.getGps().stopUpdatePosition();
+                    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(StartActivity.this);
+                    notificationManager.cancelAll();
+
                     StartActivity.super.onBackPressed();
                 }
             });
@@ -285,6 +289,7 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
     protected void onDestroy() {
         super.onDestroy();
         map.onDestroy();
+
     }
 
     @Override

@@ -11,6 +11,7 @@ import me.creese.sport.R;
 
 public class DialogFindGps extends DialogFragment {
 
+    public static final String TAG = "f_gps";
 
     @NonNull
     @Override

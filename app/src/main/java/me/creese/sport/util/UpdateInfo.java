@@ -1,8 +1,13 @@
 package me.creese.sport.util;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -26,6 +31,7 @@ import me.creese.sport.ui.activities.StartActivity;
 public class UpdateInfo implements Runnable {
 
     private static final String TAG = UpdateInfo.class.getSimpleName();
+    private static final int NOTIFY_ID = 1354;
     private static UpdateInfo inst;
     private final ArrayList<ChartModel> chartInfo;
     private RideModel rideModel;
@@ -40,6 +46,8 @@ public class UpdateInfo implements Runnable {
     private TextView kallView;
     private double perKilometr;
     private boolean isLoadChart;
+    private NotificationCompat.Builder builderNotfication;
+    private NotificationManagerCompat notificationManager;
 
 
     private UpdateInfo() {
@@ -98,9 +106,6 @@ public class UpdateInfo implements Runnable {
         contentValues.clear();
 
 
-
-
-
         if (cursor.moveToFirst()) {
 
             int tmpCal = cursor.getInt(cursor.getColumnIndex(FullTable.CALORIES));
@@ -108,17 +113,17 @@ public class UpdateInfo implements Runnable {
             double tmpDis = cursor.getInt(cursor.getColumnIndex(FullTable.DISTANCE));
             int tmpMaxSpeed = cursor.getInt(cursor.getColumnIndex(FullTable.MAX_SPEED));
 
-            contentValues.put(FullTable.CALORIES,rideModel.getCalories()+tmpCal);
-            contentValues.put(FullTable.TIME,rideModel.getTimeRide()+tmpTime);
-            contentValues.put(FullTable.DISTANCE,rideModel.getDistance()+tmpDis);
-            contentValues.put(FullTable.MAX_SPEED,rideModel.getMaxSpeed() > tmpMaxSpeed ? rideModel.getMaxSpeed() : tmpMaxSpeed);
-            database.update(FullTable.NAME_TABLE,contentValues,DataHelper.ID+"=1",null);
+            contentValues.put(FullTable.CALORIES, rideModel.getCalories() + tmpCal);
+            contentValues.put(FullTable.TIME, rideModel.getTimeRide() + tmpTime);
+            contentValues.put(FullTable.DISTANCE, rideModel.getDistance() + tmpDis);
+            contentValues.put(FullTable.MAX_SPEED, rideModel.getMaxSpeed() > tmpMaxSpeed ? rideModel.getMaxSpeed() : tmpMaxSpeed);
+            database.update(FullTable.NAME_TABLE, contentValues, DataHelper.ID + "=1", null);
         } else {
-            contentValues.put(FullTable.CALORIES,rideModel.getCalories());
-            contentValues.put(FullTable.TIME,rideModel.getTimeRide());
-            contentValues.put(FullTable.DISTANCE,rideModel.getDistance());
-            contentValues.put(FullTable.MAX_SPEED,rideModel.getMaxSpeed());
-            database.insert(FullTable.NAME_TABLE,null,contentValues);
+            contentValues.put(FullTable.CALORIES, rideModel.getCalories());
+            contentValues.put(FullTable.TIME, rideModel.getTimeRide());
+            contentValues.put(FullTable.DISTANCE, rideModel.getDistance());
+            contentValues.put(FullTable.MAX_SPEED, rideModel.getMaxSpeed());
+            database.insert(FullTable.NAME_TABLE, null, contentValues);
         }
 
         cursor.close();
@@ -167,6 +172,7 @@ public class UpdateInfo implements Runnable {
             }
         }, 0, 1000);
 
+
     }
 
     public void stop() {
@@ -175,6 +181,7 @@ public class UpdateInfo implements Runnable {
             timer.cancel();
             timer = null;
         }
+        notificationManager.cancel(NOTIFY_ID);
 
     }
 
@@ -193,6 +200,26 @@ public class UpdateInfo implements Runnable {
             distanceView.setText(Route.makeDistance(rideModel.getDistance()));
             kallView.setText(rideModel.getCalories() + "");
         }
+
+        updateNotifications();
+    }
+
+    private void updateNotifications() {
+        if (builderNotfication == null) {
+            PendingIntent contentIntent = PendingIntent.getActivity(startActivity, 0, new Intent(startActivity, StartActivity.class), PendingIntent.FLAG_CANCEL_CURRENT);
+            builderNotfication = new NotificationCompat.Builder(startActivity);
+            builderNotfication.setContentIntent(contentIntent)
+                    .setSmallIcon(R.mipmap.ic_launcher);
+        }
+
+        builderNotfication.setContentText("Калории: " + rideModel.getCalories())
+                .setContentTitle("Расстояние: " + Route.makeDistance(rideModel.getDistance()));
+
+        if (notificationManager == null)
+            notificationManager = NotificationManagerCompat.from(startActivity);
+        Notification notification = builderNotfication.build();
+        notification.flags = notification.flags | Notification.FLAG_ONGOING_EVENT;
+        notificationManager.notify(NOTIFY_ID, notification);
     }
 
     public void setStartActivity(StartActivity startActivity) {

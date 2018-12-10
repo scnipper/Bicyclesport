@@ -56,7 +56,7 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
     private boolean isFixGps;
     private float speed;
     private TextView speedView;
-    private DialogFindGps dialogWait;
+
     private float maxSpeed;
 
 
@@ -164,16 +164,13 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
 
     public void startUpdatePosition() {
 
-        if (dialogWait == null) dialogWait = new DialogFindGps();
+        DialogFindGps dialogWait = new DialogFindGps();
 
-        if (!dialogWait.isAdded()) dialogWait.show(context.getSupportFragmentManager(), "f_gps");
+        if (!dialogWait.isAdded()) dialogWait.show(context.getSupportFragmentManager(), DialogFindGps.TAG);
 
         //mapWork.getGoogleMap().clear();
 
-        if (mapWork.getStartMarker() != null) {
 
-            mapWork.getStartMarker().remove();
-        }
 
         gpsListener = null;
         checkAccessGps();
@@ -186,9 +183,7 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
      * Остановка обновления позиции
      */
     public void stopUpdatePosition() {
-        if (dialogWait != null) {
-            dialogWait.dismiss();
-        }
+        findAndDismisDialog();
         client.removeLocationUpdates(this);
     }
 
@@ -224,11 +219,19 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
         route.setColorLine(0xffff0000);
         route.setFocusRoute(true);
         mapWork.addRoute(route);
-        DialogFindGps findGps = (DialogFindGps) context.getSupportFragmentManager().findFragmentByTag("f_gps");
+        findAndDismisDialog();
+
+        if (mapWork.getStartMarker() != null) {
+            mapWork.getStartMarker().remove();
+        }
+
+    }
+
+    private void findAndDismisDialog() {
+        DialogFindGps findGps = (DialogFindGps) context.getSupportFragmentManager().findFragmentByTag(DialogFindGps.TAG);
         if (findGps != null) {
             findGps.dismiss();
         }
-
     }
 
     public void setContext(StartActivity context) {
