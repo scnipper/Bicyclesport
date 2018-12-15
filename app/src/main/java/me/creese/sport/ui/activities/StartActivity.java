@@ -53,10 +53,10 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
 
         initPrefs();
 
-        bottomMenu = findViewById(R.id.bottom_menu);
+        bottomMenu = findViewById(R.id.view_table);
         if (savedInstanceState != null) {
             int visTable = savedInstanceState.getInt("" + R.id.view_table);
-            findViewById(R.id.view_table).setVisibility(visTable);
+//            findViewById(R.id.view_table).setVisibility(visTable);
         }
 
         UpdateInfo.get().setStartActivity(this);
@@ -64,7 +64,7 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
         map.onCreate(savedInstanceState);
 
         if (getLastNonConfigurationInstance() == null)
-            mapWork = new MapWork((TextView) findViewById(R.id.dist_text));
+            mapWork = new MapWork();
         else mapWork = (MapWork) getLastCustomNonConfigurationInstance();
         mapWork.setContext(this);
         map.getMapAsync(mapWork);
@@ -75,9 +75,9 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
         nav.bringToFront();
 
         if (mapWork.getGps().isStartWay()) {
-            ImageButton button = findViewById(R.id.play_button);
+           /* ImageButton button = findViewById(R.id.play_button);
             button.setImageResource(R.drawable.baseline_stop_black_36);
-            button.setTag("play");
+            button.setTag("play");*/
         }
 
         RouteModel model = getIntent().getParcelableExtra(RouteModel.class.getSimpleName());
@@ -156,7 +156,7 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
 
 
         if (button.getTag().equals("stop")) {
-            button.setImageResource(R.drawable.baseline_stop_black_36);
+            //button.setImageResource(R.drawable.stop_icon);
             button.setTag("play");
             mapWork.getGps().startUpdatePosition();
 
@@ -165,7 +165,6 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
             RouteModel model = mapWork.getLastRoute().saveRoute();
             RideModel rideModel = UpdateInfo.get().saveRide(model.getId());
 
-
             showStatFragment(new RouteAndRide(rideModel, model));
 
 
@@ -173,7 +172,7 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
     }
 
     private void stopGps(ImageButton button) {
-        button.setImageResource(R.drawable.baseline_play_arrow_black_36);
+       // button.setImageResource(R.drawable.baseline_play_arrow_black_36);
         button.setTag("stop");
 
         mapWork.getGps().stopUpdatePosition();
@@ -193,7 +192,9 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
             statFragment.setArguments(bundle);
 
             bottomMenu.setVisibility(View.GONE);
-            getSupportFragmentManager().beginTransaction().add(R.id.root_linear, statFragment, "stat").addToBackStack(null).commit();
+        /*    getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.root_linear, statFragment, "stat").addToBackStack(null).commit();*/
         }
     }
 
@@ -220,6 +221,25 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
 
 
         mapWork.makeRoute();
+    }
+
+    public void clickOnMainButton(View view) {
+        int id = view.getId();
+
+        switch (id) {
+            case R.id.routes_main_btn:
+                startActivity(new Intent(this, ListRoutesActivity.class));
+                break;
+            case R.id.settings_main_btn:
+                startActivity(new Intent(this, SettingsActivity.class));
+                break;
+            case R.id.history_main_btn:
+                startActivity(new Intent(this, UserHistoryActivity.class));
+                break;
+            case R.id.stat_main_btn:
+                startActivity(new Intent(this, FullDataActivity.class));
+                break;
+        }
     }
 
     public MapWork getMapWork() {
@@ -326,7 +346,7 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
             mapWork.getGps().startUpdatePosition();
         }
         if (requestCode == CHECK_GPS_ENABLED && resultCode == 0) {
-            stopGps((ImageButton) findViewById(R.id.play_button));
+            //stopGps((ImageButton) findViewById(R.id.play_button));
         }
 
     }

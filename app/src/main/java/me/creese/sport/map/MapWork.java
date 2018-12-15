@@ -27,15 +27,15 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
     //private Route currentRoute;
     private GoogleMap googleMap;
     private boolean isRouteMode;
-    private TextView distText;
+
     private ArrayList<Route> routes;
     private Marker startMarker;
     private Runnable showRouteWhenReady;
     private Route focusRoute;
 
-    public MapWork(TextView distText) {
+    public MapWork() {
 
-        this.distText = distText;
+
         gps = new Gps(this);
         routes = new ArrayList<>();
     }

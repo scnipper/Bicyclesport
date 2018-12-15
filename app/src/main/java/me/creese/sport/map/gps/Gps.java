@@ -37,6 +37,7 @@ import me.creese.sport.map.MapWork;
 import me.creese.sport.map.Route;
 import me.creese.sport.ui.DialogFindGps;
 import me.creese.sport.ui.activities.StartActivity;
+import me.creese.sport.ui.fragments.MainViewStatFragment;
 import me.creese.sport.util.UpdateInfo;
 
 
@@ -199,9 +200,9 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
         }
 
         if (levelSignal > 10) gpsStatusView.setImageResource(R.drawable.one_gps);
-        else gpsStatusView.setImageResource(R.drawable.no_gps);
+        //else gpsStatusView.setImageResource(R.drawable.no_gps);
         if (levelSignal > 20) gpsStatusView.setImageResource(R.drawable.half_gps);
-        if (levelSignal > 40) gpsStatusView.setImageResource(R.drawable.full_gps);
+        if (levelSignal > 30) gpsStatusView.setImageResource(R.drawable.full_gps);
     }
 
     /**
@@ -210,8 +211,14 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
     public void firstFixGps() {
         Log.w(TAG, "onGpsStatusChanged: gps first fix");
 
-        LinearLayout viewTable = context.findViewById(R.id.view_table);
-        viewTable.setVisibility(View.VISIBLE);
+        /*LinearLayout viewTable = context.findViewById(R.id.view_table);
+        viewTable.setVisibility(View.VISIBLE);*/
+        MainViewStatFragment mainVIewStatFragment = new MainViewStatFragment();
+        context.getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.main_content,mainVIewStatFragment,MainViewStatFragment.class.getSimpleName())
+                .commit();
+        context.getSupportFragmentManager().executePendingTransactions();
         UpdateInfo.get().start();
 
         isFixGps = true;

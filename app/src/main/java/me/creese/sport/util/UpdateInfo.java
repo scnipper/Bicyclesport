@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.widget.TextView;
@@ -26,6 +27,7 @@ import me.creese.sport.map.gps.Gps;
 import me.creese.sport.models.ChartModel;
 import me.creese.sport.models.RideModel;
 import me.creese.sport.ui.activities.StartActivity;
+import me.creese.sport.ui.fragments.MainViewStatFragment;
 
 
 public class UpdateInfo implements Runnable {
@@ -80,10 +82,12 @@ public class UpdateInfo implements Runnable {
     }
 
     private void createViews() {
-        speedView = startActivity.findViewById(R.id.speed_view);
-        distanceView = startActivity.findViewById(R.id.distance_view);
-        timeView = startActivity.findViewById(R.id.time_view);
-        kallView = startActivity.findViewById(R.id.kall_view);
+        Fragment fragment = startActivity.getSupportFragmentManager().findFragmentByTag(MainViewStatFragment.class.getSimpleName());
+
+        speedView = fragment.getView().findViewById(R.id.speed_view);
+        distanceView = fragment.getView().findViewById(R.id.distance_view);
+        timeView = fragment.getView().findViewById(R.id.time_view);
+        kallView = fragment.getView().findViewById(R.id.kall_view);
     }
 
     public RideModel saveRide(int idRoute) {
@@ -162,6 +166,7 @@ public class UpdateInfo implements Runnable {
     }
 
     public void start() {
+        createViews();
         if (mapWork == null) mapWork = startActivity.getMapWork();
         rideModel = new RideModel();
         timer = new Timer();
@@ -196,6 +201,7 @@ public class UpdateInfo implements Runnable {
             rideModel.setTimeRide(time);
             timeView.setText(formatTime(time));
 
+
             speedView.setText(((int) gps.getSpeed()) + " " + startActivity.getString(R.string.km_peer_hour));
             distanceView.setText(Route.makeDistance(rideModel.getDistance()));
             kallView.setText(rideModel.getCalories() + "");
@@ -225,7 +231,6 @@ public class UpdateInfo implements Runnable {
     public void setStartActivity(StartActivity startActivity) {
         this.startActivity = startActivity;
 
-        createViews();
     }
 
 
