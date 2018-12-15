@@ -66,6 +66,8 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
         if (getLastNonConfigurationInstance() == null)
             mapWork = new MapWork();
         else mapWork = (MapWork) getLastCustomNonConfigurationInstance();
+
+
         mapWork.setContext(this);
         map.getMapAsync(mapWork);
 
@@ -351,6 +353,13 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(mapWork.getGps().isFirstFix()) {
+            UpdateInfo.get().createViews();
+        }
+    }
 
     @Override
     public Object onRetainCustomNonConfigurationInstance() {

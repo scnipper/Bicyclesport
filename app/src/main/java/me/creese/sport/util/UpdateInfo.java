@@ -81,13 +81,18 @@ public class UpdateInfo implements Runnable {
         return hourText + ":" + minText + ":" + secText;
     }
 
-    private void createViews() {
-        Fragment fragment = startActivity.getSupportFragmentManager().findFragmentByTag(MainViewStatFragment.class.getSimpleName());
+    public void createViews() {
+        Fragment fragment = startActivity
+                .getSupportFragmentManager()
+                .findFragmentByTag(MainViewStatFragment.class.getSimpleName());
+        if (fragment != null) {
+            speedView = fragment.getView().findViewById(R.id.speed_view);
+            distanceView = fragment.getView().findViewById(R.id.distance_view);
+            timeView = fragment.getView().findViewById(R.id.time_view);
+            kallView = fragment.getView().findViewById(R.id.kall_view);
+        }
 
-        speedView = fragment.getView().findViewById(R.id.speed_view);
-        distanceView = fragment.getView().findViewById(R.id.distance_view);
-        timeView = fragment.getView().findViewById(R.id.time_view);
-        kallView = fragment.getView().findViewById(R.id.kall_view);
+
     }
 
     public RideModel saveRide(int idRoute) {
