@@ -90,14 +90,8 @@ public class Route {
             line.remove();
         }
         line = googleMap.addPolyline(lineOptions);
+        line.setClickable(isMarker);
 
-        if (isMarker) {
-            clearMarkers();
-
-            for (int i = 0; i < lineOptions.getPoints().size(); i++) {
-                addMarker(lineOptions.getPoints().get(i), markerTitles.get(i));
-            }
-        }
         if (isFocusRoute)
             focusOnPoint(lineOptions.getPoints().get(lineOptions.getPoints().size() - 1));
 
@@ -106,6 +100,16 @@ public class Route {
         }
 
 
+    }
+
+    private void addMarkers() {
+        if (isMarker) {
+            clearMarkers();
+
+            for (int i = 0; i < lineOptions.getPoints().size(); i++) {
+                addMarker(lineOptions.getPoints().get(i), markerTitles.get(i));
+            }
+        }
     }
 
     private void clearMarkers() {
@@ -210,6 +214,10 @@ public class Route {
         db.close();
 
         return model;
+    }
+
+    public void clickOnRoute() {
+        addMarkers();
     }
 
     /**

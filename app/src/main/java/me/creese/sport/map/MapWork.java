@@ -1,6 +1,7 @@
 package me.creese.sport.map;
 
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -9,6 +10,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 
 import java.util.ArrayList;
 
@@ -19,7 +21,7 @@ import me.creese.sport.ui.activities.StartActivity;
 import me.creese.sport.util.Settings;
 
 
-public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMapClickListener, GoogleMap.OnMarkerDragListener {
+public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMapClickListener, GoogleMap.OnMarkerDragListener, GoogleMap.OnPolylineClickListener {
     private static final String TAG = MapWork.class.getSimpleName();
     private final Gps gps;
     private AppCompatActivity context;
@@ -146,6 +148,7 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
 
         googleMap.setOnMapClickListener(this);
         googleMap.setOnMarkerDragListener(this);
+        googleMap.setOnPolylineClickListener(this);
 /*        if (App.get().getModel() != null) {
             showRoute(App.get().getModel());
             App.get().setModel(null);
@@ -201,6 +204,18 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
 
     @Override
     public void onMarkerDragEnd(Marker marker) {
+
+    }
+
+    @Override
+    public void onPolylineClick(Polyline polyline) {
+
+        Log.w(TAG, "onPolylineClick: "+polyline );
+        for (Route route : routes) {
+            if (route.getLine().equals(polyline)) {
+                route.clickOnRoute();
+            }
+        }
 
     }
 
