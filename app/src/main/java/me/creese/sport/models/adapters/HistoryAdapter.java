@@ -36,7 +36,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryH
     @NonNull
     @Override
     public HistoryHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.history_item, viewGroup, false);
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_route, viewGroup, false);
         return new HistoryHolder(v);
     }
 
@@ -76,9 +76,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryH
                 }
             });
 
-            time = itemView.findViewById(R.id.history_time);
-            date = itemView.findViewById(R.id.history_date);
-            dist = itemView.findViewById(R.id.history_dist);
+            time = itemView.findViewById(R.id.item_route_time_route);
+            date = itemView.findViewById(R.id.item_route_date_route);
+            dist = itemView.findViewById(R.id.item_route_dist_route);
         }
     }
 }

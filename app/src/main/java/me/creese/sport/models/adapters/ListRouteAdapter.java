@@ -9,19 +9,22 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.google.maps.android.SphericalUtil;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
-import me.creese.sport.App;
 import me.creese.sport.R;
 import me.creese.sport.map.Route;
-import me.creese.sport.ui.activities.ListRoutesActivity;
 import me.creese.sport.ui.activities.StartActivity;
 import me.creese.sport.models.RouteModel;
 
 public class ListRouteAdapter extends RecyclerView.Adapter<ListRouteAdapter.RouteHolder> {
 
-    private static final String TAG = ListRoutesActivity.class.getSimpleName();
+    private static final String TAG = ListRouteAdapter.class.getSimpleName();
     private final ArrayList<RouteModel> listRoute;
 
     public ListRouteAdapter() {
@@ -56,13 +59,17 @@ public class ListRouteAdapter extends RecyclerView.Adapter<ListRouteAdapter.Rout
         private final TextView dateRoute;
         private final TextView nameRoute;
         private final FrameLayout root;
+        private final TextView distRoute;
+        private final TextView timeRoute;
         private RouteModel model;
 
         RouteHolder(@NonNull View itemView) {
             super(itemView);
 
             dateRoute = itemView.findViewById(R.id.item_route_date_route);
+            timeRoute = itemView.findViewById(R.id.item_route_time_route);
             nameRoute = itemView.findViewById(R.id.item_route_name_route);
+            distRoute = itemView.findViewById(R.id.item_route_dist_route);
             root = itemView.findViewById(R.id.item_route_root);
             root.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -79,11 +86,22 @@ public class ListRouteAdapter extends RecyclerView.Adapter<ListRouteAdapter.Rout
 
         void bind(RouteModel model) {
             this.model = model;
-            Calendar date = Calendar.getInstance();
-            date.setTimeInMillis(model.getTime());
+            Date date = new Date(model.getTime());
+            SimpleDateFormat formatDate = new SimpleDateFormat("dd.MM.yyyy",Locale.getDefault());
+            SimpleDateFormat formatTime = new SimpleDateFormat("H:mm:ss",Locale.getDefault());
 
-            dateRoute.setText(date.get(Calendar.HOUR_OF_DAY)+":"+date.get(Calendar.MINUTE)+":"+date.get(Calendar.SECOND)+" "+
-                    date.get(Calendar.DAY_OF_MONTH)+"/"+(date.get(Calendar.MONTH)+1)+"/"+date.get(Calendar.YEAR));
+            if(model.getTmpDistance() == 0) {
+                if(model.getPoints().size() > 1) {
+                    for (int i = 1; i < model.getPoints().size(); i++) {
+                        model.setTmpDistance(model.getTmpDistance()
+                                +SphericalUtil.computeDistanceBetween(model.getPoints().get(i-1),model.getPoints().get(i)));
+                    }
+                }
+            }
+
+            distRoute.setText(Route.makeDistance(model.getTmpDistance()));
+            timeRoute.setText(formatTime.format(date));
+            dateRoute.setText(formatDate.format(date));
             nameRoute.setText(model.getName());
         }
     }

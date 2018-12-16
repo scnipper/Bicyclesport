@@ -26,7 +26,7 @@ public class StatPageAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int i) {
-        return PageStatFragment.newInstanse(i,model);
+        return PageStatFragment.newInstanse(i);
     }
 
     @Override

@@ -3,8 +3,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@android:color/white"
     android:orientation="vertical"
+    android:padding="25dp"
     android:tag="stat_list">
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:text="Полная статистика"
+        android:textColor="@color/text_color_main"
+        android:textSize="30sp"
+        android:textStyle="bold" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,8 +27,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Расстояние:"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="24sp" />
+            android:textColor="@color/text_color_main"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/stat_dist"
@@ -25,8 +37,8 @@
             android:layout_weight="1"
             android:text="TextView"
             android:textAlignment="textEnd"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="24sp" />
+            android:textColor="@color/text_color_main"
+            android:textSize="14sp" />
     </LinearLayout>
 
     <LinearLayout
@@ -38,8 +50,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Кллории:"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="24sp" />
+            android:textColor="@color/text_color_main"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/stat_cal"
@@ -48,8 +60,8 @@
             android:layout_weight="1"
             android:text="TextView"
             android:textAlignment="textEnd"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="24sp" />
+            android:textColor="@color/text_color_main"
+            android:textSize="14sp" />
     </LinearLayout>
 
     <LinearLayout
@@ -61,8 +73,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Макс. скорость:"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="24sp" />
+            android:textColor="@color/text_color_main"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/stat_max_speed"
@@ -71,8 +83,8 @@
             android:layout_weight="1"
             android:text="TextView"
             android:textAlignment="textEnd"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="24sp" />
+            android:textColor="@color/text_color_main"
+            android:textSize="14sp" />
     </LinearLayout>
 
     <LinearLayout
@@ -84,8 +96,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Средняя скорость:"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="24sp" />
+            android:textColor="@color/text_color_main"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/stat_av_speed"
@@ -94,8 +106,8 @@
             android:layout_weight="1"
             android:text="TextView"
             android:textAlignment="textEnd"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="24sp" />
+            android:textColor="@color/text_color_main"
+            android:textSize="14sp" />
     </LinearLayout>
 
     <LinearLayout
@@ -107,8 +119,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Время:"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="24sp" />
+            android:textColor="@color/text_color_main"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/stat_ride_time"
@@ -117,8 +129,8 @@
             android:layout_weight="1"
             android:text="TextView"
             android:textAlignment="textEnd"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="24sp" />
+            android:textColor="@color/text_color_main"
+            android:textSize="14sp" />
     </LinearLayout>
 
     <LinearLayout
@@ -130,8 +142,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Темп:"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="24sp" />
+            android:textColor="@color/text_color_main"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/stat_temp"
@@ -140,15 +152,15 @@
             android:layout_weight="1"
             android:text="TextView"
             android:textAlignment="textEnd"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="24sp" />
+            android:textColor="@color/text_color_main"
+            android:textSize="14sp" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:visibility="invisible">
+        android:visibility="gone">
 
         <TextView
             android:layout_width="wrap_content"
@@ -172,7 +184,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:visibility="invisible">
+        android:visibility="gone">
 
         <TextView
             android:layout_width="wrap_content"

@@ -9,6 +9,7 @@ import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -216,6 +217,7 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
         MainViewStatFragment mainVIewStatFragment = new MainViewStatFragment();
         context.getSupportFragmentManager()
                 .beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .add(R.id.main_content,mainVIewStatFragment,MainViewStatFragment.class.getSimpleName())
                 .commit();
         context.getSupportFragmentManager().executePendingTransactions();

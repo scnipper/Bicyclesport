@@ -21,6 +21,8 @@ public class RouteModel implements Parcelable{
     private String name;
     private List<LatLng> points;
     private long time;
+    // not use in db calculate runtime
+    private double tmpDistance;
 
 
     public RouteModel(int id,String name, List<LatLng> points, long time, boolean isFocusRoute, boolean isMarker) {
@@ -30,7 +32,6 @@ public class RouteModel implements Parcelable{
         this.points = points;
         this.time = time;
         this.isFocusRoute = isFocusRoute;
-        //int id = App.get().
     }
 
 
@@ -79,6 +80,14 @@ public class RouteModel implements Parcelable{
         return time;
     }
 
+
+    public double getTmpDistance() {
+        return tmpDistance;
+    }
+
+    public void setTmpDistance(double tmpDistance) {
+        this.tmpDistance = tmpDistance;
+    }
 
     public boolean isMarker() {
         return isMarker;

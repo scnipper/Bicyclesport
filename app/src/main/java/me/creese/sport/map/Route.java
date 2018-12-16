@@ -177,7 +177,8 @@ public class Route {
      * @param name
      */
     public RouteModel saveRoute(String name) {
-        RouteModel model = new RouteModel(0,name, lineOptions.getPoints(), System.currentTimeMillis(),isFocusRoute,isMarker);
+        RouteModel model = new RouteModel(0,name, lineOptions.getPoints(),
+                System.currentTimeMillis(),isFocusRoute,isMarker);
 
         SQLiteDatabase db = App.get().getData().getWritableDatabase();
 

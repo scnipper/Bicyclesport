@@ -36,6 +36,7 @@ public class BevelView extends FrameLayout {
 
     private void init(){
         setWillNotDraw(false);
+
     }
 
     @Override
@@ -45,6 +46,7 @@ public class BevelView extends FrameLayout {
         float vert[] = new float[]{0, 0, 0, getHeight() * 0.4f, getWidth(), getHeight(), getWidth(), 0};
 
         Paint paint = new Paint();
+        paint.setAntiAlias(true);
         paint.setColor(0xffffffff);
         paint.setStyle(Paint.Style.FILL);
 

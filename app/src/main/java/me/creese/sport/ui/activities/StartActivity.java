@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -32,6 +33,9 @@ import me.creese.sport.map.MapWork;
 import me.creese.sport.models.RideModel;
 import me.creese.sport.models.RouteAndRide;
 import me.creese.sport.models.RouteModel;
+import me.creese.sport.ui.fragments.HistoryFragment;
+import me.creese.sport.ui.fragments.ListRoutesFragment;
+import me.creese.sport.ui.fragments.PageStatFragment;
 import me.creese.sport.ui.fragments.StatFragment;
 import me.creese.sport.util.Settings;
 import me.creese.sport.util.UpdateInfo;
@@ -230,16 +234,26 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
 
         switch (id) {
             case R.id.routes_main_btn:
-                startActivity(new Intent(this, ListRoutesActivity.class));
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.main_content,new ListRoutesFragment())
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .commit();
                 break;
             case R.id.settings_main_btn:
                 startActivity(new Intent(this, SettingsActivity.class));
                 break;
             case R.id.history_main_btn:
-                startActivity(new Intent(this, UserHistoryActivity.class));
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.main_content,new HistoryFragment())
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .commit();
                 break;
             case R.id.stat_main_btn:
-                startActivity(new Intent(this, FullDataActivity.class));
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .add(R.id.main_content,PageStatFragment.newInstanse(0))
+                .commit();
                 break;
         }
     }
@@ -319,16 +333,16 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
 
         switch (menuItem.getItemId()) {
             case R.id.menu_routes:
-                startActivity(new Intent(this, ListRoutesActivity.class));
+                //startActivity(new Intent(this, ListRoutesActivity.class));
                 break;
             case R.id.menu_settings:
                 startActivity(new Intent(this, SettingsActivity.class));
                 break;
             case R.id.menu_history:
-                startActivity(new Intent(this, UserHistoryActivity.class));
+               // startActivity(new Intent(this, UserHistoryActivity.class));
                 break;
             case R.id.menu_stat:
-                startActivity(new Intent(this, FullDataActivity.class));
+                //startActivity(new Intent(this, FullDataActivity.class));
                 break;
         }
 

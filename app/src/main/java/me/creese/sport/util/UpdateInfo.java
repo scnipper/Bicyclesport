@@ -191,7 +191,9 @@ public class UpdateInfo implements Runnable {
             timer.cancel();
             timer = null;
         }
-        notificationManager.cancel(NOTIFY_ID);
+        if (notificationManager != null) {
+            notificationManager.cancel(NOTIFY_ID);
+        }
 
     }
 
