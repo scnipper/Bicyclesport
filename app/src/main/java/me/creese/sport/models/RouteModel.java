@@ -40,6 +40,7 @@ public class RouteModel implements Parcelable{
         name = in.readString();
         points = in.createTypedArrayList(LatLng.CREATOR);
         time = in.readLong();
+        tmpDistance = in.readDouble();
     }
 
     @Override
@@ -48,6 +49,7 @@ public class RouteModel implements Parcelable{
         dest.writeString(name);
         dest.writeTypedList(points);
         dest.writeLong(time);
+        dest.writeDouble(tmpDistance);
     }
 
     @Override

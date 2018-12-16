@@ -1,7 +1,6 @@
 package me.creese.sport.map;
 
 import android.support.v7.app.AppCompatActivity;
-import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -47,27 +46,27 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
      * @param model
      */
     public void showRoute(final RouteModel model) {
-        showRouteWhenReady = new Runnable() {
+        /*showRouteWhenReady = new Runnable() {
             @Override
-            public void run() {
-                googleMap.clear();
-                clearRoutes();
-                Route route = new Route(context);
-                route.setFocusCenterRoute(true);
-                addRoute(route);
-                for (LatLng latLng : model.getPoints()) {
-                    route.addPoint(latLng);
-                }
-                route.setMarker(model.isMarker());
+            public void run() {*/
+        googleMap.clear();
+        clearRoutes();
+        Route route = new Route(context);
+        route.setFocusCenterRoute(true);
+        route.setMarker(model.isMarker());
+        addRoute(route);
+        for (LatLng latLng : model.getPoints()) {
+            route.addPoint(latLng);
+        }
 
 
-                //route.focusOnCenterRoute();
+        route.showOnMap();
+        //route.focusOnCenterRoute();
 
               /*  if (last != null) {
                     googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(last, 15));
                 }*/
-            }
-        };
+
     }
 
     /**

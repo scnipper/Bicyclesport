@@ -21,7 +21,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
 import com.google.android.gms.maps.MapView;
 
@@ -46,7 +45,7 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
     private static final String TAG = StartActivity.class.getSimpleName();
     private MapView map;
     private MapWork mapWork;
-    private View bottomMenu;
+    //private View bottomMenu;
 
 
     @Override
@@ -57,7 +56,7 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
 
         initPrefs();
 
-        bottomMenu = findViewById(R.id.view_table);
+        //bottomMenu = findViewById(R.id.view_table);
         if (savedInstanceState != null) {
             int visTable = savedInstanceState.getInt("" + R.id.view_table);
 //            findViewById(R.id.view_table).setVisibility(visTable);
@@ -86,7 +85,7 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
             button.setTag("play");*/
         }
 
-        RouteModel model = getIntent().getParcelableExtra(RouteModel.class.getSimpleName());
+       /* RouteModel model = getIntent().getParcelableExtra(RouteModel.class.getSimpleName());
         RouteAndRide routeAndRide = getIntent().getParcelableExtra(RouteAndRide.class.getSimpleName());
 
         if (routeAndRide != null) {
@@ -94,7 +93,7 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
         }
         if (model != null) {
             if (mapWork.getRoutes().size() == 0) mapWork.showRoute(model);
-        }
+        }*/
 
     }
 
@@ -184,24 +183,16 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
         mapWork.getGps().stopUpdatePosition();
     }
 
-    private void showStatFragment(RouteAndRide model) {
+    public void showStatFragment(RouteAndRide model) {
+        if (mapWork.getRoutes().size() == 0) mapWork.showRoute(model.getRouteModel());
 
-        Fragment stat = getSupportFragmentManager().findFragmentByTag("stat");
-        if (stat == null) {
+        //bottomMenu.setVisibility(View.GONE);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .replace(R.id.main_content,PageStatFragment.newInstanse(0,model.getRideModel()))
+                .commit();
 
-
-            if (mapWork.getRoutes().size() == 0) mapWork.showRoute(model.getRouteModel());
-            Bundle bundle = new Bundle();
-            bundle.putParcelable(RideModel.class.getSimpleName(), model.getRideModel());
-
-            StatFragment statFragment = new StatFragment();
-            statFragment.setArguments(bundle);
-
-            bottomMenu.setVisibility(View.GONE);
-        /*    getSupportFragmentManager()
-                    .beginTransaction()
-                    .add(R.id.root_linear, statFragment, "stat").addToBackStack(null).commit();*/
-        }
     }
 
     /**
@@ -235,7 +226,7 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
         switch (id) {
             case R.id.routes_main_btn:
                 getSupportFragmentManager().beginTransaction()
-                        .add(R.id.main_content,new ListRoutesFragment())
+                        .replace(R.id.main_content,new ListRoutesFragment())
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .commit();
                 break;
@@ -244,7 +235,7 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
                 break;
             case R.id.history_main_btn:
                 getSupportFragmentManager().beginTransaction()
-                        .add(R.id.main_content,new HistoryFragment())
+                        .replace(R.id.main_content,new HistoryFragment())
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                         .commit();
                 break;
@@ -252,7 +243,7 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
                 getSupportFragmentManager()
                         .beginTransaction()
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                        .add(R.id.main_content,PageStatFragment.newInstanse(0))
+                        .replace(R.id.main_content,PageStatFragment.newInstanse(0, null))
                 .commit();
                 break;
         }
@@ -303,7 +294,7 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
 
 
             super.onBackPressed();
-            if (bottomMenu.getVisibility() == View.GONE) bottomMenu.setVisibility(View.VISIBLE);
+            //if (bottomMenu.getVisibility() == View.GONE) bottomMenu.setVisibility(View.VISIBLE);
         }
 
 

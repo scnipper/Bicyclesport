@@ -26,7 +26,7 @@ public class ListRoutesFragment extends Fragment {
         ((TextView) view.findViewById(R.id.head_text_list_routes)).setText("Маршруты");
         RecyclerView recyclerView = view.findViewById(R.id.list_routes);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        ListRouteAdapter adapter = new ListRouteAdapter();
+        ListRouteAdapter adapter = new ListRouteAdapter(this);
         recyclerView.setAdapter(adapter);
 
         ArrayList<RouteModel> models = App.get().getData().getRoutesModelFromDB(false);

@@ -2,6 +2,7 @@ package me.creese.sport.models.adapters;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,13 +22,16 @@ import me.creese.sport.R;
 import me.creese.sport.map.Route;
 import me.creese.sport.ui.activities.StartActivity;
 import me.creese.sport.models.RouteModel;
+import me.creese.sport.ui.fragments.ListRoutesFragment;
 
 public class ListRouteAdapter extends RecyclerView.Adapter<ListRouteAdapter.RouteHolder> {
 
     private static final String TAG = ListRouteAdapter.class.getSimpleName();
     private final ArrayList<RouteModel> listRoute;
+    private final ListRoutesFragment listRoutesFragment;
 
-    public ListRouteAdapter() {
+    public ListRouteAdapter(ListRoutesFragment listRoutesFragment) {
+        this.listRoutesFragment = listRoutesFragment;
         listRoute = new ArrayList<>();
     }
 
@@ -74,11 +78,13 @@ public class ListRouteAdapter extends RecyclerView.Adapter<ListRouteAdapter.Rout
             root.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(root.getContext(),StartActivity.class);
+                    /*Intent intent = new Intent(root.getContext(),StartActivity.class);
                     intent.putExtra(RouteModel.class.getSimpleName(),model);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 
-                    root.getContext().startActivity(intent);
+                    root.getContext().startActivity(intent);*/
+
+                    ((StartActivity) listRoutesFragment.getActivity()).getMapWork().showRoute(model);
                 }
             });
 

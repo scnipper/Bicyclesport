@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
+import android.location.Geocoder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +22,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.SphericalUtil;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Random;
 
 import me.creese.sport.App;
@@ -167,6 +169,9 @@ public class Route {
         Random random = new Random();
         byte[] bytes = new byte[10];
         random.nextBytes(bytes);
+
+
+
 
         return saveRoute(new String(bytes));
     }

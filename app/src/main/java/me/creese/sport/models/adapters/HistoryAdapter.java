@@ -1,7 +1,11 @@
 package me.creese.sport.models.adapters;
 
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,10 +13,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import me.creese.sport.R;
@@ -20,12 +26,16 @@ import me.creese.sport.map.Route;
 import me.creese.sport.models.RouteAndRide;
 import me.creese.sport.models.RouteModel;
 import me.creese.sport.ui.activities.StartActivity;
+import me.creese.sport.ui.fragments.HistoryFragment;
+import me.creese.sport.ui.fragments.PageStatFragment;
 import me.creese.sport.util.UpdateInfo;
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryHolder> {
     private final ArrayList<RouteAndRide> items;
+    private final HistoryFragment historyFragment;
 
-    public HistoryAdapter() {
+    public HistoryAdapter(HistoryFragment historyFragment) {
+        this.historyFragment = historyFragment;
         items = new ArrayList<>();
     }
 
@@ -48,6 +58,32 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryH
         historyHolder.date.setText(format.format(date));
         historyHolder.dist.setText(Route.makeDistance(items.get(i).getRideModel().getDistance()));
         historyHolder.time.setText(UpdateInfo.formatTime(items.get(i).getRideModel().getTimeRide()));
+
+        if(items.get(i).getRideModel().getRideAdress() == null) {
+            items.get(i).getRideModel().setRideAdress("");
+            Geocoder gc = new Geocoder(historyHolder.date.getContext(), Locale.getDefault());
+            int last = items.get(i).getRouteModel().getPoints().size()-1;
+            if(last > -1) {
+                try {
+                    List<Address> fromLocationStart = gc.getFromLocation(items.get(i).getRouteModel().getPoints().get(0).latitude, items.get(i).getRouteModel().getPoints().get(0).longitude, 1);
+
+                    List<Address> fromLocationEnd = gc.getFromLocation(items.get(i).getRouteModel().getPoints().get(last).latitude, items.get(i).getRouteModel().getPoints().get(last).longitude, 1);
+
+                    StringBuilder stringBuilder = new StringBuilder();
+                    stringBuilder.append(fromLocationStart.get(0).getThoroughfare()).append(" ").append(fromLocationStart.get(0).getSubThoroughfare());
+
+                    if (!fromLocationStart.get(0).getLocality().equals(fromLocationEnd.get(0).getLocality()))
+                        stringBuilder.append(", ").append(fromLocationStart.get(0).getLocality());
+                    stringBuilder.append(" - ").append(fromLocationEnd.get(0).getThoroughfare()).append(" ").append(fromLocationEnd.get(0).getSubThoroughfare()).append(", ").append(fromLocationEnd.get(0).getLocality());
+                    items.get(i).getRideModel().setRideAdress(stringBuilder.toString());
+
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        historyHolder.name.setText(items.get(i).getRideModel().getRideAdress());
         historyHolder.idModel = i;
 
 
@@ -62,6 +98,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryH
         private final TextView time;
         private final TextView date;
         private final TextView dist;
+        private final TextView name;
         private int idModel;
 
         public HistoryHolder(@NonNull final View itemView) {
@@ -69,16 +106,18 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryH
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(itemView.getContext(),StartActivity.class);
+                    /*Intent intent = new Intent(itemView.getContext(),StartActivity.class);
                     intent.putExtra(RouteAndRide.class.getSimpleName(),items.get(idModel));
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    itemView.getContext().startActivity(intent);
+                    itemView.getContext().startActivity(intent);*/
+                    ((StartActivity) historyFragment.getActivity()).showStatFragment(items.get(getAdapterPosition()));
                 }
             });
 
             time = itemView.findViewById(R.id.item_route_time_route);
             date = itemView.findViewById(R.id.item_route_date_route);
             dist = itemView.findViewById(R.id.item_route_dist_route);
+            name = itemView.findViewById(R.id.item_route_name_route);
         }
     }
 }

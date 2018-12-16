@@ -34,10 +34,10 @@ public class PageStatFragment extends Fragment {
     private int page;
     private RideModel model;
 
-    public static Fragment newInstanse(int i) {
+    public static Fragment newInstanse(int i, @Nullable RideModel rideModel) {
         Bundle bundle = new Bundle();
         bundle.putInt(PAGE, i);
-        //bundle.putParcelable(RideModel.class.getSimpleName(), model);
+        bundle.putParcelable(RideModel.class.getSimpleName(), rideModel);
 
         Fragment fragment = new PageStatFragment();
         fragment.setArguments(bundle);
@@ -86,9 +86,15 @@ public class PageStatFragment extends Fragment {
         Bundle arguments = getArguments();
         if (arguments != null) {
             page = arguments.getInt(PAGE);
-
+            model = arguments.getParcelable(RideModel.class.getSimpleName());
         }
+        if(model == null)
+        loadFullStat(savedInstanceState);
 
+
+    }
+
+    private void loadFullStat(Bundle savedInstanceState) {
         if (savedInstanceState == null) {
             SQLiteDatabase database = App.get().getData().getReadableDatabase();
 
@@ -106,8 +112,6 @@ public class PageStatFragment extends Fragment {
         } else {
             model = savedInstanceState.getParcelable(RideModel.class.getSimpleName());
         }
-
-
     }
 
     @Nullable

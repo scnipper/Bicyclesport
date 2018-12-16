@@ -10,6 +10,7 @@ public class RideModel implements Parcelable {
     private double distance;
     private int idRoute;
     private int idRide;
+    private String rideAdress;
 
     public RideModel() {
     }
@@ -29,6 +30,7 @@ public class RideModel implements Parcelable {
         distance = in.readDouble();
         idRoute = in.readInt();
         idRide = in.readInt();
+        rideAdress = in.readString();
     }
 
     @Override
@@ -39,6 +41,7 @@ public class RideModel implements Parcelable {
         dest.writeDouble(distance);
         dest.writeInt(idRoute);
         dest.writeInt(idRide);
+        dest.writeString(rideAdress);
     }
 
     @Override
@@ -104,5 +107,14 @@ public class RideModel implements Parcelable {
 
     public void setIdRide(int idRide) {
         this.idRide = idRide;
+    }
+
+
+    public String getRideAdress() {
+        return rideAdress;
+    }
+
+    public void setRideAdress(String rideAdress) {
+        this.rideAdress = rideAdress;
     }
 }

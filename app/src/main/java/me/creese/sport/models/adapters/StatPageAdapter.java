@@ -1,14 +1,11 @@
 package me.creese.sport.models.adapters;
 
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import me.creese.sport.models.RideModel;
-import me.creese.sport.models.RouteModel;
 import me.creese.sport.ui.fragments.PageStatFragment;
 
 public class StatPageAdapter extends FragmentStatePagerAdapter {
@@ -26,7 +23,7 @@ public class StatPageAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int i) {
-        return PageStatFragment.newInstanse(i);
+        return PageStatFragment.newInstanse(i, null);
     }
 
     @Override

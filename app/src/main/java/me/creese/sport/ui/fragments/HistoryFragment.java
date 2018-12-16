@@ -28,7 +28,7 @@ public class HistoryFragment extends Fragment {
         ((TextView) view.findViewById(R.id.head_text_list_routes)).setText("История");
         RecyclerView recyclerView = view.findViewById(R.id.list_routes);
 
-        HistoryAdapter adapter = new HistoryAdapter();
+        HistoryAdapter adapter = new HistoryAdapter(this);
         recyclerView.setAdapter(adapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
