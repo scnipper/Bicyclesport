@@ -2,6 +2,10 @@ package me.creese.sport.map;
 
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -15,6 +19,7 @@ import com.google.android.gms.maps.model.Polyline;
 
 import java.util.ArrayList;
 
+import me.creese.sport.R;
 import me.creese.sport.map.gps.Gps;
 import me.creese.sport.map.gps.GpsListener;
 import me.creese.sport.models.RouteModel;
@@ -26,14 +31,11 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
     private static final String TAG = MapWork.class.getSimpleName();
     private final Gps gps;
     private AppCompatActivity context;
-    //private Route currentRoute;
     private GoogleMap googleMap;
     private boolean isRouteMode;
 
     private ArrayList<Route> routes;
     private Marker startMarker;
-    private Runnable showRouteWhenReady;
-    private Route focusRoute;
     private CameraPosition currentCameraPosition;
 
     public MapWork() {
@@ -58,6 +60,7 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
         Route route = new Route(context);
         route.setFocusCenterRoute(true);
         route.setMarker(model.isMarker());
+        route.setClickLine(true);
         addRoute(route);
         for (LatLng latLng : model.getPoints()) {
             route.addPoint(latLng);
@@ -98,6 +101,15 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
         route.setMarker(true);
         addRoute(route);
 
+
+        context.findViewById(R.id.routes_main_btn).setVisibility(View.GONE);
+
+        ImageButton btnSave = context.findViewById(R.id.save_route_btn);
+        btnSave.setScaleX(0);
+        btnSave.setScaleY(0);
+        btnSave.setVisibility(View.VISIBLE);
+        btnSave.animate().scaleX(1).scaleY(1).start();
+
     }
 
 
@@ -112,7 +124,8 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
 
     public void clearRoutes() {
         for (Route route : routes) {
-            route.getMarkers().clear();
+            route.clearMarkers();
+            route.getLine().remove();
         }
         routes.clear();
     }
@@ -145,6 +158,14 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
 
     public void setStartMarker(Marker startMarker) {
         this.startMarker = startMarker;
+    }
+
+    public void setRouteMode(boolean routeMode) {
+        isRouteMode = routeMode;
+    }
+
+    public boolean isRouteMode() {
+        return isRouteMode;
     }
 
     @Override
@@ -202,8 +223,24 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
 
     @Override
     public void onMapClick(LatLng latLng) {
+        LinearLayout distView = context.findViewById(R.id.distance_panel);
+
+        if(routes.size() == 0) {
+            makeRoute();
+            distView.setVisibility(View.VISIBLE);
+        }
+
+
+
         if (isRouteMode) {
-            routes.get(routes.size() - 1).addPointOnMap(latLng);
+            getLastRoute().addPointOnMap(latLng);
+
+            for (int i = 0; i < distView.getChildCount(); i++) {
+                View childAt = distView.getChildAt(i);
+                if (childAt instanceof TextView) {
+                    ((TextView) childAt).setText(Route.makeDistance(getLastRoute().getDistance()).toUpperCase());
+                }
+            }
         }
     }
 

@@ -52,17 +52,47 @@
                     android:id="@+id/imageButton5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:background="@drawable/btn_main_2"
                     android:onClick="playSport"
                     android:tag="stop"
                     app:srcCompat="@drawable/play_icon" />
+
+                <LinearLayout
+                    android:id="@+id/distance_panel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="11dp"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/dist_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:freezesText="true"
+                        android:textColor="@android:color/white"
+                        android:textStyle="bold" />
+
+                    <ImageButton
+                        android:id="@+id/img_button_cross_close_route"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:background="@null"
+                        android:onClick="clearMakeRoute"
+                        app:srcCompat="@drawable/clear_route_cross_white" />
+                </LinearLayout>
+
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/main_buttons_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="5dp"
                 android:gravity="bottom"
                 android:orientation="horizontal">
 
@@ -72,6 +102,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="15dp"
                     android:layout_marginBottom="8dp"
+                    android:layout_weight="1"
                     android:background="@drawable/btn_main"
                     android:onClick="clickOnMainButton"
                     app:srcCompat="@drawable/settings_icon" />
@@ -80,8 +111,9 @@
                     android:id="@+id/stat_main_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="30dp"
+                    android:layout_marginStart="30dp"
                     android:layout_marginBottom="15dp"
+                    android:layout_weight="1"
                     android:background="@drawable/btn_main"
                     android:onClick="clickOnMainButton"
                     app:srcCompat="@drawable/fullstat_btn" />
@@ -92,6 +124,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="30dp"
                     android:layout_marginBottom="25dp"
+                    android:layout_weight="1"
                     android:background="@drawable/btn_main"
                     android:onClick="clickOnMainButton"
                     app:srcCompat="@drawable/history_btn" />
@@ -102,9 +135,22 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="30dp"
                     android:layout_marginBottom="30dp"
+                    android:layout_weight="1"
                     android:background="@drawable/btn_main"
                     android:onClick="clickOnMainButton"
                     app:srcCompat="@drawable/routes_btn" />
+
+                <ImageButton
+                    android:id="@+id/save_route_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginBottom="36dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_main_3"
+                    android:onClick="saveRoute"
+                    android:visibility="gone"
+                    app:srcCompat="@drawable/save_icon" />
             </LinearLayout>
         </LinearLayout>
 
@@ -209,16 +255,6 @@
         </LinearLayout>
 
     </LinearLayout>
-
-    <ImageButton
-        android:id="@+id/save_route_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="50dp"
-        android:onClick="saveRoute"
-        android:visibility="gone"
-        app:srcCompat="@android:drawable/ic_menu_save" />
 
 
 </LinearLayout>

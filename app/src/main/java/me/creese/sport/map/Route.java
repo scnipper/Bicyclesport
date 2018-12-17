@@ -17,7 +17,6 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.SphericalUtil;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -51,13 +50,18 @@ public class Route {
     private float calories;
     private boolean isFocusCenterRoute;
     private boolean markersIsAdded;
+    private boolean isClickLine;
     //private TextView viewText;
 
     public Route(AppCompatActivity context) {
         this.context = context;
 
         markers = new ArrayList<>();
-        markerOptions = new MarkerOptions().draggable(true).flat(true).anchor(0.5f, 0.5f).icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.marker_icon)));
+        markerOptions = new MarkerOptions()
+                .draggable(true)
+                .flat(true)
+                .anchor(0.5f, 0.5f)
+                .icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.marker_icon)));
         markerTitles = new ArrayList<>();
 
         lineOptions = new PolylineOptions();
@@ -86,7 +90,7 @@ public class Route {
             line.remove();
         }
         line = googleMap.addPolyline(lineOptions);
-        line.setClickable(isMarker);
+        line.setClickable(isClickLine);
 
         if (isFocusRoute)
             focusOnPoint(lineOptions.getPoints().get(lineOptions.getPoints().size() - 1));
@@ -95,7 +99,7 @@ public class Route {
             focusOnPoint(lineOptions.getPoints().get(lineOptions.getPoints().size() / 2), 12);
         }
 
-        if(markersIsAdded) {
+        if (isMarker) {
             addMarkers();
         }
 
@@ -106,21 +110,21 @@ public class Route {
      * Добавление маркеров на точки в маршруте
      */
     private void addMarkers() {
-        if (isMarker) {
-            clearMarkers();
 
-            double rotation = 0;
+        clearMarkers();
 
-
-            for (int i = 0; i < lineOptions.getPoints().size(); i++) {
-                if(i+1 < lineOptions.getPoints().size())
-                rotation = angleFromCoordinate(lineOptions.getPoints().get(i), lineOptions.getPoints().get(i+1));
+        double rotation = 0;
 
 
-                addMarker(lineOptions.getPoints().get(i), markerTitles.get(i), rotation);
-            }
-            markersIsAdded = true;
+        for (int i = 0; i < lineOptions.getPoints().size(); i++) {
+            if (i + 1 < lineOptions.getPoints().size())
+                rotation = angleFromCoordinate(lineOptions.getPoints().get(i), lineOptions.getPoints().get(i + 1));
+
+
+            addMarker(lineOptions.getPoints().get(i), markerTitles.get(i), rotation);
         }
+
+
     }
 
     private double angleFromCoordinate(LatLng latFrom, LatLng latTo) {
@@ -142,7 +146,7 @@ public class Route {
     /**
      * Удаление всех маркеров с маршрута
      */
-    private void clearMarkers() {
+    public void clearMarkers() {
         for (Marker marker : markers) {
             marker.remove();
         }
@@ -164,7 +168,10 @@ public class Route {
         }
         lineOptions.add(point);
 
-        if (isMarker) markerTitles.add(makeDistance(distance));
+        if (isMarker) {
+            markerTitles.add(makeDistance(distance));
+
+        }
 
 
     }
@@ -180,7 +187,6 @@ public class Route {
         markerOptions.position(point);
         markerOptions.title(title);
         markers.add(googleMap.addMarker(markerOptions));
-        Log.w(TAG, "addMarker: "+rotation );
 
         markers.get(markers.size() - 1).setRotation((float) rotation);
     }
@@ -257,11 +263,12 @@ public class Route {
     }
 
     public void clickOnRoute() {
-        if(!markersIsAdded)
-        addMarkers();
-        else {
-            markersIsAdded = false;
+        if (!isMarker) {
+            addMarkers();
+            isMarker = true;
+        } else {
             clearMarkers();
+            isMarker = false;
         }
     }
 
@@ -275,7 +282,7 @@ public class Route {
             distance += SphericalUtil.computeDistanceBetween(markers.get(i - 1).getPosition(), markers.get(i).getPosition());
             String dist = makeDistance(distance);
 
-            markers.get(i-1).setRotation((float) angleFromCoordinate(markers.get(i - 1).getPosition(), markers.get(i).getPosition()));
+            markers.get(i - 1).setRotation((float) angleFromCoordinate(markers.get(i - 1).getPosition(), markers.get(i).getPosition()));
 
             markers.get(i).setTitle(dist);
             markerTitles.set(i, dist);
@@ -306,6 +313,14 @@ public class Route {
     public float calculateCalories(float speed) {
         calories += speed * 0.00006944f * UserData.WEIGHT;
         return calories;
+    }
+
+    public boolean isClickLine() {
+        return isClickLine;
+    }
+
+    public void setClickLine(boolean clickLine) {
+        isClickLine = clickLine;
     }
 
     public void setGoogleMap(GoogleMap googleMap) {

@@ -21,14 +21,14 @@ public class StatFragment extends Fragment {
     private boolean isShowStartPosWhenClose;
 
     private void init(View view) {
-        Bundle arguments = getArguments();
+    /*    Bundle arguments = getArguments();
         RideModel model = arguments.getParcelable(RideModel.class.getSimpleName());
         CustomPager viewPager = view.findViewById(R.id.view_pager);
         viewPager.setAdapter(new StatPageAdapter(getActivity().getSupportFragmentManager(), model));
         viewPager.measure(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         TabLayout tabLayout = view.findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(viewPager, true);
-        isShowStartPosWhenClose = true;
+        isShowStartPosWhenClose = true;*/
 
     }
 

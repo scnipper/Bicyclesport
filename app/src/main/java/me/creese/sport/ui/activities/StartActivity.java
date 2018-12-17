@@ -19,6 +19,7 @@ import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
@@ -56,12 +57,6 @@ public class StartActivity extends AppCompatActivity {
 
         initPrefs();
 
-        //bottomMenu = findViewById(R.id.view_table);
-        if (savedInstanceState != null) {
-            int visTable = savedInstanceState.getInt("" + R.id.view_table);
-//            findViewById(R.id.view_table).setVisibility(visTable);
-        }
-
         UpdateInfo.get().setStartActivity(this);
         map = findViewById(R.id.route_map);
         map.onCreate(savedInstanceState);
@@ -94,6 +89,10 @@ public class StartActivity extends AppCompatActivity {
         if (model != null) {
             if (mapWork.getRoutes().size() == 0) mapWork.showRoute(model);
         }*/
+
+       findViewById(R.id.distance_panel).setVisibility(mapWork.isRouteMode() ? View.VISIBLE : View.GONE);
+       findViewById(R.id.routes_main_btn).setVisibility(mapWork.isRouteMode() ? View.GONE : View.VISIBLE);
+       findViewById(R.id.save_route_btn).setVisibility(mapWork.isRouteMode() ? View.VISIBLE : View.GONE);
 
     }
 
@@ -135,8 +134,9 @@ public class StartActivity extends AppCompatActivity {
                     mapWork.getGoogleMap().clear();
                     mapWork.showStartPosition();
 
-                    findViewById(R.id.save_route_btn).setVisibility(View.GONE);
+
                     dialog.dismiss();
+                    clearMakeRoute(findViewById(R.id.img_button_cross_close_route),false);
                 }
             }
         });
@@ -205,7 +205,44 @@ public class StartActivity extends AppCompatActivity {
 
         drawerLayout.openDrawer(GravityCompat.START);
     }
+    public void clearMakeRoute(View v) {
+        clearMakeRoute(v,true);
+    }
+    public void clearMakeRoute(final View v, boolean isShowDialog) {
+        final Runnable deleteRun = new Runnable() {
+            @Override
+            public void run() {
+                ((ViewGroup) v.getParent()).setVisibility(View.GONE);
+                mapWork.setRouteMode(false);
+                mapWork.clearRoutes();
+                mapWork.showStartPosition();
+                findViewById(R.id.save_route_btn).setVisibility(View.GONE);
+                findViewById(R.id.routes_main_btn).setVisibility(View.VISIBLE);
+            }
+        };
 
+        if(isShowDialog) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            builder.setPositiveButton("Да", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    deleteRun.run();
+                    dialog.dismiss();
+                }
+            });
+            builder.setTitle("Удалить мрашрут?")
+                    .create().show();
+        } else {
+            deleteRun.run();
+        }
+
+    }
 
     /**
      * Кнопка начала создания маршрута
@@ -227,6 +264,7 @@ public class StartActivity extends AppCompatActivity {
             case R.id.routes_main_btn:
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.main_content,new ListRoutesFragment())
+                        .addToBackStack(null)
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .commit();
                 break;
@@ -236,6 +274,7 @@ public class StartActivity extends AppCompatActivity {
             case R.id.history_main_btn:
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.main_content,new HistoryFragment())
+                        .addToBackStack(null)
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                         .commit();
                 break;
@@ -243,6 +282,7 @@ public class StartActivity extends AppCompatActivity {
                 getSupportFragmentManager()
                         .beginTransaction()
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .addToBackStack(null)
                         .replace(R.id.main_content,PageStatFragment.newInstanse(0, null))
                 .commit();
                 break;
@@ -375,8 +415,17 @@ public class StartActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        int visTable = findViewById(R.id.view_table).getVisibility();
+/*        int visTable = findViewById(R.id.distance_panel).getVisibility();
 
-        outState.putInt("" + R.id.view_table, visTable);
+        outState.putInt("" + R.id.distance_panel, visTable);*/
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+    /*    if (savedInstanceState != null) {
+            findViewById(R.id.distance_panel).setVisibility(savedInstanceState.getInt(R.id.distance_panel+""));
+        }*/
     }
 }
