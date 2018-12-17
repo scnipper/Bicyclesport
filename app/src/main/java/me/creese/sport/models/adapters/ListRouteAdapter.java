@@ -78,13 +78,11 @@ public class ListRouteAdapter extends RecyclerView.Adapter<ListRouteAdapter.Rout
             root.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    /*Intent intent = new Intent(root.getContext(),StartActivity.class);
-                    intent.putExtra(RouteModel.class.getSimpleName(),model);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                    root.getContext().startActivity(intent);*/
-
                     ((StartActivity) listRoutesFragment.getActivity()).getMapWork().showRoute(model);
+                    listRoutesFragment.getFragmentManager()
+                            .beginTransaction()
+                            .remove(listRoutesFragment)
+                            .commit();
                 }
             });
 

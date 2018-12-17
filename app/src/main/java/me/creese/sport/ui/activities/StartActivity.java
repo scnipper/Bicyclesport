@@ -39,7 +39,7 @@ import me.creese.sport.ui.fragments.StatFragment;
 import me.creese.sport.util.Settings;
 import me.creese.sport.util.UpdateInfo;
 
-public class StartActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class StartActivity extends AppCompatActivity {
 
     public static final int CHECK_GPS_ENABLED = 1122;
     private static final String TAG = StartActivity.class.getSimpleName();
@@ -75,9 +75,9 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
         map.getMapAsync(mapWork);
 
 
-        NavigationView nav = findViewById(R.id.nav_bar);
+/*        NavigationView nav = findViewById(R.id.nav_bar);
         nav.setNavigationItemSelectedListener(this);
-        nav.bringToFront();
+        nav.bringToFront();*/
 
         if (mapWork.getGps().isStartWay()) {
            /* ImageButton button = findViewById(R.id.play_button);
@@ -319,7 +319,7 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
 
     }
 
-    @Override
+   /* @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
         switch (menuItem.getItemId()) {
@@ -342,7 +342,7 @@ public class StartActivity extends AppCompatActivity implements NavigationView.O
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
-
+*/
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

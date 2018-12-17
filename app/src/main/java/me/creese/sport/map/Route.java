@@ -1,28 +1,24 @@
 package me.creese.sport.map;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
-import android.location.Geocoder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.SphericalUtil;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.Random;
 
 import me.creese.sport.App;
@@ -31,7 +27,6 @@ import me.creese.sport.data.PointsTable;
 import me.creese.sport.data.RoutesTable;
 import me.creese.sport.models.RouteModel;
 import me.creese.sport.util.Settings;
-import me.creese.sport.util.UpdateInfo;
 import me.creese.sport.util.UserData;
 
 public class Route {
@@ -55,13 +50,14 @@ public class Route {
     private TextView distanceView;
     private float calories;
     private boolean isFocusCenterRoute;
+    private boolean markersIsAdded;
     //private TextView viewText;
 
     public Route(AppCompatActivity context) {
         this.context = context;
 
         markers = new ArrayList<>();
-        markerOptions = new MarkerOptions().draggable(true).flat(true).icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.dot)));
+        markerOptions = new MarkerOptions().draggable(true).flat(true).anchor(0.5f, 0.5f).icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.marker_icon)));
         markerTitles = new ArrayList<>();
 
         lineOptions = new PolylineOptions();
@@ -95,28 +91,63 @@ public class Route {
         if (isFocusRoute)
             focusOnPoint(lineOptions.getPoints().get(lineOptions.getPoints().size() - 1));
 
-        if(isFocusCenterRoute) {
-            focusOnPoint(lineOptions.getPoints().get(lineOptions.getPoints().size() /2),12);
+        if (isFocusCenterRoute) {
+            focusOnPoint(lineOptions.getPoints().get(lineOptions.getPoints().size() / 2), 12);
+        }
+
+        if(markersIsAdded) {
+            addMarkers();
         }
 
 
     }
 
+    /**
+     * Добавление маркеров на точки в маршруте
+     */
     private void addMarkers() {
         if (isMarker) {
             clearMarkers();
 
+            double rotation = 0;
+
+
             for (int i = 0; i < lineOptions.getPoints().size(); i++) {
-                addMarker(lineOptions.getPoints().get(i), markerTitles.get(i));
+                if(i+1 < lineOptions.getPoints().size())
+                rotation = angleFromCoordinate(lineOptions.getPoints().get(i), lineOptions.getPoints().get(i+1));
+
+
+                addMarker(lineOptions.getPoints().get(i), markerTitles.get(i), rotation);
             }
+            markersIsAdded = true;
         }
     }
 
+    private double angleFromCoordinate(LatLng latFrom, LatLng latTo) {
+
+        double dLon = (latTo.longitude - latFrom.longitude);
+
+        double y = Math.sin(dLon) * Math.cos(latTo.latitude);
+        double x = Math.cos(latFrom.latitude) * Math.sin(latTo.latitude) - Math.sin(latFrom.latitude) * Math.cos(latTo.latitude) * Math.cos(dLon);
+
+        double angle = Math.atan2(y, x);
+
+        angle = Math.toDegrees(angle);
+        angle = (angle + 360) % 360;
+        angle = 360 - angle;
+
+        return angle;
+    }
+
+    /**
+     * Удаление всех маркеров с маршрута
+     */
     private void clearMarkers() {
         for (Marker marker : markers) {
             marker.remove();
         }
         markers.clear();
+
     }
 
     /**
@@ -138,20 +169,32 @@ public class Route {
 
     }
 
-    private void addMarker(LatLng point, String title) {
+    /**
+     * Добавление маркера на маршрут
+     *
+     * @param point
+     * @param title
+     * @param rotation
+     */
+    private void addMarker(LatLng point, String title, double rotation) {
         markerOptions.position(point);
         markerOptions.title(title);
         markers.add(googleMap.addMarker(markerOptions));
+        Log.w(TAG, "addMarker: "+rotation );
+
+        markers.get(markers.size() - 1).setRotation((float) rotation);
     }
 
     public void focusOnPoint(LatLng point) {
-        focusOnPoint(point,Settings.ZOOM);
+        focusOnPoint(point, Settings.ZOOM);
     }
+
     /**
      * Сделать фокус на точке
+     *
      * @param point
      */
-    public void focusOnPoint(LatLng point,int zooom) {
+    public void focusOnPoint(LatLng point, int zooom) {
 
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, zooom));
     }
@@ -175,8 +218,6 @@ public class Route {
         random.nextBytes(bytes);
 
 
-
-
         return saveRoute(new String(bytes));
     }
 
@@ -186,8 +227,7 @@ public class Route {
      * @param name
      */
     public RouteModel saveRoute(String name) {
-        RouteModel model = new RouteModel(0,name, lineOptions.getPoints(),
-                System.currentTimeMillis(),isFocusRoute,isMarker);
+        RouteModel model = new RouteModel(0, name, lineOptions.getPoints(), System.currentTimeMillis(), isFocusRoute, isMarker);
 
         SQLiteDatabase db = App.get().getData().getWritableDatabase();
 
@@ -217,20 +257,25 @@ public class Route {
     }
 
     public void clickOnRoute() {
+        if(!markersIsAdded)
         addMarkers();
+        else {
+            markersIsAdded = false;
+            clearMarkers();
+        }
     }
 
     /**
-     * Обновление линии маршрута при перетаскивании маркера
+     * Обновление линии маршрута и маркеров при перетаскивании маркера
      */
     public void update() {
-        //Log.w(TAG, "update: " + markers.size() + " " + lineOptions.getPoints().size());
-
         if (markers.size() < 2) return;
         distance = 0;
         for (int i = 1; i < markers.size(); i++) {
             distance += SphericalUtil.computeDistanceBetween(markers.get(i - 1).getPosition(), markers.get(i).getPosition());
             String dist = makeDistance(distance);
+
+            markers.get(i-1).setRotation((float) angleFromCoordinate(markers.get(i - 1).getPosition(), markers.get(i).getPosition()));
 
             markers.get(i).setTitle(dist);
             markerTitles.set(i, dist);
@@ -254,11 +299,12 @@ public class Route {
 
     /**
      * Расчет калорий в секуду
+     *
      * @param speed
      * @return
      */
     public float calculateCalories(float speed) {
-        calories+= speed * 0.00006944f * UserData.WEIGHT;
+        calories += speed * 0.00006944f * UserData.WEIGHT;
         return calories;
     }
 
