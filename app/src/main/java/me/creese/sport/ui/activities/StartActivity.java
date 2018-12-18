@@ -5,9 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NotificationManagerCompat;
@@ -17,7 +15,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -61,13 +58,13 @@ public class StartActivity extends AppCompatActivity {
         map = findViewById(R.id.route_map);
         map.onCreate(savedInstanceState);
 
-        if (getLastNonConfigurationInstance() == null)
-            mapWork = new MapWork();
+        if (getLastNonConfigurationInstance() == null) mapWork = new MapWork();
         else mapWork = (MapWork) getLastCustomNonConfigurationInstance();
 
 
         mapWork.setContext(this);
         map.getMapAsync(mapWork);
+
 
 
 /*        NavigationView nav = findViewById(R.id.nav_bar);
@@ -90,9 +87,11 @@ public class StartActivity extends AppCompatActivity {
             if (mapWork.getRoutes().size() == 0) mapWork.showRoute(model);
         }*/
 
-       findViewById(R.id.distance_panel).setVisibility(mapWork.isRouteMode() ? View.VISIBLE : View.GONE);
-       findViewById(R.id.routes_main_btn).setVisibility(mapWork.isRouteMode() ? View.GONE : View.VISIBLE);
-       findViewById(R.id.save_route_btn).setVisibility(mapWork.isRouteMode() ? View.VISIBLE : View.GONE);
+        findViewById(R.id.distance_panel).setVisibility(mapWork.isRouteMode() ? View.VISIBLE : View.GONE);
+        findViewById(R.id.routes_main_btn).setVisibility(mapWork.isRouteMode() ? View.GONE : View.VISIBLE);
+        findViewById(R.id.save_route_btn).setVisibility(mapWork.isRouteMode() ? View.VISIBLE : View.GONE);
+        findViewById(R.id.stop_button).setVisibility(mapWork.getGps().isStartWay() ?View.VISIBLE : View.GONE);
+        ((ImageButton) findViewById(R.id.play_button)).setImageResource(mapWork.getGps().isStartWay() ? R.drawable.pause_icon : R.drawable.play_icon);
 
     }
 
@@ -136,7 +135,7 @@ public class StartActivity extends AppCompatActivity {
 
 
                     dialog.dismiss();
-                    clearMakeRoute(findViewById(R.id.img_button_cross_close_route),false);
+                    clearMakeRoute(findViewById(R.id.img_button_cross_close_route), false);
                 }
             }
         });
@@ -160,27 +159,33 @@ public class StartActivity extends AppCompatActivity {
         ImageButton button = (ImageButton) v;
 
 
-        if (button.getTag().equals("stop")) {
-            //button.setImageResource(R.drawable.stop_icon);
+        if (button.getTag().equals("pause")) {
             button.setTag("play");
-            mapWork.getGps().startUpdatePosition();
+            button.setImageResource(R.drawable.pause_icon);
+            if(!mapWork.getGps().getPause()) {
+                mapWork.getGps().startUpdatePosition();
+                findViewById(R.id.stop_button).setVisibility(View.VISIBLE);
+            } else {
+                mapWork.getGps().setPause(false);
+                UpdateInfo.get().resume();
+            }
 
         } else {
-            stopGps(button);
-            RouteModel model = mapWork.getLastRoute().saveRoute();
-            RideModel rideModel = UpdateInfo.get().saveRide(model.getId());
-
-            showStatFragment(new RouteAndRide(rideModel, model));
-
+            button.setImageResource(R.drawable.play_icon);
+            v.setTag("pause");
+            mapWork.getGps().setPause(true);
+            UpdateInfo.get().pause();
 
         }
     }
 
-    private void stopGps(ImageButton button) {
-       // button.setImageResource(R.drawable.baseline_play_arrow_black_36);
-        button.setTag("stop");
-
+    public void stopGps(View button) {
+        button.setVisibility(View.GONE);
+        ((ImageButton) findViewById(R.id.play_button)).setImageResource(R.drawable.play_icon);
         mapWork.getGps().stopUpdatePosition();
+        RouteModel model = mapWork.getLastRoute().saveRoute();
+        RideModel rideModel = UpdateInfo.get().saveRide(model.getId());
+        showStatFragment(new RouteAndRide(rideModel, model));
     }
 
     public void showStatFragment(RouteAndRide model) {
@@ -190,7 +195,8 @@ public class StartActivity extends AppCompatActivity {
         getSupportFragmentManager()
                 .beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .replace(R.id.main_content,PageStatFragment.newInstanse(0,model.getRideModel()))
+                .addToBackStack(null)
+                .replace(R.id.main_content, PageStatFragment.newInstanse(0, model.getRideModel()))
                 .commit();
 
     }
@@ -205,9 +211,11 @@ public class StartActivity extends AppCompatActivity {
 
         drawerLayout.openDrawer(GravityCompat.START);
     }
+
     public void clearMakeRoute(View v) {
-        clearMakeRoute(v,true);
+        clearMakeRoute(v, true);
     }
+
     public void clearMakeRoute(final View v, boolean isShowDialog) {
         final Runnable deleteRun = new Runnable() {
             @Override
@@ -221,7 +229,7 @@ public class StartActivity extends AppCompatActivity {
             }
         };
 
-        if(isShowDialog) {
+        if (isShowDialog) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
                 @Override
@@ -236,8 +244,7 @@ public class StartActivity extends AppCompatActivity {
                     dialog.dismiss();
                 }
             });
-            builder.setTitle("Удалить мрашрут?")
-                    .create().show();
+            builder.setTitle("Удалить мрашрут?").create().show();
         } else {
             deleteRun.run();
         }
@@ -262,29 +269,16 @@ public class StartActivity extends AppCompatActivity {
 
         switch (id) {
             case R.id.routes_main_btn:
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_content,new ListRoutesFragment())
-                        .addToBackStack(null)
-                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.main_content, new ListRoutesFragment()).addToBackStack(null).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).commit();
                 break;
             case R.id.settings_main_btn:
                 startActivity(new Intent(this, SettingsActivity.class));
                 break;
             case R.id.history_main_btn:
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_content,new HistoryFragment())
-                        .addToBackStack(null)
-                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                        .commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.main_content, new HistoryFragment()).addToBackStack(null).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).commit();
                 break;
             case R.id.stat_main_btn:
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                        .addToBackStack(null)
-                        .replace(R.id.main_content,PageStatFragment.newInstanse(0, null))
-                .commit();
+                getSupportFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).addToBackStack(null).replace(R.id.main_content, PageStatFragment.newInstanse(0, null)).commit();
                 break;
         }
     }
@@ -359,30 +353,6 @@ public class StartActivity extends AppCompatActivity {
 
     }
 
-   /* @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-
-        switch (menuItem.getItemId()) {
-            case R.id.menu_routes:
-                //startActivity(new Intent(this, ListRoutesActivity.class));
-                break;
-            case R.id.menu_settings:
-                startActivity(new Intent(this, SettingsActivity.class));
-                break;
-            case R.id.menu_history:
-               // startActivity(new Intent(this, UserHistoryActivity.class));
-                break;
-            case R.id.menu_stat:
-                //startActivity(new Intent(this, FullDataActivity.class));
-                break;
-        }
-
-        DrawerLayout drawerLayout = findViewById(R.id.drawer);
-
-        drawerLayout.closeDrawer(GravityCompat.START);
-        return true;
-    }
-*/
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -401,7 +371,8 @@ public class StartActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if(mapWork.getGps().isFirstFix()) {
+        map.onStart();
+        if (mapWork.getGps().isFirstFix()) {
             UpdateInfo.get().createViews();
         }
     }

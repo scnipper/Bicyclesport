@@ -10,8 +10,6 @@ import android.preference.PreferenceManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.util.Random;
-
 import me.creese.sport.data.DataHelper;
 import me.creese.sport.data.UserTable;
 import me.creese.sport.models.RouteModel;

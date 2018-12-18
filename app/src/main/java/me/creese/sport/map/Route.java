@@ -176,6 +176,7 @@ public class Route {
 
     }
 
+
     /**
      * Добавление маркера на маршрут
      *
@@ -183,7 +184,7 @@ public class Route {
      * @param title
      * @param rotation
      */
-    private void addMarker(LatLng point, String title, double rotation) {
+    public void addMarker(LatLng point, String title, double rotation) {
         markerOptions.position(point);
         markerOptions.title(title);
         markers.add(googleMap.addMarker(markerOptions));

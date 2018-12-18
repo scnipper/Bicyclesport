@@ -60,6 +60,7 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
     private TextView speedView;
 
     private float maxSpeed;
+    private boolean pause;
 
 
     public Gps(MapWork mapWork) {
@@ -211,6 +212,7 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
      */
     public void firstFixGps() {
         Log.w(TAG, "onGpsStatusChanged: gps first fix");
+        if(!isStartWay) return;
 
         /*LinearLayout viewTable = context.findViewById(R.id.view_table);
         viewTable.setVisibility(View.VISIBLE);*/
@@ -218,7 +220,7 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
         context.getSupportFragmentManager()
                 .beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .add(R.id.main_content,mainVIewStatFragment,MainViewStatFragment.class.getSimpleName())
+                .replace(R.id.main_content,mainVIewStatFragment,MainViewStatFragment.class.getSimpleName())
                 .commit();
         context.getSupportFragmentManager().executePendingTransactions();
         UpdateInfo.get().start();
@@ -292,6 +294,7 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
     @Override
     public void onLocationResult(LocationResult locationResult) {
         Log.w(TAG, "onLocationResult: " + locationResult.getLastLocation());
+        if(pause) return;
         Location location = locationResult.getLastLocation();
 
 
@@ -368,4 +371,11 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
         }
     }
 
+    public void setPause(boolean pause) {
+        this.pause = pause;
+    }
+
+    public boolean getPause() {
+        return pause;
+    }
 }

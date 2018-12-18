@@ -9,7 +9,7 @@
     android:tag="stat_list">
 
     <TextView
-        android:id="@+id/textView6"
+        android:id="@+id/stat_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"

@@ -174,6 +174,12 @@ public class UpdateInfo implements Runnable {
         createViews();
         if (mapWork == null) mapWork = startActivity.getMapWork();
         rideModel = new RideModel();
+        resume();
+
+
+    }
+
+    public void resume() {
         timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -181,20 +187,22 @@ public class UpdateInfo implements Runnable {
                 UpdateInfo.this.run();
             }
         }, 0, 1000);
-
-
     }
 
     public void stop() {
-        if (timer != null) {
-            time = 0;
-            timer.cancel();
-            timer = null;
-        }
+        pause();
+        time = 0;
         if (notificationManager != null) {
             notificationManager.cancel(NOTIFY_ID);
         }
 
+    }
+
+    public void pause() {
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
     }
 
     private void updateViews() {

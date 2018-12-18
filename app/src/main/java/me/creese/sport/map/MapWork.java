@@ -102,6 +102,7 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
         addRoute(route);
 
 
+
         context.findViewById(R.id.routes_main_btn).setVisibility(View.GONE);
 
         ImageButton btnSave = context.findViewById(R.id.save_route_btn);
@@ -111,7 +112,6 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
         btnSave.animate().scaleX(1).scaleY(1).start();
 
     }
-
 
 
 
@@ -160,12 +160,12 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
         this.startMarker = startMarker;
     }
 
-    public void setRouteMode(boolean routeMode) {
-        isRouteMode = routeMode;
-    }
-
     public boolean isRouteMode() {
         return isRouteMode;
+    }
+
+    public void setRouteMode(boolean routeMode) {
+        isRouteMode = routeMode;
     }
 
     @Override
@@ -174,7 +174,6 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
         this.googleMap = googleMap;
 
         googleMap.setMapType(Settings.TYPE_MAP);
-        //currentRoute.setGoogleMap(googleMap);
 
         for (Route route : routes) {
             route.setGoogleMap(googleMap);
@@ -207,7 +206,7 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
 
         }
 
-        if(currentCameraPosition != null) {
+        if (currentCameraPosition != null) {
             googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(currentCameraPosition));
         }
 
@@ -225,22 +224,15 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
     public void onMapClick(LatLng latLng) {
         LinearLayout distView = context.findViewById(R.id.distance_panel);
 
-        if(routes.size() == 0) {
+        if (routes.size() == 0) {
             makeRoute();
             distView.setVisibility(View.VISIBLE);
         }
-
-
-
         if (isRouteMode) {
             getLastRoute().addPointOnMap(latLng);
+            ((TextView) distView.findViewById(R.id.dist_text)).setText(Route.makeDistance(getLastRoute().getDistance()).toUpperCase());
 
-            for (int i = 0; i < distView.getChildCount(); i++) {
-                View childAt = distView.getChildAt(i);
-                if (childAt instanceof TextView) {
-                    ((TextView) childAt).setText(Route.makeDistance(getLastRoute().getDistance()).toUpperCase());
-                }
-            }
+
         }
     }
 
@@ -265,7 +257,7 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
     @Override
     public void onPolylineClick(Polyline polyline) {
 
-        Log.w(TAG, "onPolylineClick: "+polyline );
+        Log.w(TAG, "onPolylineClick: " + polyline);
         for (Route route : routes) {
             if (route.getLine().equals(polyline)) {
                 route.clickOnRoute();

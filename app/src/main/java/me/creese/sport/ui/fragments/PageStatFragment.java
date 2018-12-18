@@ -33,6 +33,7 @@ public class PageStatFragment extends Fragment {
     private static final String TAG = PageStatFragment.class.getSimpleName();
     private int page;
     private RideModel model;
+    private boolean isChangeTitle;
 
     public static Fragment newInstanse(int i, @Nullable RideModel rideModel) {
         Bundle bundle = new Bundle();
@@ -90,6 +91,7 @@ public class PageStatFragment extends Fragment {
         }
         if(model == null)
         loadFullStat(savedInstanceState);
+        else isChangeTitle = true;
 
 
     }
@@ -125,6 +127,8 @@ public class PageStatFragment extends Fragment {
 
 
                 view = inflater.inflate(R.layout.stat_fragment_page_1, container, false);
+
+                if(isChangeTitle) ((TextView) view.findViewById(R.id.stat_title)).setText("Статистика маршрута");
                 TextView dist = view.findViewById(R.id.stat_dist);
                 dist.setText(Route.makeDistance(model.getDistance()) + "");
 
@@ -133,6 +137,9 @@ public class PageStatFragment extends Fragment {
                 ((TextView) view.findViewById(R.id.stat_av_speed)).setText(((int) ((model.getDistance() / model.getTimeRide()) * 3.6f)) +" "+ getString(R.string.km_peer_hour));
                 ((TextView) view.findViewById(R.id.stat_cal)).setText(model.getCalories() + "");
                 ((TextView) view.findViewById(R.id.stat_max_speed)).setText(model.getMaxSpeed() +" "+ getString(R.string.km_peer_hour));
+
+
+
 
                 double temp = ((model.getDistance() / model.getTimeRide()) * 60);
                 temp = Math.round((temp) * 10) / 10D;
