@@ -214,8 +214,6 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
         Log.w(TAG, "onGpsStatusChanged: gps first fix");
         if(!isStartWay) return;
 
-        /*LinearLayout viewTable = context.findViewById(R.id.view_table);
-        viewTable.setVisibility(View.VISIBLE);*/
         MainViewStatFragment mainVIewStatFragment = new MainViewStatFragment();
         context.getSupportFragmentManager()
                 .beginTransaction()
@@ -268,8 +266,6 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
         isStartWay = false;
         isFixGps = false;
         UpdateInfo.get().stop();
-        LinearLayout viewTable = context.findViewById(R.id.view_table);
-        viewTable.setVisibility(View.GONE);
         speed = 0;
         maxSpeed = 0;
     }

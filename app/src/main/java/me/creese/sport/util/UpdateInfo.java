@@ -186,7 +186,7 @@ public class UpdateInfo implements Runnable {
             public void run() {
                 UpdateInfo.this.run();
             }
-        }, 0, 1000);
+        }, 0, 1);
     }
 
     public void stop() {
@@ -213,8 +213,8 @@ public class UpdateInfo implements Runnable {
             rideModel.setDistance(route.getDistance());
             rideModel.setCalories((int) route.calculateCalories(gps.getSpeed()));
             rideModel.setMaxSpeed((int) gps.getMaxSpeed());
-            rideModel.setTimeRide(time);
-            timeView.setText(formatTime(time));
+            rideModel.setTimeRide(time/1000);
+            timeView.setText(formatTime(time/1000));
 
 
             speedView.setText(((int) gps.getSpeed()) + " " + startActivity.getString(R.string.km_peer_hour));
@@ -255,17 +255,18 @@ public class UpdateInfo implements Runnable {
 
     @Override
     public void run() {
+        if(time % 1000 == 0) {
+            startActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    updateViews();
+                }
+            });
 
-        startActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                updateViews();
+            if (rideModel.getDistance() >= perKilometr) {
+                chartInfo.add(new ChartModel(time/1000, rideModel.getCalories(), (int) (perKilometr / 1000)));
+                perKilometr += 1000;
             }
-        });
-
-        if (rideModel.getDistance() >= perKilometr) {
-            chartInfo.add(new ChartModel(time, rideModel.getCalories(), (int) (perKilometr / 1000)));
-            perKilometr += 1000;
         }
 
         time++;

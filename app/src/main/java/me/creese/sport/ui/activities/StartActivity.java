@@ -32,6 +32,7 @@ import me.creese.sport.models.RouteAndRide;
 import me.creese.sport.models.RouteModel;
 import me.creese.sport.ui.fragments.HistoryFragment;
 import me.creese.sport.ui.fragments.ListRoutesFragment;
+import me.creese.sport.ui.fragments.MainViewStatFragment;
 import me.creese.sport.ui.fragments.PageStatFragment;
 import me.creese.sport.ui.fragments.StatFragment;
 import me.creese.sport.util.Settings;
@@ -65,27 +66,6 @@ public class StartActivity extends AppCompatActivity {
         mapWork.setContext(this);
         map.getMapAsync(mapWork);
 
-
-
-/*        NavigationView nav = findViewById(R.id.nav_bar);
-        nav.setNavigationItemSelectedListener(this);
-        nav.bringToFront();*/
-
-        if (mapWork.getGps().isStartWay()) {
-           /* ImageButton button = findViewById(R.id.play_button);
-            button.setImageResource(R.drawable.baseline_stop_black_36);
-            button.setTag("play");*/
-        }
-
-       /* RouteModel model = getIntent().getParcelableExtra(RouteModel.class.getSimpleName());
-        RouteAndRide routeAndRide = getIntent().getParcelableExtra(RouteAndRide.class.getSimpleName());
-
-        if (routeAndRide != null) {
-            showStatFragment(routeAndRide);
-        }
-        if (model != null) {
-            if (mapWork.getRoutes().size() == 0) mapWork.showRoute(model);
-        }*/
 
         findViewById(R.id.distance_panel).setVisibility(mapWork.isRouteMode() ? View.VISIBLE : View.GONE);
         findViewById(R.id.routes_main_btn).setVisibility(mapWork.isRouteMode() ? View.GONE : View.VISIBLE);
@@ -191,7 +171,12 @@ public class StartActivity extends AppCompatActivity {
     public void showStatFragment(RouteAndRide model) {
         if (mapWork.getRoutes().size() == 0) mapWork.showRoute(model.getRouteModel());
 
-        //bottomMenu.setVisibility(View.GONE);
+        Fragment panel = getSupportFragmentManager().findFragmentByTag(MainViewStatFragment.class.getSimpleName());
+        if (panel != null) {
+            getSupportFragmentManager().beginTransaction()
+                    .remove(panel)
+                    .commit();
+        }
         getSupportFragmentManager()
                 .beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
