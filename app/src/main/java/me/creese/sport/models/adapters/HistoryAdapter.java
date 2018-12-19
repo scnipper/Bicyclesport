@@ -1,12 +1,8 @@
 package me.creese.sport.models.adapters;
 
-import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +12,6 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -24,10 +19,8 @@ import java.util.Locale;
 import me.creese.sport.R;
 import me.creese.sport.map.Route;
 import me.creese.sport.models.RouteAndRide;
-import me.creese.sport.models.RouteModel;
 import me.creese.sport.ui.activities.StartActivity;
 import me.creese.sport.ui.fragments.HistoryFragment;
-import me.creese.sport.ui.fragments.PageStatFragment;
 import me.creese.sport.util.UpdateInfo;
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryHolder> {

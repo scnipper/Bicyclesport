@@ -33,7 +33,6 @@ import me.creese.sport.models.RouteModel;
 import me.creese.sport.ui.fragments.HistoryFragment;
 import me.creese.sport.ui.fragments.ListRoutesFragment;
 import me.creese.sport.ui.fragments.MainViewStatFragment;
-import me.creese.sport.ui.fragments.PageStatFragment;
 import me.creese.sport.ui.fragments.StatFragment;
 import me.creese.sport.util.Settings;
 import me.creese.sport.util.UpdateInfo;
@@ -183,7 +182,7 @@ public class StartActivity extends AppCompatActivity {
                 .beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .addToBackStack(null)
-                .replace(R.id.main_content, PageStatFragment.newInstanse(0, model.getRideModel()))
+                .replace(R.id.main_content, StatFragment.newInstanse(model.getRideModel()))
                 .commit();
 
     }
@@ -266,7 +265,7 @@ public class StartActivity extends AppCompatActivity {
                 getSupportFragmentManager().beginTransaction().replace(R.id.main_content, new HistoryFragment()).addToBackStack(null).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).commit();
                 break;
             case R.id.stat_main_btn:
-                getSupportFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).addToBackStack(null).replace(R.id.main_content, PageStatFragment.newInstanse(0, null)).commit();
+                getSupportFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).addToBackStack(null).replace(R.id.main_content, StatFragment.newInstanse( null)).commit();
                 break;
         }
     }
