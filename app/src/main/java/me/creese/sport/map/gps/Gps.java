@@ -265,6 +265,7 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
         Log.w(TAG, "onGpsStatusChanged: gps event stop");
         isStartWay = false;
         isFixGps = false;
+        pause = false;
         UpdateInfo.get().stop();
         speed = 0;
         maxSpeed = 0;

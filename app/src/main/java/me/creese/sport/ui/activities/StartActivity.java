@@ -143,6 +143,7 @@ public class StartActivity extends AppCompatActivity {
             button.setTag("play");
             button.setImageResource(R.drawable.pause_icon);
             if(!mapWork.getGps().getPause()) {
+                clearAllFragments();
                 mapWork.getGps().startUpdatePosition();
                 findViewById(R.id.stop_button).setVisibility(View.VISIBLE);
             } else {
@@ -162,6 +163,7 @@ public class StartActivity extends AppCompatActivity {
     public void stopGps(View button) {
         button.setVisibility(View.GONE);
         ((ImageButton) findViewById(R.id.play_button)).setImageResource(R.drawable.play_icon);
+        findViewById(R.id.play_button).setTag("pause");
         mapWork.getGps().stopUpdatePosition();
         RouteModel model = mapWork.getLastRoute().saveRoute();
         RideModel rideModel = UpdateInfo.get().saveRide(model.getId());
@@ -252,6 +254,7 @@ public class StartActivity extends AppCompatActivity {
     public void clickOnMainButton(View view) {
         int id = view.getId();
 
+        clearAllFragments();
         switch (id) {
             case R.id.routes_main_btn:
                 getSupportFragmentManager().beginTransaction().replace(R.id.main_content, new ListRoutesFragment()).addToBackStack(null).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).commit();
@@ -268,6 +271,16 @@ public class StartActivity extends AppCompatActivity {
         }
     }
 
+    private void clearAllFragments() {
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        for (Fragment fragment : fragments) {
+            getSupportFragmentManager().beginTransaction()
+                    .remove(fragment)
+                    .commit();
+        }
+        getSupportFragmentManager().popBackStack();
+    }
+
     public MapWork getMapWork() {
         return mapWork;
     }
@@ -278,8 +291,8 @@ public class StartActivity extends AppCompatActivity {
         if (mapWork.getGps().isStartWay()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-            builder.setTitle(R.string.are_you_sure_to_exit);
-            builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+            builder.setTitle(R.string.are_you_sure_to_exit)
+            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     mapWork.getGps().stopUpdatePosition();
@@ -288,18 +301,18 @@ public class StartActivity extends AppCompatActivity {
 
                     StartActivity.super.onBackPressed();
                 }
-            });
-            builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+            })
+            .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
                 }
-            });
-            builder.create().show();
+            })
+            .create().show();
 
         } else {
 
-
+/*
             List<Fragment> fragments = getSupportFragmentManager().getFragments();
             for (Fragment fragment : fragments) {
                 if (fragment instanceof StatFragment) {
@@ -309,7 +322,7 @@ public class StartActivity extends AppCompatActivity {
                         mapWork.showStartPosition();
                     }
                 }
-            }
+            }*/
 
 
             super.onBackPressed();
@@ -335,6 +348,7 @@ public class StartActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         map.onDestroy();
+        UpdateInfo.get().stop();
 
     }
 
@@ -367,21 +381,4 @@ public class StartActivity extends AppCompatActivity {
         return mapWork;
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-/*        int visTable = findViewById(R.id.distance_panel).getVisibility();
-
-        outState.putInt("" + R.id.distance_panel, visTable);*/
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-
-    /*    if (savedInstanceState != null) {
-            findViewById(R.id.distance_panel).setVisibility(savedInstanceState.getInt(R.id.distance_panel+""));
-        }*/
-    }
 }
