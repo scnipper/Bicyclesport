@@ -55,6 +55,7 @@ public class StartActivity extends AppCompatActivity {
         initPrefs();
 
         UpdateInfo.get().setStartActivity(this);
+        UpdateInfo.get().updateViews();
         map = findViewById(R.id.route_map);
         map.onCreate(savedInstanceState);
 

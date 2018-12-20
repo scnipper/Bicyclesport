@@ -59,6 +59,7 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
 
     private float maxSpeed;
     private boolean pause;
+    private boolean autoPause;
 
 
     public Gps(MapWork mapWork) {
@@ -282,10 +283,16 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
     }
     public void setPause(boolean pause) {
         this.pause = pause;
+        if(pause)
+        autoPause = false;
     }
 
     public boolean isPause() {
         return pause;
+    }
+
+    public void setAutoPause(boolean autoPause) {
+        this.autoPause = autoPause;
     }
 
     /**
@@ -295,9 +302,15 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
      */
     @Override
     public void onLocationResult(LocationResult locationResult) {
-        Log.w(TAG, "onLocationResult: " + locationResult.getLastLocation());
-        if(pause) return;
         Location location = locationResult.getLastLocation();
+        if(pause || autoPause)  {
+            if(autoPause && location.getSpeed() > 0) {
+                autoPause = false;
+                UpdateInfo.get().resume();
+            }
+
+            return;
+        }
 
 
         if (gpsListener != null) {
