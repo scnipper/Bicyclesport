@@ -32,10 +32,13 @@ import me.creese.sport.ui.fragments.MainViewStatFragment;
 
 public class UpdateInfo implements Runnable {
 
+    public static final int PER_KILOMETR = 1;
+    public static final int PER_MINUTE = 2;
     private static final String TAG = UpdateInfo.class.getSimpleName();
     private static final int NOTIFY_ID = 1354;
     private static UpdateInfo inst;
     private final ArrayList<ChartModel> chartInfo;
+    private int perTime;
     private RideModel rideModel;
     private StartActivity startActivity;
     private Timer timer;
@@ -47,14 +50,14 @@ public class UpdateInfo implements Runnable {
     private TextView timeView;
     private TextView kallView;
     private double perKilometr;
-    private boolean isLoadChart;
     private NotificationCompat.Builder builderNotfication;
     private NotificationManagerCompat notificationManager;
 
 
     private UpdateInfo() {
         time = 0;
-        perKilometr = 1000;
+        perKilometr = 1000; // 1 km
+        perTime = 60000; // 1 min
         chartInfo = new ArrayList<>();
     }
 
@@ -82,9 +85,7 @@ public class UpdateInfo implements Runnable {
     }
 
     public void createViews() {
-        Fragment fragment = startActivity
-                .getSupportFragmentManager()
-                .findFragmentByTag(MainViewStatFragment.class.getSimpleName());
+        Fragment fragment = startActivity.getSupportFragmentManager().findFragmentByTag(MainViewStatFragment.class.getSimpleName());
         if (fragment != null) {
             speedView = fragment.getView().findViewById(R.id.speed_view);
             distanceView = fragment.getView().findViewById(R.id.distance_view);
@@ -139,13 +140,9 @@ public class UpdateInfo implements Runnable {
 
 
         if (chartInfo.size() > 0) {
-            isLoadChart = true;
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    saveCharts(idRide, contentValues, database);
-                }
-            }).start();
+
+            saveCharts(idRide, contentValues, database);
+
         }
 
 
@@ -164,9 +161,10 @@ public class UpdateInfo implements Runnable {
             contentValues.put(ChartTable.TIME, chartModel.getTime());
             contentValues.put(ChartTable.KM, chartModel.getKilometr());
             contentValues.put(ChartTable.ID_RIDE, idRide);
+            contentValues.put(ChartTable.TYPE, chartModel.getType());
             database.insert(ChartTable.NAME_TABLE, null, contentValues);
         }
-        isLoadChart = false;
+
 
     }
 
@@ -174,9 +172,8 @@ public class UpdateInfo implements Runnable {
         createViews();
         if (mapWork == null) mapWork = startActivity.getMapWork();
         rideModel = new RideModel();
+        chartInfo.clear();
         resume();
-
-
     }
 
     public void resume() {
@@ -192,6 +189,8 @@ public class UpdateInfo implements Runnable {
     public void stop() {
         pause();
         time = 0;
+        perKilometr = 1000;
+        perTime = 60000;
         if (notificationManager != null) {
             notificationManager.cancel(NOTIFY_ID);
         }
@@ -213,8 +212,8 @@ public class UpdateInfo implements Runnable {
             rideModel.setDistance(route.getDistance());
             rideModel.setCalories((int) route.calculateCalories(gps.getSpeed()));
             rideModel.setMaxSpeed((int) gps.getMaxSpeed());
-            rideModel.setTimeRide(time/1000);
-            timeView.setText(formatTime(time/1000));
+            rideModel.setTimeRide(time / 1000);
+            timeView.setText(formatTime(time / 1000));
 
 
             speedView.setText(((int) gps.getSpeed()) + " " + startActivity.getString(R.string.km_peer_hour));
@@ -229,12 +228,10 @@ public class UpdateInfo implements Runnable {
         if (builderNotfication == null) {
             PendingIntent contentIntent = PendingIntent.getActivity(startActivity, 0, new Intent(startActivity, StartActivity.class), PendingIntent.FLAG_CANCEL_CURRENT);
             builderNotfication = new NotificationCompat.Builder(startActivity);
-            builderNotfication.setContentIntent(contentIntent)
-                    .setSmallIcon(R.mipmap.ic_launcher);
+            builderNotfication.setContentIntent(contentIntent).setSmallIcon(R.mipmap.ic_launcher);
         }
 
-        builderNotfication.setContentText("Калории: " + rideModel.getCalories())
-                .setContentTitle("Расстояние: " + Route.makeDistance(rideModel.getDistance()));
+        builderNotfication.setContentText("Калории: " + rideModel.getCalories()).setContentTitle("Расстояние: " + Route.makeDistance(rideModel.getDistance()));
 
         if (notificationManager == null)
             notificationManager = NotificationManagerCompat.from(startActivity);
@@ -249,13 +246,9 @@ public class UpdateInfo implements Runnable {
     }
 
 
-    public boolean isLoadChart() {
-        return isLoadChart;
-    }
-
     @Override
     public void run() {
-        if(time % 1000 == 0) {
+        if (time % 1000 == 0) {
             startActivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -264,8 +257,13 @@ public class UpdateInfo implements Runnable {
             });
 
             if (rideModel.getDistance() >= perKilometr) {
-                chartInfo.add(new ChartModel(time/1000, rideModel.getCalories(), (int) (perKilometr / 1000)));
+                chartInfo.add(new ChartModel(time / 1000, rideModel.getCalories(), (int) (perKilometr / 1000), PER_KILOMETR));
                 perKilometr += 1000;
+            }
+
+            if (time >= perTime) {
+                chartInfo.add(new ChartModel(perTime / 60000, rideModel.getCalories(), rideModel.getDistance(), PER_MINUTE));
+                perTime += 60000;
             }
         }
 

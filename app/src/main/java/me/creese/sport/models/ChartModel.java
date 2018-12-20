@@ -1,18 +1,23 @@
 package me.creese.sport.models;
 
 public class ChartModel {
+    private int type;
     private long time;
     private int calories;
-    private int kilometr;
+    private double kilometr;
     private int idRide;
 
-    public ChartModel(long time, int calories, int kilometr) {
-        this.idRide = idRide;
+    public ChartModel(long time, int calories, double kilometr,int type) {
+        this.type = type;
         this.time = time;
         this.calories = calories;
         this.kilometr = kilometr;
     }
 
+
+    public int getType() {
+        return type;
+    }
 
     public long getTime() {
         return time;
@@ -30,7 +35,7 @@ public class ChartModel {
         this.calories = calories;
     }
 
-    public int getKilometr() {
+    public double getKilometr() {
         return kilometr;
     }
 

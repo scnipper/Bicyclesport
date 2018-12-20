@@ -54,8 +54,9 @@ public class DataHelper extends SQLiteOpenHelper {
         final String CHARTS = "CREATE TABLE "+ChartTable.NAME_TABLE+" (" +
                 ID+" INTEGER PRIMARY KEY AUTOINCREMENT," +
                 ChartTable.CAL+" INTEGER," +
-                ChartTable.KM+" INTEGER," +
+                ChartTable.KM+" DOUBLE," +
                 ChartTable.TIME+" BIGINT," +
+                ChartTable.TYPE+" INTEGER," +
                 ChartTable.ID_RIDE+" INTEGER);";
 
         final String USER_DATA = "CREATE TABLE "+UserTable.NAME_TABLE+" (" +

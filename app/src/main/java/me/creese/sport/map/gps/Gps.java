@@ -51,13 +51,11 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
     private FusedLocationProviderClient client;
     private MapWork mapWork;
     private ImageView gpsStatusView;
-    private LatLng startPos;
     private GpsListener gpsListener;
 
     private boolean isStartWay;
     private boolean isFixGps;
     private float speed;
-    private TextView speedView;
 
     private float maxSpeed;
     private boolean pause;
@@ -282,6 +280,13 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
     public float getMaxSpeed() {
         return maxSpeed;
     }
+    public void setPause(boolean pause) {
+        this.pause = pause;
+    }
+
+    public boolean isPause() {
+        return pause;
+    }
 
     /**
      * Обновление данных позиции со спутников
@@ -368,11 +373,5 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
         }
     }
 
-    public void setPause(boolean pause) {
-        this.pause = pause;
-    }
 
-    public boolean getPause() {
-        return pause;
-    }
 }

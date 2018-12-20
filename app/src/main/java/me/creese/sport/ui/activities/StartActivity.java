@@ -141,7 +141,7 @@ public class StartActivity extends AppCompatActivity {
         if (button.getTag().equals("pause")) {
             button.setTag("play");
             button.setImageResource(R.drawable.pause_icon);
-            if(!mapWork.getGps().getPause()) {
+            if(!mapWork.getGps().isPause()) {
                 clearAllFragments();
                 mapWork.getGps().startUpdatePosition();
                 findViewById(R.id.stop_button).setVisibility(View.VISIBLE);

@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +24,7 @@ import me.creese.sport.R;
 import me.creese.sport.data.ChartTable;
 import me.creese.sport.data.FullTable;
 import me.creese.sport.map.Route;
+import me.creese.sport.models.ChartModel;
 import me.creese.sport.models.RideModel;
 import me.creese.sport.util.UpdateInfo;
 
@@ -46,29 +46,49 @@ public class StatFragment extends Fragment {
     private void loadChart(View view) {
         LineChart chart = view.findViewById(R.id.line_chart);
 
-        List<Entry> entries = new ArrayList<>();
+        List<ChartModel> allData = new ArrayList<>();
+        List<Entry> entriesPerKm = new ArrayList<>();
+        List<Entry> entriesPerTime = new ArrayList<>();
 
         SQLiteDatabase db = App.get().getData().getReadableDatabase();
 
-        Cursor cursor = db.query(ChartTable.NAME_TABLE, null, ChartTable.ID_RIDE + "=" + model.getIdRide(), null, null, null, ChartTable.KM, null);
+        Cursor cursor = db.query(ChartTable.NAME_TABLE, null, ChartTable.ID_RIDE + "=" + model.getIdRide(), null, null, null, null, null);
 
         if (cursor.moveToFirst()) {
-            long lastTime = 0;
+
             do {
-
-                long time = cursor.getLong(cursor.getColumnIndex(ChartTable.TIME));
-
-                float speed = (float) ((1000 / (time - lastTime)) * 3.6);
-                lastTime = time;
-
-                Log.w(TAG, "loadChart: "+(time/60) +" "+speed );
-                entries.add(new Entry(time/60, speed));
+                allData.add(new ChartModel(cursor.getLong(cursor.getColumnIndex(ChartTable.TIME)),
+                        cursor.getInt(cursor.getColumnIndex(ChartTable.CAL)),
+                        cursor.getDouble(cursor.getColumnIndex(ChartTable.KM)),
+                        cursor.getInt(cursor.getColumnIndex(ChartTable.TYPE))));
             } while (cursor.moveToNext());
-            LineDataSet dataSet = new LineDataSet(entries, "Скорость");
-            chart.setData(new LineData(dataSet));
+            long lastTime = 0;
+            double lastKm = 0;
+            for (ChartModel chartModel : allData) {
+                long time = chartModel.getTime();
+                if (chartModel.getType() == UpdateInfo.PER_KILOMETR) {
+                    float speed = (float) ((1000 / (time - lastTime)) * 3.6);
+                    lastTime = time;
+                    entriesPerKm.add(new Entry(time / 60, speed));
+                }
+
+                if(chartModel.getType() == UpdateInfo.PER_MINUTE) {
+                    entriesPerTime.add(new Entry(time, (float) ((chartModel.getKilometr()-lastKm)/1000)));
+                    lastKm = chartModel.getKilometr();
+                }
+            }
+
+
+            LineDataSet dataSetKm = new LineDataSet(entriesPerKm, "Скорость");
+            LineDataSet dataSetMin = new LineDataSet(entriesPerTime, "Темп");
+            LineData lineData = new LineData(dataSetKm,dataSetMin);
+            chart.setData(lineData);
+
         } else {
             chart.setVisibility(View.GONE);
         }
+
+        cursor.close();
 
 
     }

@@ -6,4 +6,5 @@ public class ChartTable {
     public static final String CAL = "calories";
     public static final String KM = "km";
     public static final String ID_RIDE = "id_ride";
+    public static final String TYPE = "type";
 }
