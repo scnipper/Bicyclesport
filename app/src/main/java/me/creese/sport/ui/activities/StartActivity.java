@@ -1,10 +1,13 @@
 package me.creese.sport.ui.activities;
 
 import android.app.Dialog;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -34,6 +37,7 @@ import me.creese.sport.ui.fragments.HistoryFragment;
 import me.creese.sport.ui.fragments.ListRoutesFragment;
 import me.creese.sport.ui.fragments.MainViewStatFragment;
 import me.creese.sport.ui.fragments.StatFragment;
+import me.creese.sport.util.NotificationService;
 import me.creese.sport.util.Settings;
 import me.creese.sport.util.UpdateInfo;
 
@@ -55,7 +59,6 @@ public class StartActivity extends AppCompatActivity {
         initPrefs();
 
         UpdateInfo.get().setStartActivity(this);
-        UpdateInfo.get().updateViews();
         map = findViewById(R.id.route_map);
         map.onCreate(savedInstanceState);
 
@@ -345,10 +348,17 @@ public class StartActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        Log.w(TAG, "onStop: " );
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         map.onDestroy();
         UpdateInfo.get().stop();
+
 
     }
 

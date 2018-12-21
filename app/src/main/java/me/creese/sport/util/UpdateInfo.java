@@ -1,11 +1,13 @@
 package me.creese.sport.util;
 
-import android.app.Notification;
-import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
@@ -36,7 +38,6 @@ public class UpdateInfo implements Runnable {
     public static final int PER_KILOMETR = 1;
     public static final int PER_MINUTE = 2;
     private static final String TAG = UpdateInfo.class.getSimpleName();
-    private static final int NOTIFY_ID = 1354;
     private static final long TIME_AUTO_PAUSE = 30000; // 30 sec
     private static UpdateInfo inst;
     private final ArrayList<ChartModel> chartInfo;
@@ -45,16 +46,14 @@ public class UpdateInfo implements Runnable {
     private StartActivity startActivity;
     private Timer timer;
     private MapWork mapWork;
-    private boolean isStarted;
     private long time;
     private TextView speedView;
     private TextView distanceView;
     private TextView timeView;
     private TextView kallView;
     private double perKilometr;
-    private NotificationCompat.Builder builderNotfication;
-    private NotificationManagerCompat notificationManager;
     private long startWaitTime;
+
 
 
     private UpdateInfo() {
@@ -177,6 +176,9 @@ public class UpdateInfo implements Runnable {
         rideModel = new RideModel();
         chartInfo.clear();
         resume();
+        Intent startIntent = new Intent(startActivity, NotificationService.class);
+        startIntent.setAction(NotificationService.ACTION_START_SERVICE);
+        startActivity.startService(startIntent);
     }
 
     public void resume() {
@@ -194,14 +196,13 @@ public class UpdateInfo implements Runnable {
         time = 0;
         perKilometr = 1000;
         perTime = 60000;
-        if (notificationManager != null) {
-            notificationManager.cancel(NOTIFY_ID);
-        }
-
+        Intent startIntent = new Intent(startActivity, NotificationService.class);
+        startIntent.setAction(NotificationService.ACTION_STOP_SERVICE);
+        startActivity.startService(startIntent);
     }
 
     public void pause() {
-        Log.w(TAG, "pause: " );
+        Log.w(TAG, "pause: ");
         if (timer != null) {
             timer.cancel();
             timer = null;
@@ -209,43 +210,26 @@ public class UpdateInfo implements Runnable {
     }
 
     public void updateViews() {
-
-        if (mapWork != null) {
-            Log.w(TAG, "updateViews: ");
-            Gps gps = mapWork.getGps();
-            if (mapWork.getRoutes().size() > 0) {
-                Route route = mapWork.getLastRoute();
-                rideModel.setDistance(route.getDistance());
-                rideModel.setCalories((int) route.calculateCalories(gps.getSpeed()));
-                rideModel.setMaxSpeed((int) gps.getMaxSpeed());
-                rideModel.setTimeRide(time / 1000);
-                timeView.setText(formatTime(time / 1000));
+        Gps gps = mapWork.getGps();
+        if (mapWork.getRoutes().size() > 0) {
+            Route route = mapWork.getLastRoute();
+            rideModel.setDistance(route.getDistance());
+            rideModel.setCalories((int) route.calculateCalories(gps.getSpeed()));
+            rideModel.setMaxSpeed((int) gps.getMaxSpeed());
+            rideModel.setTimeRide(time / 1000);
+            timeView.setText(formatTime(time / 1000));
 
 
-                speedView.setText(((int) gps.getSpeed()) + " " + startActivity.getString(R.string.km_peer_hour));
-                distanceView.setText(Route.makeDistance(rideModel.getDistance()));
-                kallView.setText(rideModel.getCalories() + "");
-            }
-
-            updateNotifications();
+            speedView.setText(((int) gps.getSpeed()) + " " + startActivity.getString(R.string.km_peer_hour));
+            distanceView.setText(Route.makeDistance(rideModel.getDistance()));
+            kallView.setText(rideModel.getCalories() + "");
         }
+        Intent startIntent = new Intent(startActivity, NotificationService.class);
+        startIntent.setAction(NotificationService.ACTION_UPDATE_INFO);
+        startIntent.putExtra(RideModel.class.getSimpleName(),rideModel);
+        startActivity.startService(startIntent);
     }
 
-    private void updateNotifications() {
-        if (builderNotfication == null) {
-            PendingIntent contentIntent = PendingIntent.getActivity(startActivity, 0, new Intent(startActivity, StartActivity.class), PendingIntent.FLAG_CANCEL_CURRENT);
-            builderNotfication = new NotificationCompat.Builder(startActivity);
-            builderNotfication.setContentIntent(contentIntent).setSmallIcon(R.mipmap.ic_launcher);
-        }
-
-        builderNotfication.setContentText("Калории: " + rideModel.getCalories()).setContentTitle("Расстояние: " + Route.makeDistance(rideModel.getDistance()));
-
-        if (notificationManager == null)
-            notificationManager = NotificationManagerCompat.from(startActivity);
-        Notification notification = builderNotfication.build();
-        notification.flags = notification.flags | Notification.FLAG_ONGOING_EVENT;
-        notificationManager.notify(NOTIFY_ID, notification);
-    }
 
     public void setStartActivity(StartActivity startActivity) {
         this.startActivity = startActivity;
@@ -263,12 +247,12 @@ public class UpdateInfo implements Runnable {
                 }
             });
 
-            if(Settings.AUTO_PAUSE) {
-                if((int) mapWork.getGps().getSpeed() == 0 && startWaitTime == 0) {
+            if (Settings.AUTO_PAUSE) {
+                if ((int) mapWork.getGps().getSpeed() == 0 && startWaitTime == 0) {
                     startWaitTime = time;
-                } else if((int) mapWork.getGps().getSpeed() > 0) startWaitTime = 0;
+                } else if ((int) mapWork.getGps().getSpeed() > 0) startWaitTime = 0;
 
-                if(startWaitTime > 0 && time >= startWaitTime+TIME_AUTO_PAUSE) {
+                if (startWaitTime > 0 && time >= startWaitTime + TIME_AUTO_PAUSE) {
 
                     pause();
                     mapWork.getGps().setAutoPause(true);
