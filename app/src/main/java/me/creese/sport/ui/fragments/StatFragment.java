@@ -6,17 +6,21 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import me.creese.sport.App;
@@ -27,12 +31,19 @@ import me.creese.sport.map.Route;
 import me.creese.sport.models.ChartModel;
 import me.creese.sport.models.RideModel;
 import me.creese.sport.util.UpdateInfo;
+import me.creese.sport.util.chartformat.XAxisFormatTime;
+import me.creese.sport.util.chartformat.YAxisFormatDistance;
 
-public class StatFragment extends Fragment {
+public class StatFragment extends Fragment implements RadioGroup.OnCheckedChangeListener {
 
     private static final String TAG = StatFragment.class.getSimpleName();
     private RideModel model;
     private boolean isChangeTitle;
+    private ArrayList<Entry> entriesPerKm;
+    private ArrayList<Entry> entriesPerTimeDist;
+    private ArrayList<Entry> entriesPerTimeCal;
+    private LineData lineData;
+    private LineChart chart;
 
     public static Fragment newInstanse(@Nullable RideModel rideModel) {
         Bundle bundle = new Bundle();
@@ -44,11 +55,12 @@ public class StatFragment extends Fragment {
     }
 
     private void loadChart(View view) {
-        LineChart chart = view.findViewById(R.id.line_chart);
+        chart = view.findViewById(R.id.line_chart);
 
         List<ChartModel> allData = new ArrayList<>();
-        List<Entry> entriesPerKm = new ArrayList<>();
-        List<Entry> entriesPerTime = new ArrayList<>();
+        entriesPerKm = new ArrayList<>();
+        entriesPerTimeDist = new ArrayList<>();
+        entriesPerTimeCal = new ArrayList<>();
 
         SQLiteDatabase db = App.get().getData().getReadableDatabase();
 
@@ -64,25 +76,55 @@ public class StatFragment extends Fragment {
             } while (cursor.moveToNext());
             long lastTime = 0;
             double lastKm = 0;
+            int lastCal = 0;
             for (ChartModel chartModel : allData) {
                 long time = chartModel.getTime();
                 if (chartModel.getType() == UpdateInfo.PER_KILOMETR) {
                     float speed = (float) ((1000 / (time - lastTime)) * 3.6);
                     lastTime = time;
-                    entriesPerKm.add(new Entry(time / 60, speed));
+                    entriesPerKm.add(new Entry(time, speed));
                 }
 
                 if(chartModel.getType() == UpdateInfo.PER_MINUTE) {
-                    entriesPerTime.add(new Entry(time, (float) ((chartModel.getKilometr()-lastKm)/1000)));
+                    entriesPerTimeDist.add(new Entry(time, (float) (chartModel.getKilometr()-lastKm)));
+                    entriesPerTimeCal.add(new Entry(time, (float) (chartModel.getCalories()-lastCal)));
                     lastKm = chartModel.getKilometr();
+                    lastCal = chartModel.getCalories();
                 }
             }
 
+            RadioGroup radioGroup = view.findViewById(R.id.stat_radio_group);
+            radioGroup.setOnCheckedChangeListener(this);
 
-            LineDataSet dataSetKm = new LineDataSet(entriesPerKm, "Скорость");
-            LineDataSet dataSetMin = new LineDataSet(entriesPerTime, "Темп");
-            LineData lineData = new LineData(dataSetKm,dataSetMin);
-            chart.setData(lineData);
+
+
+
+
+
+            int colorText = 0xffB2B0B0;
+            XAxis xAxis = chart.getXAxis();
+            xAxis.setDrawGridLines(false);
+            xAxis.setTextColor(colorText);
+            xAxis.setAxisLineColor(colorText);
+            xAxis.setGranularity(1);
+
+            xAxis.setTextSize(14);
+
+
+            chart.getAxisRight().setEnabled(false);
+
+
+            chart.getAxisLeft().setDrawAxisLine(false);
+            chart.getAxisLeft().setGridColor(colorText);
+            chart.getAxisLeft().setTextColor(colorText);
+            chart.getAxisLeft().setTextSize(14);
+            chart.getAxisLeft().setValueFormatter(new YAxisFormatDistance());
+            chart.getAxisLeft().setLabelCount(6);
+            chart.getLegend().setEnabled(false);
+
+            lineData = new LineData();
+
+            onCheckedChanged(null,R.id.stat_radio_button_2);
 
         } else {
             chart.setVisibility(View.GONE);
@@ -91,6 +133,34 @@ public class StatFragment extends Fragment {
         cursor.close();
 
 
+    }
+
+    private void createTimeChart() {
+        chart.clear();
+        chart.getXAxis().setValueFormatter(new XAxisFormatTime());
+        LineDataSet dataSetMin = new LineDataSet(entriesPerTimeDist, "");
+        dataSetMin.setColor(0xffFA507D);
+        dataSetMin.setLineWidth(3);
+        dataSetMin.setDrawValues(false);
+        dataSetMin.setDrawCircles(false);
+        dataSetMin.setDrawCircleHole(false);
+        dataSetMin.setHighlightEnabled(false);
+        lineData.addDataSet(dataSetMin);
+        chart.setData(lineData);
+    }
+
+    private void createDistanceChart() {
+        chart.clear();
+       /* LineDataSet dataSetMin = new LineDataSet(entriesPerTimeDist, "");
+        //dataSetMin.setColor();
+        dataSetMin.setLineWidth(3);
+        dataSetMin.setDrawValues(false);
+        dataSetMin.setDrawCircles(false);
+        dataSetMin.setDrawCircleHole(false);
+        dataSetMin.setHighlightEnabled(false);
+        LineDataSet dataSetKm = new LineDataSet(entriesPerKm, "");
+        LineData lineData = new LineData(dataSetKm,dataSetMin);
+        chart.setData(lineData);*/
     }
 
     @Override
@@ -160,5 +230,17 @@ public class StatFragment extends Fragment {
 
 
         return view;
+    }
+
+    @Override
+    public void onCheckedChanged(RadioGroup group, int checkedId) {
+        switch (checkedId) {
+            case R.id.stat_radio_button_1:
+                createDistanceChart();
+                break;
+            case R.id.stat_radio_button_2:
+                createTimeChart();
+                break;
+        }
     }
 }

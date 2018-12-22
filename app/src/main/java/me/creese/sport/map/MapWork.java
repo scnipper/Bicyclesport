@@ -232,7 +232,6 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
             getLastRoute().addPointOnMap(latLng);
             ((TextView) distView.findViewById(R.id.dist_text)).setText(Route.makeDistance(getLastRoute().getDistance()).toUpperCase());
 
-
         }
     }
 

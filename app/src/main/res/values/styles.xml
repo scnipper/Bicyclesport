@@ -8,4 +8,11 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+
+    <style name="CheckBoxBlue" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:colorActivatedHighlight">@color/blue</item>
+
+
+    </style>
+
 </resources>

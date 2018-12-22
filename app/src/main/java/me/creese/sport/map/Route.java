@@ -10,6 +10,8 @@ import android.widget.TextView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Cap;
+import com.google.android.gms.maps.model.CustomCap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -65,6 +67,7 @@ public class Route {
         markerTitles = new ArrayList<>();
 
         lineOptions = new PolylineOptions();
+
 
         setColorLine(0xffffff00);
 
@@ -122,6 +125,10 @@ public class Route {
 
 
             addMarker(lineOptions.getPoints().get(i), markerTitles.get(i), rotation);
+
+            if(i == 0 || i == lineOptions.getPoints().size()-1) {
+                markers.get(i).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.cap));
+            }
         }
 
 
