@@ -186,7 +186,7 @@ public class StartActivity extends AppCompatActivity {
                 .beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .addToBackStack(null)
-                .replace(R.id.main_content, StatFragment.newInstanse(model.getRideModel()))
+                .replace(R.id.main_content, StatFragment.newInstanse(model))
                 .commit();
 
     }
