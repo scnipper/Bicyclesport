@@ -320,6 +320,7 @@ public class Route {
      */
     public float calculateCalories(float speed) {
         calories += speed * 0.00006944f * UserData.WEIGHT;
+        //calories+=random.nextInt(5);
         return calories;
     }
 
@@ -360,6 +361,7 @@ public class Route {
     }
 
     public double getDistance() {
+        //distance+=random.nextInt(3);
         return distance;
     }
 }

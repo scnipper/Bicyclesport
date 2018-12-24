@@ -1,24 +1,14 @@
 package me.creese.sport.ui.fragments;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-
-
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
 import android.support.v14.preference.SwitchPreference;
 import android.support.v7.preference.EditTextPreference;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 
 import me.creese.sport.BuildConfig;
 import me.creese.sport.R;
@@ -58,28 +48,28 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @Override
     public boolean onPreferenceTreeClick(Preference preference) {
-        Log.w(TAG, "onPreferenceTreeClick: "+preference );
+        Log.w(TAG, "onPreferenceTreeClick: " + preference);
         String key = preference.getKey();
 
-        if(key.equals(getString(R.string.pref_enter_data))) {
-            preference.getContext().startActivity(new Intent(getContext(),EnterDataUserActivity.class));
+        if (key.equals(getString(R.string.pref_enter_data))) {
+            preference.getContext().startActivity(new Intent(getContext(), EnterDataUserActivity.class));
         }
-        if(key.equals(getString(R.string.pref_goal_switch))) {
+        if (key.equals(getString(R.string.pref_goal_switch))) {
             checkGoal((SwitchPreference) preference);
         }
 
         String value = null;
 
-        if(preference instanceof ListPreference) {
+        if (preference instanceof ListPreference) {
             value = ((ListPreference) preference).getValue();
         }
 
-        if(preference instanceof SwitchPreference) {
+        if (preference instanceof SwitchPreference) {
             value = String.valueOf(((SwitchPreference) preference).isChecked());
         }
 
 
-        Settings.init(key,value,getContext());
+        Settings.init(key, value, getContext());
 
 
         return super.onPreferenceTreeClick(preference);
@@ -88,7 +78,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
-        Log.w(TAG, "onCreatePreferences: "+s );
+        Log.w(TAG, "onCreatePreferences: " + s);
 
     }
 

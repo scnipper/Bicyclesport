@@ -157,7 +157,8 @@ public class UpdateInfo implements Runnable {
     private void saveCharts(int idRide, ContentValues contentValues, SQLiteDatabase database) {
 
         contentValues.clear();
-        for (ChartModel chartModel : chartInfo) {
+        for (int i = 0; i < chartInfo.size(); i++) {
+            ChartModel chartModel = chartInfo.get(i);
 
             contentValues.put(ChartTable.CAL, chartModel.getCalories());
             contentValues.put(ChartTable.TIME, chartModel.getTime());

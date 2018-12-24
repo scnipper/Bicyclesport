@@ -105,7 +105,7 @@ public class StatFragment extends Fragment implements RadioGroup.OnCheckedChange
                 }
 
                 if (chartModel.getType() == UpdateInfo.PER_MINUTE) {
-                    long time = chartModel.getTime() * 100;
+                    long time = chartModel.getTime();
                     float cal = (float) (chartModel.getCalories() - lastCal);
                     float dist = (float) (chartModel.getKilometr() - lastKm);
                     entriesPerTimeDist.add(new Entry(time, dist));
@@ -197,17 +197,6 @@ public class StatFragment extends Fragment implements RadioGroup.OnCheckedChange
     private void createDistanceChart() {
         chart.clear();
         chart.getXAxis().setValueFormatter(new AxisFormat(AxisFormat.TypeAxis.DISTANCE));
-
-       /* LineDataSet dataSetMin = new LineDataSet(entriesPerTimeDist, "");
-        //dataSetMin.setColor();
-        dataSetMin.setLineWidth(3);
-        dataSetMin.setDrawValues(false);
-        dataSetMin.setDrawCircles(false);
-        dataSetMin.setDrawCircleHole(false);
-        dataSetMin.setHighlightEnabled(false);
-        LineDataSet dataSetKm = new LineDataSet(entriesPerKmTime, "");
-        LineData lineData = new LineData(dataSetKm,dataSetMin);
-        chart.setData(lineData);*/
     }
 
     @Override

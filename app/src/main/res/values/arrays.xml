@@ -29,4 +29,12 @@
         <item>2</item>
         <item>1</item>
     </string-array>
+    <string-array name="sport_type">
+        <item>Велосипед</item>
+        <item>Бег</item>
+    </string-array>
+    <string-array name="sport_type_val">
+        <item>bike</item>
+        <item>run</item>
+    </string-array>
 </resources>

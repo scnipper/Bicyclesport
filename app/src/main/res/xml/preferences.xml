@@ -33,20 +33,18 @@
             android:summary="Включить цель"
             android:title="Цель" />
 
-        <EditTextPreference
-            android:defaultValue="0"
+        <me.creese.sport.ui.custom_preference.NumberPreference
             android:key="@string/pref_goal_dist"
-            android:numeric="signed"
-            android:selectAllOnFocus="true"
-            android:singleLine="true"
+            android:summary="Ежедневная цель по количеству пройденного расстояния (в метрах)"
             android:title="Цель по растоянию" />
-        <EditTextPreference
-            android:defaultValue="0"
+        <me.creese.sport.ui.custom_preference.NumberPreference
             android:key="@string/pref_goal_cal"
-            android:numeric="signed"
-            android:selectAllOnFocus="true"
-            android:singleLine="true"
+            android:summary="Ежедневня цель по сжиганию калорий"
             android:title="Цель по каллориям" />
+        <me.creese.sport.ui.custom_preference.NumberPreference
+            android:key="@string/pref_goal_time"
+            android:summary="Ежедневная цель по количеству потраченного времени на тренировки (в минутах)"
+            android:title="Цель по времени" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/user_data">
@@ -55,12 +53,25 @@
             android:key="@string/pref_enter_data"
             android:summary="Укажите свои данные"
             android:title="Ввод данных" />
+        <ListPreference
+            android:defaultValue="bike"
+            android:entries="@array/sport_type"
+            android:entryValues="@array/sport_type_val"
+            android:key="@string/pref_sport_type"
+            android:title="Вид спорта"
+            android:summary="Выберите вид спорта которым вы будете заниматься"/>
 
     </PreferenceCategory>
     <PreferenceCategory android:title="Дополнительно">
         <Preference
             android:summary="Напишите нам E-Mail"
             android:title="Связь с разработчиком" />
+        <Preference
+            android:title="Исходный код"
+            android:summary="Проект на GitHub">
+            <intent android:action="android.intent.action.VIEW"
+                android:data="https://github.com/scnipper/Bicyclesport" />
+        </Preference>
         <Preference
             android:key="version_app"
             android:summary="1.0.1"

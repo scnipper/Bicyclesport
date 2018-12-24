@@ -6,4 +6,7 @@
     <string name="pref_autopause">autopause</string>
     <string name="pref_goal_switch">goal_switch</string>
     <string name="pref_goal_dist">goal_dist</string>
+    <string name="pref_goal_cal">goal_cal</string>
+    <string name="pref_goal_time">goal_time</string>
+    <string name="pref_sport_type">p_sport_type</string>
 </resources>
