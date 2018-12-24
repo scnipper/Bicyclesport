@@ -30,6 +30,7 @@ import java.util.Map;
 
 import me.creese.sport.R;
 import me.creese.sport.map.MapWork;
+import me.creese.sport.map.Point;
 import me.creese.sport.models.RideModel;
 import me.creese.sport.models.RouteAndRide;
 import me.creese.sport.models.RouteModel;
@@ -150,6 +151,7 @@ public class StartActivity extends AppCompatActivity {
                 mapWork.getGps().startUpdatePosition();
                 findViewById(R.id.stop_button).setVisibility(View.VISIBLE);
             } else {
+                mapWork.getLastRoute().getLastPoint().setTypePoint(Point.DASH_START);
                 mapWork.getGps().setPause(false);
                 UpdateInfo.get().resume();
             }

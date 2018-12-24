@@ -1,25 +1,27 @@
 package me.creese.sport.map;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Cap;
-import com.google.android.gms.maps.model.CustomCap;
+import com.google.android.gms.maps.model.Dash;
+import com.google.android.gms.maps.model.Gap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.SphericalUtil;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 import me.creese.sport.App;
@@ -33,37 +35,32 @@ import me.creese.sport.util.UserData;
 public class Route {
 
     private static final String TAG = Route.class.getSimpleName();
+    private List<PatternItem> patternPauseLine = Arrays.<PatternItem>asList(new Dash(20), new Gap(30));
 
     private final MarkerOptions markerOptions;
+    private final ArrayList<Point> points;
     private final PolylineOptions lineOptions;
-    private final AppCompatActivity context;
-    // private final Context context;
+    private final ArrayList<Polyline> lines;
     private int colorLine;
     private double distance = 0.0D;
     private GoogleMap googleMap;
     private ArrayList<Marker> markers;
-
-    private Polyline line;
     private ArrayList<LatLng> tmpPoints;
     private ArrayList<String> markerTitles;
     private boolean isMarker;
     private boolean isFocusRoute;
-    private TextView distanceView;
     private float calories;
     private boolean isFocusCenterRoute;
     private boolean markersIsAdded;
     private boolean isClickLine;
-    //private TextView viewText;
 
-    public Route(AppCompatActivity context) {
-        this.context = context;
+    public Route(Context context) {
+
+        lines = new ArrayList<>();
+        points = new ArrayList<>();
 
         markers = new ArrayList<>();
-        markerOptions = new MarkerOptions()
-                .draggable(true)
-                .flat(true)
-                .anchor(0.5f, 0.5f)
-                .icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.marker_icon)));
+        markerOptions = new MarkerOptions().draggable(true).flat(true).anchor(0.5f, 0.5f).icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.marker_icon)));
         markerTitles = new ArrayList<>();
 
         lineOptions = new PolylineOptions();
@@ -89,17 +86,44 @@ public class Route {
      */
     public void showOnMap() {
 
-        if (line != null) {
-            line.remove();
+        for (Polyline line : lines) {
+            if (line != null) {
+                line.remove();
+            }
         }
-        line = googleMap.addPolyline(lineOptions);
-        line.setClickable(isClickLine);
+        lines.clear();
+        lineOptions.getPoints().clear();
 
-        if (isFocusRoute)
-            focusOnPoint(lineOptions.getPoints().get(lineOptions.getPoints().size() - 1));
+        for (Point point : points) {
+            lineOptions.add(point.getLatLng());
+            if (point.getTypePoint() == Point.DASH_START) {
+                Polyline line = googleMap.addPolyline(lineOptions);
+                line.setClickable(isClickLine);
+                lines.add(line);
+                lineOptions.getPoints().clear();
+                lineOptions.add(point.getLatLng());
+            }
+
+            if (point.getTypePoint() == Point.DASH_END) {
+                Polyline line = googleMap.addPolyline(lineOptions);
+                line.setClickable(isClickLine);
+                line.setPattern(patternPauseLine);
+                lines.add(line);
+                lineOptions.getPoints().clear();
+                lineOptions.add(point.getLatLng());
+            }
+
+        }
+        Polyline line = googleMap.addPolyline(lineOptions);
+        line.setClickable(isClickLine);
+        lines.add(line);
+
+
+        Log.w(TAG, "showOnMap: " + lines.size());
+        if (isFocusRoute) focusOnPoint(points.get(points.size() - 1).getLatLng());
 
         if (isFocusCenterRoute) {
-            focusOnPoint(lineOptions.getPoints().get(lineOptions.getPoints().size() / 2), 12);
+            focusOnPoint(points.get(points.size() / 2).getLatLng(), 12);
         }
 
         if (isMarker) {
@@ -119,14 +143,14 @@ public class Route {
         double rotation = 0;
 
 
-        for (int i = 0; i < lineOptions.getPoints().size(); i++) {
-            if (i + 1 < lineOptions.getPoints().size())
-                rotation = angleFromCoordinate(lineOptions.getPoints().get(i), lineOptions.getPoints().get(i + 1));
+        for (int i = 0; i < points.size(); i++) {
+            if (i + 1 < points.size())
+                rotation = angleFromCoordinate(points.get(i).getLatLng(), points.get(i + 1).getLatLng());
 
 
-            addMarker(lineOptions.getPoints().get(i), markerTitles.get(i), rotation);
+            addMarker(points.get(i).getLatLng(), markerTitles.get(i), rotation);
 
-            if(i == 0 || i == lineOptions.getPoints().size()-1) {
+            if (i == 0 || i == points.size() - 1) {
                 markers.get(i).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.cap));
             }
         }
@@ -150,6 +174,13 @@ public class Route {
         return angle;
     }
 
+    public void removeLines() {
+        for (Polyline line : lines) {
+            line.remove();
+        }
+        lines.clear();
+    }
+
     /**
      * Удаление всех маркеров с маршрута
      */
@@ -166,14 +197,19 @@ public class Route {
      *
      * @param point
      */
-    public void addPoint(LatLng point) {
+    public void addPoint(Point point) {
 
-        if (lineOptions.getPoints().size() > 0) {
-            double delta = SphericalUtil.computeDistanceBetween(lineOptions.getPoints().get(lineOptions.getPoints().size() - 1), point);
+        if (points.size() > 0) {
+            double delta = SphericalUtil.computeDistanceBetween(points.get(points.size() - 1).getLatLng(), point.getLatLng());
             distance += delta;
 
         }
-        lineOptions.add(point);
+
+        Point lastPoint = getLastPoint();
+        if (lastPoint != null) {
+            if (lastPoint.getTypePoint() == Point.DASH_START) point.setTypePoint(Point.DASH_END);
+        }
+        points.add(point);
 
         if (isMarker) {
             markerTitles.add(makeDistance(distance));
@@ -208,20 +244,20 @@ public class Route {
      *
      * @param point
      */
-    public void focusOnPoint(LatLng point, int zooom) {
+    public void focusOnPoint(LatLng point, int zoom) {
 
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, zooom));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, zoom));
     }
 
 
     /**
      * Добавление точки на маршрут и отображение на карте
      *
-     * @param point
+     * @param latLng
      */
-    public void addPointOnMap(LatLng point) {
+    public void addPointOnMap(LatLng latLng) {
 
-        addPoint(point);
+        addPoint(new Point(latLng));
         showOnMap();
 
     }
@@ -241,7 +277,7 @@ public class Route {
      * @param name
      */
     public RouteModel saveRoute(String name) {
-        RouteModel model = new RouteModel(0, name, lineOptions.getPoints(), System.currentTimeMillis(), isFocusRoute, isMarker);
+        RouteModel model = new RouteModel(0, name, points, System.currentTimeMillis(), isFocusRoute, isMarker);
 
         SQLiteDatabase db = App.get().getData().getWritableDatabase();
 
@@ -257,11 +293,12 @@ public class Route {
 
         model.setId((int) id);
 
-        for (LatLng latLng : model.getPoints()) {
+        for (Point point : model.getPoints()) {
             contentValues.clear();
             contentValues.put(PointsTable.ID_ROUTE, (int) id);
-            contentValues.put(PointsTable.LATITUDE, latLng.latitude);
-            contentValues.put(PointsTable.LONGTITUDE, latLng.longitude);
+            contentValues.put(PointsTable.LATITUDE, point.getLatLng().latitude);
+            contentValues.put(PointsTable.LONGTITUDE, point.getLatLng().longitude);
+            contentValues.put(PointsTable.TYPE, point.getTypePoint());
             db.insert(PointsTable.NAME_TABLE, null, contentValues);
         }
 
@@ -294,17 +331,21 @@ public class Route {
 
             markers.get(i).setTitle(dist);
             markerTitles.set(i, dist);
-            lineOptions.getPoints().set(i, markers.get(i).getPosition());
+            points.set(i, new Point(markers.get(i).getPosition()));
 
         }
         tmpPoints.clear();
         for (Marker m : markers) {
             tmpPoints.add(m.getPosition());
         }
-        line.setPoints(tmpPoints);
+        lines.get(lines.size() - 1).setPoints(tmpPoints);
 
         //viewText.setText(context.getString(R.string.distance)+" "+markers.get(markers.size()-1).getTitle());
 
+    }
+
+    public Point getLastPoint() {
+        return points.size() > 0 ? points.get(points.size() - 1) : null;
     }
 
     public void setColorLine(int colorLine) {
@@ -340,9 +381,6 @@ public class Route {
         return markers;
     }
 
-    public Polyline getLine() {
-        return line;
-    }
 
     public boolean isFocusRoute() {
         return isFocusRoute;
@@ -363,5 +401,9 @@ public class Route {
     public double getDistance() {
         //distance+=random.nextInt(3);
         return distance;
+    }
+
+    public ArrayList<Polyline> getLines() {
+        return lines;
     }
 }

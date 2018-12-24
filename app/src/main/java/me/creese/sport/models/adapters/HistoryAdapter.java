@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Locale;
 
 import me.creese.sport.R;
+import me.creese.sport.map.Point;
 import me.creese.sport.map.Route;
 import me.creese.sport.models.RouteAndRide;
 import me.creese.sport.ui.activities.StartActivity;
@@ -58,9 +59,11 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryH
             int last = items.get(i).getRouteModel().getPoints().size()-1;
             if(last > -1) {
                 try {
-                    List<Address> fromLocationStart = gc.getFromLocation(items.get(i).getRouteModel().getPoints().get(0).latitude, items.get(i).getRouteModel().getPoints().get(0).longitude, 1);
+                    Point p1 = items.get(i).getRouteModel().getPoints().get(0);
+                    Point p2 = items.get(i).getRouteModel().getPoints().get(last);
+                    List<Address> fromLocationStart = gc.getFromLocation(p1.getLatLng().latitude, p1.getLatLng().longitude, 1);
 
-                    List<Address> fromLocationEnd = gc.getFromLocation(items.get(i).getRouteModel().getPoints().get(last).latitude, items.get(i).getRouteModel().getPoints().get(last).longitude, 1);
+                    List<Address> fromLocationEnd = gc.getFromLocation(p2.getLatLng().latitude, p2.getLatLng().longitude, 1);
 
                     StringBuilder stringBuilder = new StringBuilder();
                     stringBuilder.append(fromLocationStart.get(0).getThoroughfare()).append(" ").append(fromLocationStart.get(0).getSubThoroughfare());

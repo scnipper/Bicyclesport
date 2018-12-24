@@ -6,4 +6,6 @@ public class PointsTable {
     public static final String LATITUDE = "latitude";
     public static final String LONGTITUDE = "longtitude";
     public static final String ID_ROUTE = "id_route";
+    public static final String TYPE = "type";
+
 }

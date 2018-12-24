@@ -62,8 +62,8 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
         route.setMarker(model.isMarker());
         route.setClickLine(true);
         addRoute(route);
-        for (LatLng latLng : model.getPoints()) {
-            route.addPoint(latLng);
+        for (Point point : model.getPoints()) {
+            route.addPoint(point);
         }
 
 
@@ -125,7 +125,7 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
     public void clearRoutes() {
         for (Route route : routes) {
             route.clearMarkers();
-            route.getLine().remove();
+            route.removeLines();
         }
         routes.clear();
     }
@@ -149,7 +149,7 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
     }
 
     public Route getLastRoute() {
-        return routes.get(routes.size() - 1);
+        return routes.size() > 0 ? routes.get(routes.size() - 1) : null;
     }
 
     public Marker getStartMarker() {
@@ -255,14 +255,14 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
 
     @Override
     public void onPolylineClick(Polyline polyline) {
-
-        Log.w(TAG, "onPolylineClick: " + polyline);
         for (Route route : routes) {
-            if (route.getLine().equals(polyline)) {
-                route.clickOnRoute();
+            for (Polyline routeLine : route.getLines()) {
+                if (routeLine.equals(polyline)) {
+                    route.clickOnRoute();
+                    return;
+                }
             }
         }
-
     }
 
     @Override

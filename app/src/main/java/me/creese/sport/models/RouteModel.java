@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.creese.sport.App;
+import me.creese.sport.map.Point;
 
 public class RouteModel implements Parcelable{
 
@@ -19,13 +20,13 @@ public class RouteModel implements Parcelable{
 
     private boolean isMarker;
     private String name;
-    private List<LatLng> points;
+    private List<Point> points;
     private long time;
     // not use in db calculate runtime
     private double tmpDistance;
 
 
-    public RouteModel(int id,String name, List<LatLng> points, long time, boolean isFocusRoute, boolean isMarker) {
+    public RouteModel(int id, String name, List<Point> points, long time, boolean isFocusRoute, boolean isMarker) {
         this.id = id;
         this.isMarker = isMarker;
         this.name = name;
@@ -38,7 +39,7 @@ public class RouteModel implements Parcelable{
     protected RouteModel(Parcel in) {
         isFocusRoute = in.readByte() != 0;
         name = in.readString();
-        points = in.createTypedArrayList(LatLng.CREATOR);
+        points = in.createTypedArrayList(Point.CREATOR);
         time = in.readLong();
         tmpDistance = in.readDouble();
     }
@@ -74,7 +75,7 @@ public class RouteModel implements Parcelable{
         return name;
     }
 
-    public List<LatLng> getPoints() {
+    public List<Point> getPoints() {
         return points;
     }
 

@@ -283,8 +283,10 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
     }
     public void setPause(boolean pause) {
         this.pause = pause;
-        if(pause)
-        autoPause = false;
+        if(pause) {
+            autoPause = false;
+            speed = 0;
+        }
     }
 
     public boolean isPause() {

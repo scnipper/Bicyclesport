@@ -4,12 +4,14 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 
 import me.creese.sport.App;
+import me.creese.sport.map.Point;
 import me.creese.sport.models.RideModel;
 import me.creese.sport.models.RouteModel;
 
@@ -49,6 +51,7 @@ public class DataHelper extends SQLiteOpenHelper {
                 ID+" INTEGER PRIMARY KEY AUTOINCREMENT," +
                 PointsTable.LATITUDE+" DOUBLE," +
                 PointsTable.LONGTITUDE+" DOUBLE," +
+                PointsTable.TYPE+" INTEGER DEFAULT(0)," +
                 PointsTable.ID_ROUTE+" INTEGER);";
 
         final String CHARTS = "CREATE TABLE "+ChartTable.NAME_TABLE+" (" +
@@ -96,7 +99,7 @@ public class DataHelper extends SQLiteOpenHelper {
 
         if(cursor.moveToFirst()) {
             do {
-                ArrayList<LatLng> points = new ArrayList<>();
+                ArrayList<Point> points = new ArrayList<>();
                 Cursor cursor2 = db.query(PointsTable.NAME_TABLE, null,
                         PointsTable.ID_ROUTE + "=" + cursor.getInt(cursor.getColumnIndex(DataHelper.ID)), null, null, null, null);
 
@@ -107,7 +110,10 @@ public class DataHelper extends SQLiteOpenHelper {
                         double lat = cursor2.getDouble(i1);
                         double lng = cursor2.getDouble(i2);
                         LatLng point = new LatLng(lat, lng);
-                        points.add(point);
+                        Point p = new Point(point);
+                        p.setTypePoint(cursor2.getInt(cursor2.getColumnIndex(PointsTable.TYPE)));
+                        points.add(p);
+
                     } while (cursor2.moveToNext());
                 }
 

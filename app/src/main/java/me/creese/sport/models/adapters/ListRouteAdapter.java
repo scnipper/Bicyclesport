@@ -98,7 +98,8 @@ public class ListRouteAdapter extends RecyclerView.Adapter<ListRouteAdapter.Rout
                 if(model.getPoints().size() > 1) {
                     for (int i = 1; i < model.getPoints().size(); i++) {
                         model.setTmpDistance(model.getTmpDistance()
-                                +SphericalUtil.computeDistanceBetween(model.getPoints().get(i-1),model.getPoints().get(i)));
+                                +SphericalUtil.computeDistanceBetween(model.getPoints().get(i-1).getLatLng(),
+                                model.getPoints().get(i).getLatLng()));
                     }
                 }
             }

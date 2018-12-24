@@ -112,7 +112,8 @@ public class UpdateInfo implements Runnable {
         final int idRide = (int) database.insert(RideTable.NAME_TABLE, null, contentValues);
 
 
-        Cursor cursor = database.query(FullTable.NAME_TABLE, null, null, null, null, null, null);
+        Cursor cursor = database.query(FullTable.NAME_TABLE,
+                null, null, null, null, null, null);
 
 
         contentValues.clear();
@@ -207,6 +208,13 @@ public class UpdateInfo implements Runnable {
         if (timer != null) {
             timer.cancel();
             timer = null;
+
+            startActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    updateViews();
+                }
+            });
         }
     }
 

@@ -7,6 +7,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
@@ -33,21 +34,23 @@ public class NotificationService extends Service {
     public void createNotification() {
         if (isServiceRunning) return;
         isServiceRunning = true;
-        notificationManager = NotificationManagerCompat.from(this);
-        Intent intent = new Intent(this, StartActivity.class);
-        intent.setAction(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-        builderNotfication = new NotificationCompat.Builder(this);
-        builderNotfication.setContentIntent(contentIntent).setSmallIcon(R.mipmap.ic_launcher);
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            notificationManager = NotificationManagerCompat.from(this);
+            Intent intent = new Intent(this, StartActivity.class);
+            intent.setAction(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_LAUNCHER);
+            PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+            builderNotfication = new NotificationCompat.Builder(this);
+            builderNotfication.setContentIntent(contentIntent).setSmallIcon(R.mipmap.ic_launcher);
+        }
     }
     public void updateInfo(RideModel rideModel) {
-        builderNotfication.setContentText("Калории: " + rideModel.getCalories())
-                .setOngoing(true)
-                .setContentTitle("Расстояние: " + Route.makeDistance(rideModel.getDistance()));
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            builderNotfication.setContentText("Калории: " + rideModel.getCalories()).setOngoing(true).setContentTitle("Расстояние: " + Route.makeDistance(rideModel.getDistance()));
 
-        Notification notification = builderNotfication.build();
-        startForeground(NOTIFY_ID, notification);
+            Notification notification = builderNotfication.build();
+            startForeground(NOTIFY_ID, notification);
+        }
     }
     private void stopService() {
         stopForeground(true);
