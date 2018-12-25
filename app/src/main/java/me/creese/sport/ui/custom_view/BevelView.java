@@ -2,6 +2,7 @@ package me.creese.sport.ui.custom_view;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.os.Build;
@@ -13,6 +14,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class BevelView extends FrameLayout {
+    private Paint paint;
+    private Path path;
+
     public BevelView(@NonNull @android.support.annotation.NonNull Context context) {
         super(context);
         init();
@@ -34,29 +38,29 @@ public class BevelView extends FrameLayout {
         init();
     }
 
-    private void init(){
+    private void init() {
         setWillNotDraw(false);
+        paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setColor(Color.WHITE);
+        paint.setStyle(Paint.Style.FILL);
+        path = new Path();
+    }
 
+    public float calcY(float x) {
+        float y1 = getHeight() * 0.6f;
+        float m = (y1 * -1) / getWidth();
+        return m * x + y1;
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
-        float vert[] = new float[]{0, 0, 0, getHeight() * 0.4f, getWidth(), getHeight(), getWidth(), 0};
-
-        Paint paint = new Paint();
-        paint.setAntiAlias(true);
-        paint.setColor(0xffffffff);
-        paint.setStyle(Paint.Style.FILL);
-
-        Path path = new Path();
         path.reset();
-        path.moveTo(0,getHeight());
-        path.lineTo(0,getHeight()*0.4f);
-        path.lineTo(getWidth(),0);
-        path.lineTo(getWidth(),getHeight());
-        canvas.drawPath(path,paint);
-
+        path.moveTo(0, getHeight());
+        path.lineTo(0, calcY(0));
+        path.lineTo(getWidth(), calcY(getWidth()));
+        path.lineTo(getWidth(), getHeight());
+        canvas.drawPath(path, paint);
     }
 }

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -20,22 +19,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <me.creese.sport.ui.custom_view.BevelView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom">
-
-            <ImageView
-                android:id="@+id/gps_stauts"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|right"
-                android:layout_marginTop="30dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginBottom="8dp"
-                app:srcCompat="@drawable/one_gps" />
-        </me.creese.sport.ui.custom_view.BevelView>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -46,6 +29,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="30dp"
+                android:layout_marginBottom="-40dp"
                 android:orientation="horizontal">
 
                 <ImageButton
@@ -97,76 +81,91 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/main_buttons_container"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="5dp"
-                android:gravity="bottom"
-                android:orientation="horizontal">
+            <me.creese.sport.ui.custom_view.BevelLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-                <ImageButton
-                    android:id="@+id/settings_main_btn"
+                <me.creese.sport.ui.custom_view.BevelView
+                    android:id="@+id/bevel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom">
+
+                    <ImageView
+                        android:id="@+id/gps_stauts"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|end"
+                        android:layout_marginTop="30dp"
+                        android:layout_marginEnd="9dp"
+                        android:layout_marginBottom="8dp"
+                        app:srcCompat="@drawable/one_gps" />
+                </me.creese.sport.ui.custom_view.BevelView>
+
+                <LinearLayout
+                    android:id="@+id/main_buttons_container"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginBottom="8dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/btn_main"
-                    android:onClick="clickOnMainButton"
-                    app:srcCompat="@drawable/settings_icon" />
+                    android:layout_gravity="center_horizontal"
+                    android:orientation="horizontal">
 
-                <ImageButton
-                    android:id="@+id/stat_main_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="30dp"
-                    android:layout_marginBottom="15dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/btn_main"
-                    android:onClick="clickOnMainButton"
-                    app:srcCompat="@drawable/fullstat_btn" />
+                    <ImageButton
+                        android:id="@+id/settings_main_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_main"
+                        android:onClick="clickOnMainButton"
+                        app:srcCompat="@drawable/settings_icon" />
 
-                <ImageButton
-                    android:id="@+id/history_main_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="30dp"
-                    android:layout_marginBottom="25dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/btn_main"
-                    android:onClick="clickOnMainButton"
-                    app:srcCompat="@drawable/history_btn" />
+                    <ImageButton
+                        android:id="@+id/stat_main_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_main"
+                        android:onClick="clickOnMainButton"
+                        app:srcCompat="@drawable/fullstat_btn" />
 
-                <ImageButton
-                    android:id="@+id/routes_main_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="30dp"
-                    android:layout_marginBottom="30dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/btn_main"
-                    android:onClick="clickOnMainButton"
-                    app:srcCompat="@drawable/routes_btn" />
+                    <ImageButton
+                        android:id="@+id/history_main_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="30dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_main"
+                        android:onClick="clickOnMainButton"
+                        app:srcCompat="@drawable/history_btn" />
 
-                <ImageButton
-                    android:id="@+id/save_route_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="30dp"
-                    android:layout_marginBottom="36dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/btn_main_3"
-                    android:onClick="saveRoute"
-                    android:visibility="gone"
-                    app:srcCompat="@drawable/save_icon" />
-            </LinearLayout>
+                    <ImageButton
+                        android:id="@+id/routes_main_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="30dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_main"
+                        android:onClick="clickOnMainButton"
+                        app:srcCompat="@drawable/routes_btn" />
+
+                    <ImageButton
+                        android:id="@+id/save_route_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="30dp"
+                        android:layout_marginBottom="36dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_main_3"
+                        android:onClick="saveRoute"
+                        android:visibility="gone"
+                        app:srcCompat="@drawable/save_icon" />
+                </LinearLayout>
+
+            </me.creese.sport.ui.custom_view.BevelLayout>
+
         </LinearLayout>
 
     </FrameLayout>
-
-
 
 
 </LinearLayout>
