@@ -35,7 +35,8 @@ import me.creese.sport.util.UserData;
 public class Route {
 
     private static final String TAG = Route.class.getSimpleName();
-    private List<PatternItem> patternPauseLine = Arrays.<PatternItem>asList(new Dash(20), new Gap(30));
+    private final MarkerOptions focusMarkerOptions;
+    private List<PatternItem> patternPauseLine = Arrays.asList(new Dash(20), new Gap(30));
 
     private final MarkerOptions markerOptions;
     private final ArrayList<Point> points;
@@ -53,6 +54,7 @@ public class Route {
     private boolean isFocusCenterRoute;
     private boolean markersIsAdded;
     private boolean isClickLine;
+    private Marker focusMarker;
 
     public Route(Context context) {
 
@@ -65,6 +67,14 @@ public class Route {
 
         lineOptions = new PolylineOptions();
 
+        focusMarkerOptions = new MarkerOptions()
+                .anchor(0.5f,1);
+
+        if(Settings.TYPE_SPORT == Settings.TypeSport.BIKE) {
+            focusMarkerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_bike));
+        } else {
+            focusMarkerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_run));
+        }
 
         setColorLine(0xffffff00);
 
@@ -143,10 +153,7 @@ public class Route {
         for (int i = 0; i < points.size(); i++) {
             if (i + 1 < points.size())
                 rotation = angleFromCoordinate(points.get(i).getLatLng(), points.get(i + 1).getLatLng());
-
-
             addMarker(points.get(i).getLatLng(), markerTitles.get(i), rotation);
-
             if (i == 0 || i == points.size() - 1) {
                 markers.get(i).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.cap));
             }
@@ -242,8 +249,15 @@ public class Route {
      * @param point
      */
     public void focusOnPoint(LatLng point, int zoom) {
-
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, zoom));
+
+        if(isFocusRoute) {
+            if (focusMarker == null) {
+                focusMarkerOptions.position(point);
+                focusMarker = googleMap.addMarker(focusMarkerOptions);
+            }
+            focusMarker.setPosition(point);
+        }
     }
 
 
