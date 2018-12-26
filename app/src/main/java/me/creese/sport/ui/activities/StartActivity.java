@@ -1,13 +1,10 @@
 package me.creese.sport.ui.activities;
 
 import android.app.Dialog;
-import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -22,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import com.google.android.gms.maps.MapView;
 
@@ -38,7 +36,6 @@ import me.creese.sport.ui.fragments.HistoryFragment;
 import me.creese.sport.ui.fragments.ListRoutesFragment;
 import me.creese.sport.ui.fragments.MainViewStatFragment;
 import me.creese.sport.ui.fragments.StatFragment;
-import me.creese.sport.util.NotificationService;
 import me.creese.sport.util.Settings;
 import me.creese.sport.util.UpdateInfo;
 
@@ -48,7 +45,6 @@ public class StartActivity extends AppCompatActivity {
     private static final String TAG = StartActivity.class.getSimpleName();
     private MapView map;
     private MapWork mapWork;
-    //private View bottomMenu;
 
 
     @Override
@@ -70,13 +66,25 @@ public class StartActivity extends AppCompatActivity {
         mapWork.setContext(this);
         map.getMapAsync(mapWork);
 
+        setIndicator();
 
-        findViewById(R.id.distance_panel).setVisibility(mapWork.isRouteMode() ? View.VISIBLE : View.GONE);
+
+        /*findViewById(R.id.distance_panel).setVisibility(mapWork.isRouteMode() ? View.VISIBLE : View.GONE);
         findViewById(R.id.routes_main_btn).setVisibility(mapWork.isRouteMode() ? View.GONE : View.VISIBLE);
         findViewById(R.id.save_route_btn).setVisibility(mapWork.isRouteMode() ? View.VISIBLE : View.GONE);
-        findViewById(R.id.stop_button).setVisibility(mapWork.getGps().isStartWay() ?View.VISIBLE : View.GONE);
+        findViewById(R.id.stop_button).setVisibility(mapWork.getGps().isStartWay() ? View.VISIBLE : View.GONE);*/
         ((ImageButton) findViewById(R.id.play_button)).setImageResource(mapWork.getGps().isStartWay() ? R.drawable.pause_icon : R.drawable.play_icon);
 
+    }
+
+    private void setIndicator() {
+        ImageView indicator = findViewById(R.id.indicator_sport);
+
+        if (Settings.TYPE_SPORT == Settings.TypeSport.BIKE) {
+            indicator.setImageResource(R.drawable.bike_indicator);
+        } else {
+            indicator.setImageResource(R.drawable.run_indicator);
+        }
     }
 
     /**
@@ -146,7 +154,7 @@ public class StartActivity extends AppCompatActivity {
         if (button.getTag().equals("pause")) {
             button.setTag("play");
             button.setImageResource(R.drawable.pause_icon);
-            if(!mapWork.getGps().isPause()) {
+            if (!mapWork.getGps().isPause()) {
                 clearAllFragments();
                 mapWork.getGps().startUpdatePosition();
                 findViewById(R.id.stop_button).setVisibility(View.VISIBLE);
@@ -180,16 +188,9 @@ public class StartActivity extends AppCompatActivity {
 
         Fragment panel = getSupportFragmentManager().findFragmentByTag(MainViewStatFragment.class.getSimpleName());
         if (panel != null) {
-            getSupportFragmentManager().beginTransaction()
-                    .remove(panel)
-                    .commit();
+            getSupportFragmentManager().beginTransaction().remove(panel).commit();
         }
-        getSupportFragmentManager()
-                .beginTransaction()
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .addToBackStack(null)
-                .replace(R.id.main_content, StatFragment.newInstanse(model))
-                .commit();
+        getSupportFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).addToBackStack(null).replace(R.id.main_content, StatFragment.newInstanse(model)).commit();
 
     }
 
@@ -271,7 +272,7 @@ public class StartActivity extends AppCompatActivity {
                 getSupportFragmentManager().beginTransaction().replace(R.id.main_content, new HistoryFragment()).addToBackStack(null).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).commit();
                 break;
             case R.id.stat_main_btn:
-                getSupportFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).addToBackStack(null).replace(R.id.main_content, StatFragment.newInstanse( null)).commit();
+                getSupportFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).addToBackStack(null).replace(R.id.main_content, StatFragment.newInstanse(null)).commit();
                 break;
         }
     }
@@ -279,9 +280,7 @@ public class StartActivity extends AppCompatActivity {
     private void clearAllFragments() {
         List<Fragment> fragments = getSupportFragmentManager().getFragments();
         for (Fragment fragment : fragments) {
-            getSupportFragmentManager().beginTransaction()
-                    .remove(fragment)
-                    .commit();
+            getSupportFragmentManager().beginTransaction().remove(fragment).commit();
         }
         getSupportFragmentManager().popBackStack();
     }
@@ -296,8 +295,7 @@ public class StartActivity extends AppCompatActivity {
         if (mapWork.getGps().isStartWay()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-            builder.setTitle(R.string.are_you_sure_to_exit)
-            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+            builder.setTitle(R.string.are_you_sure_to_exit).setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     mapWork.getGps().stopUpdatePosition();
@@ -306,35 +304,16 @@ public class StartActivity extends AppCompatActivity {
 
                     StartActivity.super.onBackPressed();
                 }
-            })
-            .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+            }).setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
                 }
-            })
-            .create().show();
+            }).create().show();
 
         } else {
-
-/*
-            List<Fragment> fragments = getSupportFragmentManager().getFragments();
-            for (Fragment fragment : fragments) {
-                if (fragment instanceof StatFragment) {
-                    if (((StatFragment) fragment).isShowStartPosWhenClose()) {
-                        mapWork.getGoogleMap().clear();
-                        mapWork.clearRoutes();
-                        mapWork.showStartPosition();
-                    }
-                }
-            }*/
-
-
             super.onBackPressed();
-            //if (bottomMenu.getVisibility() == View.GONE) bottomMenu.setVisibility(View.VISIBLE);
         }
-
-
     }
 
     @Override
@@ -347,12 +326,23 @@ public class StartActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         map.onResume();
+
+        while (Settings.listChanges.size() > 0) {
+            switch (Settings.listChanges.pop()) {
+                case CHANGE_TYPE_MAP:
+                    mapWork.getGoogleMap().setMapType(Settings.TYPE_MAP);
+                    break;
+                case CHANGE_TYPE_SPORT:
+                    setIndicator();
+                    break;
+            }
+        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.w(TAG, "onStop: " );
+        Log.w(TAG, "onStop: ");
     }
 
     @Override
@@ -374,7 +364,7 @@ public class StartActivity extends AppCompatActivity {
             mapWork.getGps().startUpdatePosition();
         }
         if (requestCode == CHECK_GPS_ENABLED && resultCode == 0) {
-            //stopGps((ImageButton) findViewById(R.id.play_button));
+            stopGps(findViewById(R.id.stop_button));
         }
 
     }

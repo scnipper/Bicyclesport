@@ -65,16 +65,20 @@
     <PreferenceCategory android:title="Дополнительно">
         <Preference
             android:summary="Напишите нам E-Mail"
-            android:title="Связь с разработчиком" />
+            android:key="email"
+            android:title="Связь с разработчиком">
+            <intent android:action="android.intent.action.SENDTO"
+                android:data="mailto:support@creese.me" />
+        </Preference>
         <Preference
             android:title="Исходный код"
+            android:key="source"
             android:summary="Проект на GitHub">
             <intent android:action="android.intent.action.VIEW"
                 android:data="https://github.com/scnipper/Bicyclesport" />
         </Preference>
         <Preference
             android:key="version_app"
-            android:summary="1.0.1"
             android:title="Версия приложения" />
     </PreferenceCategory>
 </PreferenceScreen>

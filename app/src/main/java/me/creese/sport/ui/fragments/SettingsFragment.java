@@ -1,6 +1,7 @@
 package me.creese.sport.ui.fragments;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v14.preference.SwitchPreference;
@@ -8,16 +9,14 @@ import android.support.v7.preference.EditTextPreference;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
-import android.util.Log;
 
 import me.creese.sport.BuildConfig;
 import me.creese.sport.R;
 import me.creese.sport.ui.activities.EnterDataUserActivity;
 import me.creese.sport.util.Settings;
 
-import static android.support.constraint.Constraints.TAG;
+public class SettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
 
-public class SettingsFragment extends PreferenceFragmentCompat {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,12 +47,34 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @Override
     public boolean onPreferenceTreeClick(Preference preference) {
-        Log.w(TAG, "onPreferenceTreeClick: " + preference);
-        String key = preference.getKey();
-
-        if (key.equals(getString(R.string.pref_enter_data))) {
+        if (preference.getKey().equals(getString(R.string.pref_enter_data))) {
             preference.getContext().startActivity(new Intent(getContext(), EnterDataUserActivity.class));
         }
+        return super.onPreferenceTreeClick(preference);
+    }
+
+    @Override
+    public void onCreatePreferences(Bundle bundle, String s) {
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+
+    }
+
+    @Override
+    public void onPause() {
+        getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+        super.onPause();
+    }
+
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        Preference preference = findPreference(key);
+
         if (key.equals(getString(R.string.pref_goal_switch))) {
             checkGoal((SwitchPreference) preference);
         }
@@ -69,18 +90,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         }
 
 
-        Settings.init(key, value, getContext());
-
-
-        return super.onPreferenceTreeClick(preference);
+        Settings.init(key, value, getContext(), true);
 
     }
-
-    @Override
-    public void onCreatePreferences(Bundle bundle, String s) {
-        Log.w(TAG, "onCreatePreferences: " + s);
-
-    }
-
-
 }
