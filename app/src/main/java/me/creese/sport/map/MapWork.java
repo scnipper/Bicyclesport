@@ -7,17 +7,20 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import me.creese.sport.R;
 import me.creese.sport.map.gps.Gps;
@@ -68,11 +71,15 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
 
 
         route.showOnMap();
-        //route.focusOnCenterRoute();
 
-              /*  if (last != null) {
-                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(last, 15));
-                }*/
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        List<Point> points = model.getPoints();
+        for(int i = 0; i < points.size();i++){
+            builder.include(points.get(i).getLatLng());
+        }
+        LatLngBounds bounds = builder.build();
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
+
 
     }
 

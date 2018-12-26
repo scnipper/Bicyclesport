@@ -117,9 +117,6 @@ public class Route {
         Polyline line = googleMap.addPolyline(lineOptions);
         line.setClickable(isClickLine);
         lines.add(line);
-
-
-        Log.w(TAG, "showOnMap: " + lines.size());
         if (isFocusRoute) focusOnPoint(points.get(points.size() - 1).getLatLng());
 
         if (isFocusCenterRoute) {
