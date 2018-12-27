@@ -9,6 +9,7 @@ import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
@@ -213,13 +214,11 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
         Log.w(TAG, "onGpsStatusChanged: gps first fix");
         if(!isStartWay) return;
 
-        MainViewStatFragment mainVIewStatFragment = new MainViewStatFragment();
-        context.getSupportFragmentManager()
-                .beginTransaction()
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .replace(R.id.main_content,mainVIewStatFragment,MainViewStatFragment.class.getSimpleName())
-                .commit();
-        context.getSupportFragmentManager().executePendingTransactions();
+        Fragment fragment = context.getSupportFragmentManager().findFragmentById(R.id.sub_content);
+        if(fragment == null) {
+
+            context.addMainView();
+        }
         UpdateInfo.get().start();
 
         isFixGps = true;

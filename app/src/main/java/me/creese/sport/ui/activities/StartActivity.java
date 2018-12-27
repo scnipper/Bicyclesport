@@ -9,8 +9,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
@@ -35,6 +33,7 @@ import me.creese.sport.models.RouteModel;
 import me.creese.sport.ui.fragments.HistoryFragment;
 import me.creese.sport.ui.fragments.ListRoutesFragment;
 import me.creese.sport.ui.fragments.MainViewStatFragment;
+import me.creese.sport.ui.fragments.MinMenuFragment;
 import me.creese.sport.ui.fragments.StatFragment;
 import me.creese.sport.util.Settings;
 import me.creese.sport.util.UpdateInfo;
@@ -51,7 +50,7 @@ public class StartActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.w(TAG, "onCreate: ");
-        setContentView(R.layout.activity_start);
+        setContentView(R.layout.content);
 
         initPrefs();
 
@@ -149,13 +148,19 @@ public class StartActivity extends AppCompatActivity {
      */
     public void playSport(View v) {
         ImageButton button = (ImageButton) v;
-
+        int id = button.getId();
 
         if (button.getTag().equals("pause")) {
             button.setTag("play");
-            button.setImageResource(R.drawable.pause_icon);
+            button.setImageResource(id == R.id.play_button ? R.drawable.pause_icon :R.drawable.pause_icon_black);
             if (!mapWork.getGps().isPause()) {
+                if(id == R.id.play_button)
                 clearAllFragments();
+                else {
+                    MinMenuFragment fragment = (MinMenuFragment) getSupportFragmentManager().findFragmentById(R.id.sub_content);
+
+                    fragment.setType(MinMenuFragment.TYPE_MOVING,fragment.getView());
+                }
                 mapWork.getGps().startUpdatePosition();
                 findViewById(R.id.stop_button).setVisibility(View.VISIBLE);
             } else {
@@ -165,7 +170,7 @@ public class StartActivity extends AppCompatActivity {
             }
 
         } else {
-            button.setImageResource(R.drawable.play_icon);
+            button.setImageResource(id == R.id.play_button ? R.drawable.play_icon :R.drawable.play_icon_black);
             v.setTag("pause");
             mapWork.getGps().setPause(true);
             UpdateInfo.get().pause();
@@ -194,18 +199,14 @@ public class StartActivity extends AppCompatActivity {
 
     }
 
-    /**
-     * Кнопка открытия бокового меню
-     *
-     * @param v
-     */
-    public void openDrawer(View v) {
-        DrawerLayout drawerLayout = findViewById(R.id.drawer);
-
-        drawerLayout.openDrawer(GravityCompat.START);
-    }
 
     public void clearMakeRoute(View v) {
+        if(v.getId() == R.id.clear_route_btn_minmenu && mapWork.getGps().isStartWay()) {
+            clearAllFragments();
+            addMainView();
+            UpdateInfo.get().createViews();
+            return;
+        }
         clearMakeRoute(v, true);
     }
 
@@ -275,6 +276,12 @@ public class StartActivity extends AppCompatActivity {
                 getSupportFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).addToBackStack(null).replace(R.id.main_content, StatFragment.newInstanse(null)).commit();
                 break;
         }
+    }
+
+    public void addMainView() {
+        MainViewStatFragment mainVIewStatFragment = new MainViewStatFragment();
+        getSupportFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).replace(R.id.main_content, mainVIewStatFragment, MainViewStatFragment.class.getSimpleName()).commit();
+        getSupportFragmentManager().executePendingTransactions();
     }
 
     private void clearAllFragments() {
@@ -382,5 +389,4 @@ public class StartActivity extends AppCompatActivity {
     public Object onRetainCustomNonConfigurationInstance() {
         return mapWork;
     }
-
 }

@@ -6,4 +6,5 @@
     <color name="navigationMenuBack">#871ea440</color>
     <color name="text_color_main">#393737</color>
     <color name="blue">#4285f4</color>
+    <color name="text_color_red">#fa507d</color>
 </resources>

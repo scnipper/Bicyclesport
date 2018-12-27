@@ -27,6 +27,7 @@ import me.creese.sport.map.gps.Gps;
 import me.creese.sport.map.gps.GpsListener;
 import me.creese.sport.models.RouteModel;
 import me.creese.sport.ui.activities.StartActivity;
+import me.creese.sport.ui.fragments.MinMenuFragment;
 import me.creese.sport.util.Settings;
 
 
@@ -108,6 +109,11 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
         route.setMarker(true);
         addRoute(route);
 
+        context.getSupportFragmentManager().beginTransaction()
+                .add(R.id.sub_content,MinMenuFragment.instance(MinMenuFragment.TYPE_CREATE_ROUTE))
+                .commit();
+
+        context.findViewById(R.id.menu_buttons).setVisibility(View.GONE);
 
 
         context.findViewById(R.id.routes_main_btn).setVisibility(View.GONE);
@@ -237,7 +243,8 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
         }
         if (isRouteMode) {
             getLastRoute().addPointOnMap(latLng);
-            ((TextView) distView.findViewById(R.id.dist_text)).setText(Route.makeDistance(getLastRoute().getDistance()).toUpperCase());
+            // TODO: 27.12.2018 dist text is here
+           // ((TextView) distView.findViewById(R.id.dist_text)).setText(Route.makeDistance(getLastRoute().getDistance()).toUpperCase());
 
         }
     }

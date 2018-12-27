@@ -93,6 +93,10 @@ public class UpdateInfo implements Runnable {
             distanceView = fragment.getView().findViewById(R.id.distance_view);
             timeView = fragment.getView().findViewById(R.id.time_view);
             kallView = fragment.getView().findViewById(R.id.kall_view);
+        } else {
+            fragment = startActivity.getSupportFragmentManager().findFragmentById(R.id.sub_content);
+            speedView = fragment.getView().findViewById(R.id.text_minmenu);
+
         }
 
 
@@ -226,11 +230,14 @@ public class UpdateInfo implements Runnable {
             rideModel.setCalories((int) route.calculateCalories(gps.getSpeed()));
             rideModel.setMaxSpeed((int) gps.getMaxSpeed());
             rideModel.setTimeRide(time / 1000);
+            if(timeView != null)
             timeView.setText(formatTime(time / 1000));
 
-
+            if (speedView != null)
             speedView.setText(((int) gps.getSpeed()) + " " + startActivity.getString(R.string.km_peer_hour));
+            if (distanceView != null)
             distanceView.setText(Route.makeDistance(rideModel.getDistance()));
+            if (kallView != null)
             kallView.setText(rideModel.getCalories() + "");
         }
         Intent startIntent = new Intent(startActivity, NotificationService.class);
