@@ -179,13 +179,21 @@ public class StartActivity extends AppCompatActivity {
     }
 
     public void stopGps(View button) {
-        button.setVisibility(View.GONE);
+        if(button.getId() == R.id.stop_btn_minmenu) {
+            addMainButtons();
+            clearAllFragments();
+            findViewById(R.id.stop_button).setVisibility(View.GONE);
+        } else {
+            button.setVisibility(View.GONE);
+        }
         ((ImageButton) findViewById(R.id.play_button)).setImageResource(R.drawable.play_icon);
         findViewById(R.id.play_button).setTag("pause");
         mapWork.getGps().stopUpdatePosition();
         RouteModel model = mapWork.getLastRoute().saveRoute();
         RideModel rideModel = UpdateInfo.get().saveRide(model.getId());
         showStatFragment(new RouteAndRide(rideModel, model));
+
+
     }
 
     public void showStatFragment(RouteAndRide model) {
@@ -220,6 +228,9 @@ public class StartActivity extends AppCompatActivity {
                 mapWork.showStartPosition();
                 findViewById(R.id.save_route_btn).setVisibility(View.GONE);
                 findViewById(R.id.routes_main_btn).setVisibility(View.VISIBLE);
+
+                clearAllFragments();
+                findViewById(R.id.menu_buttons).setVisibility(View.VISIBLE);
             }
         };
 
@@ -278,16 +289,46 @@ public class StartActivity extends AppCompatActivity {
         }
     }
 
+    private void addMainButtons() {
+        findViewById(R.id.menu_buttons).setVisibility(View.VISIBLE);
+        ImageButton playBtn = findViewById(R.id.play_button);
+
+        if(UpdateInfo.get().isPause()) {
+            playBtn.setTag("pause");
+            playBtn.setImageResource(R.drawable.play_icon);
+        } else {
+            playBtn.setTag("play");
+            playBtn.setImageResource(R.drawable.pause_icon);
+        }
+    }
     public void addMainView() {
+        if(mapWork.getGps().isFirstFix())
+        addMainButtons();
+
         MainViewStatFragment mainVIewStatFragment = new MainViewStatFragment();
-        getSupportFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).replace(R.id.main_content, mainVIewStatFragment, MainViewStatFragment.class.getSimpleName()).commit();
+        getSupportFragmentManager().beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .replace(R.id.main_content, mainVIewStatFragment, MainViewStatFragment.class.getSimpleName())
+                .commit();
         getSupportFragmentManager().executePendingTransactions();
     }
 
-    private void clearAllFragments() {
+    public void addMinMenu(int typeCreateRoute) {
+        getSupportFragmentManager().beginTransaction()
+        .add(R.id.sub_content,MinMenuFragment.instance(typeCreateRoute))
+        .commit();
+        getSupportFragmentManager().executePendingTransactions();
+        if(typeCreateRoute == MinMenuFragment.TYPE_MOVING)
+        UpdateInfo.get().createViews();
+
+        findViewById(R.id.menu_buttons).setVisibility(View.GONE);
+    }
+
+    public void clearAllFragments() {
         List<Fragment> fragments = getSupportFragmentManager().getFragments();
         for (Fragment fragment : fragments) {
             getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+
         }
         getSupportFragmentManager().popBackStack();
     }

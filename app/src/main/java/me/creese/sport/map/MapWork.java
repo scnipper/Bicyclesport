@@ -1,5 +1,6 @@
 package me.creese.sport.map;
 
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -34,7 +35,7 @@ import me.creese.sport.util.Settings;
 public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMapClickListener, GoogleMap.OnMarkerDragListener, GoogleMap.OnPolylineClickListener, GoogleMap.OnCameraMoveListener {
     private static final String TAG = MapWork.class.getSimpleName();
     private final Gps gps;
-    private AppCompatActivity context;
+    private StartActivity context;
     private GoogleMap googleMap;
     private boolean isRouteMode;
 
@@ -109,20 +110,16 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
         route.setMarker(true);
         addRoute(route);
 
-        context.getSupportFragmentManager().beginTransaction()
-                .add(R.id.sub_content,MinMenuFragment.instance(MinMenuFragment.TYPE_CREATE_ROUTE))
-                .commit();
-
-        context.findViewById(R.id.menu_buttons).setVisibility(View.GONE);
+        context.addMinMenu(MinMenuFragment.TYPE_CREATE_ROUTE);
 
 
-        context.findViewById(R.id.routes_main_btn).setVisibility(View.GONE);
+        /*context.findViewById(R.id.routes_main_btn).setVisibility(View.GONE);
 
         ImageButton btnSave = context.findViewById(R.id.save_route_btn);
         btnSave.setScaleX(0);
         btnSave.setScaleY(0);
         btnSave.setVisibility(View.VISIBLE);
-        btnSave.animate().scaleX(1).scaleY(1).start();
+        btnSave.animate().scaleX(1).scaleY(1).start();*/
 
     }
 
@@ -235,18 +232,32 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
 
     @Override
     public void onMapClick(LatLng latLng) {
-        LinearLayout distView = context.findViewById(R.id.distance_panel);
+       // LinearLayout distView = context.findViewById(R.id.distance_panel);
 
+        if(gps.isStartWay()) {
+            isRouteMode = false;
+            Fragment fragment = context.getSupportFragmentManager().findFragmentById(R.id.sub_content);
+            if (fragment == null) {
+                context.clearAllFragments();
+                context.getSupportFragmentManager().executePendingTransactions();
+                context.addMinMenu(MinMenuFragment.TYPE_MOVING);
+            }
+
+        }
         if (routes.size() == 0) {
             makeRoute();
-            distView.setVisibility(View.VISIBLE);
+
         }
         if (isRouteMode) {
             getLastRoute().addPointOnMap(latLng);
-            // TODO: 27.12.2018 dist text is here
-           // ((TextView) distView.findViewById(R.id.dist_text)).setText(Route.makeDistance(getLastRoute().getDistance()).toUpperCase());
+            TextView textView = context.findViewById(R.id.dist_text);
+            if (textView != null) {
+                textView.setText(Route.makeDistance(getLastRoute().getDistance()).toUpperCase());
+            }
 
         }
+
+
     }
 
     @Override

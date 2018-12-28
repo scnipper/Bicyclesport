@@ -1,78 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_gravity="bottom"
-    android:gravity="bottom|end"
-    android:paddingBottom="23dp">
-
-    <ImageButton
-        android:id="@+id/clear_route_btn_minmenu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="28dp"
-        android:background="@drawable/btn_main_4"
-        android:onClick="clearMakeRoute"
-        app:srcCompat="@drawable/clear_route_cross_white" />
-
-    <ImageButton
-        android:id="@+id/save_route_btn_minmenu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="11dp"
-        android:background="@drawable/btn_main_2"
-        android:onClick="saveRoute"
-        app:srcCompat="@drawable/save_icon" />
+    android:layout_height="match_parent">
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="11dp"
-        android:background="@drawable/play_and_stop"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <ImageButton
-            android:id="@+id/play_button_minmenu"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
-            android:onClick="playSport"
-            android:paddingStart="21dp"
-            android:paddingEnd="21dp"
-            android:tag="pause"
-            app:srcCompat="@drawable/play_icon_black" />
+        android:layout_gravity="bottom"
+        android:orientation="vertical">
 
         <TextView
-            android:id="@+id/text_minmenu"
-            android:layout_width="wrap_content"
+            android:id="@+id/dist_text"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Стоп"
-            android:textAlignment="center"
+            android:layout_marginLeft="40dp"
+            android:layout_marginBottom="10dp"
             android:textColor="@color/text_color_red"
-            android:textSize="27sp"
             android:textStyle="bold" />
 
-        <ImageButton
-            android:id="@+id/stop_btn_minmenu"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
-            android:onClick="stopGps"
-            android:paddingStart="21dp"
-            android:paddingEnd="21dp"
-            app:srcCompat="@drawable/stop_icon_red" />
-
-        <Space
-            android:id="@+id/space_minmenu"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_weight="1"
-            android:visibility="gone" />
+            android:gravity="bottom|end"
+            android:paddingBottom="23dp">
+
+            <ImageButton
+                android:id="@+id/clear_route_btn_minmenu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="28dp"
+                android:background="@drawable/btn_main_4"
+                android:onClick="clearMakeRoute"
+                app:srcCompat="@drawable/clear_route_cross_white" />
+
+            <ImageButton
+                android:id="@+id/save_route_btn_minmenu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="11dp"
+                android:background="@drawable/btn_main_2"
+                android:onClick="saveRoute"
+                app:srcCompat="@drawable/save_icon" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="11dp"
+                android:background="@drawable/play_and_stop"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/play_button_minmenu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:onClick="playSport"
+                    android:paddingStart="21dp"
+                    android:paddingEnd="21dp"
+                    android:tag="pause"
+                    app:srcCompat="@drawable/play_icon_black" />
+
+                <TextView
+                    android:id="@+id/text_minmenu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Стоп"
+                    android:textAlignment="center"
+                    android:textColor="@color/text_color_red"
+                    android:textSize="27sp"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:id="@+id/stop_btn_minmenu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:onClick="stopGps"
+                    android:paddingStart="21dp"
+                    android:paddingEnd="21dp"
+                    app:srcCompat="@drawable/stop_icon_red" />
+
+                <Space
+                    android:id="@+id/space_minmenu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_weight="1"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+
+</FrameLayout>

@@ -53,7 +53,7 @@ public class UpdateInfo implements Runnable {
     private TextView kallView;
     private double perKilometr;
     private long startWaitTime;
-
+    private boolean isPause;
 
 
     private UpdateInfo() {
@@ -93,11 +93,13 @@ public class UpdateInfo implements Runnable {
             distanceView = fragment.getView().findViewById(R.id.distance_view);
             timeView = fragment.getView().findViewById(R.id.time_view);
             kallView = fragment.getView().findViewById(R.id.kall_view);
+            updateViews();
         } else {
             fragment = startActivity.getSupportFragmentManager().findFragmentById(R.id.sub_content);
             speedView = fragment.getView().findViewById(R.id.text_minmenu);
 
         }
+
 
 
     }
@@ -177,14 +179,17 @@ public class UpdateInfo implements Runnable {
     }
 
     public void start() {
-        createViews();
         if (mapWork == null) mapWork = startActivity.getMapWork();
+
+
         rideModel = new RideModel();
         chartInfo.clear();
         resume();
         Intent startIntent = new Intent(startActivity, NotificationService.class);
         startIntent.setAction(NotificationService.ACTION_START_SERVICE);
         startActivity.startService(startIntent);
+
+        createViews();
     }
 
     public void resume() {
@@ -195,6 +200,7 @@ public class UpdateInfo implements Runnable {
                 UpdateInfo.this.run();
             }
         }, 0, 1);
+        isPause = false;
     }
 
     public void stop() {
@@ -208,7 +214,7 @@ public class UpdateInfo implements Runnable {
     }
 
     public void pause() {
-        Log.w(TAG, "pause: ");
+        isPause = true;
         if (timer != null) {
             timer.cancel();
             timer = null;
@@ -252,6 +258,9 @@ public class UpdateInfo implements Runnable {
 
     }
 
+    public boolean isPause() {
+        return isPause;
+    }
 
     @Override
     public void run() {
