@@ -281,7 +281,14 @@ public class Route {
 
         return saveRoute(new String(bytes));
     }
+    public void remove() {
+        clearMarkers();
+        removeLines();
+        if (focusMarker != null) {
+            focusMarker.remove();
+        }
 
+    }
     /**
      * Сохранение маршрута
      *

@@ -290,7 +290,8 @@ public class StartActivity extends AppCompatActivity {
     }
 
     private void addMainButtons() {
-        findViewById(R.id.menu_buttons).setVisibility(View.VISIBLE);
+        View buttons = findViewById(R.id.menu_buttons);
+        buttons.setVisibility(View.VISIBLE);
         ImageButton playBtn = findViewById(R.id.play_button);
 
         if(UpdateInfo.get().isPause()) {

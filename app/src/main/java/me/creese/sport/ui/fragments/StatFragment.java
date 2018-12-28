@@ -1,11 +1,13 @@
 package me.creese.sport.ui.fragments;
 
+import android.app.Activity;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +37,7 @@ import me.creese.sport.models.ChartModel;
 import me.creese.sport.models.RideModel;
 import me.creese.sport.models.RouteAndRide;
 import me.creese.sport.models.RouteModel;
+import me.creese.sport.ui.activities.StartActivity;
 import me.creese.sport.util.UpdateInfo;
 import me.creese.sport.util.chartformat.AxisFormat;
 
@@ -322,4 +325,19 @@ public class StatFragment extends Fragment implements RadioGroup.OnCheckedChange
 
 
     }
+
+    @Override
+    public void onDetach() {
+        StartActivity activity = (StartActivity) getActivity();
+        ArrayList<Route> routes = activity.getMapWork().getRoutes();
+        for (Route route : routes) {
+            route.remove();
+        }
+        routes.clear();
+        activity.getMapWork().showStartPosition();
+        super.onDetach();
+
+    }
+
+
 }

@@ -178,6 +178,10 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
         gpsListener = null;
         checkAccessGps();
 
+        for (Route route : mapWork.getRoutes()) {
+            route.clearMarkers();
+        }
+
 
 
     }

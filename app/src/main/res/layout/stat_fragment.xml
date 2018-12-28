@@ -1,396 +1,391 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@android:color/white"
-    android:clipToPadding="false"
+    android:orientation="vertical"
     android:padding="25dp"
     android:tag="stat_list">
+
+    <TextView
+        android:id="@+id/stat_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:text="Полная статистика"
+        android:textColor="@color/text_color_main"
+        android:textSize="30sp"
+        android:textStyle="bold" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/stat_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Расстояние:"
+            android:textColor="@color/text_color_main"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/stat_dist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TextView"
+            android:textAlignment="textEnd"
+            android:textColor="@color/text_color_main"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Время:"
+            android:textColor="@color/text_color_main"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/stat_ride_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TextView"
+            android:textAlignment="textEnd"
+            android:textColor="@color/text_color_main"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/stat_date_field"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Дата:"
+            android:textColor="@color/text_color_main"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/stat_ride_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TextView"
+            android:textAlignment="textEnd"
+            android:textColor="@color/text_color_main"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Кллории:"
+            android:textColor="@color/text_color_main"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/stat_cal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TextView"
+            android:textAlignment="textEnd"
+            android:textColor="@color/text_color_main"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Макс. скорость:"
+            android:textColor="@color/text_color_main"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/stat_max_speed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TextView"
+            android:textAlignment="textEnd"
+            android:textColor="@color/text_color_main"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Средняя скорость:"
+            android:textColor="@color/text_color_main"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/stat_av_speed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TextView"
+            android:textAlignment="textEnd"
+            android:textColor="@color/text_color_main"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Темп:"
+            android:textColor="@color/text_color_main"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/stat_temp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TextView"
+            android:textAlignment="textEnd"
+            android:textColor="@color/text_color_main"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Мин. высота:"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/textView13"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TextView"
+            android:textAlignment="textEnd"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="24sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Макс. высота:"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/textView13"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TextView"
+            android:textAlignment="textEnd"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="24sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/stat_all_chart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <TextView
+            android:id="@+id/stat_title2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="32dp"
-            android:text="Полная статистика"
+            android:text="Графики"
             android:textColor="@color/text_color_main"
             android:textSize="30sp"
             android:textStyle="bold" />
 
-        <LinearLayout
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/line_chart"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Расстояние:"
-                android:textColor="@color/text_color_main"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/stat_dist"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="TextView"
-                android:textAlignment="textEnd"
-                android:textColor="@color/text_color_main"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Время:"
-                android:textColor="@color/text_color_main"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/stat_ride_time"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="TextView"
-                android:textAlignment="textEnd"
-                android:textColor="@color/text_color_main"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/stat_date_field"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Дата:"
-                android:textColor="@color/text_color_main"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/stat_ride_date"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="TextView"
-                android:textAlignment="textEnd"
-                android:textColor="@color/text_color_main"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Кллории:"
-                android:textColor="@color/text_color_main"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/stat_cal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="TextView"
-                android:textAlignment="textEnd"
-                android:textColor="@color/text_color_main"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Макс. скорость:"
-                android:textColor="@color/text_color_main"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/stat_max_speed"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="TextView"
-                android:textAlignment="textEnd"
-                android:textColor="@color/text_color_main"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Средняя скорость:"
-                android:textColor="@color/text_color_main"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/stat_av_speed"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="TextView"
-                android:textAlignment="textEnd"
-                android:textColor="@color/text_color_main"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Темп:"
-                android:textColor="@color/text_color_main"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/stat_temp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="TextView"
-                android:textAlignment="textEnd"
-                android:textColor="@color/text_color_main"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:visibility="gone">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Мин. высота:"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="24sp" />
-
-            <TextView
-                android:id="@+id/textView13"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="TextView"
-                android:textAlignment="textEnd"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="24sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:visibility="gone">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Макс. высота:"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="24sp" />
-
-            <TextView
-                android:id="@+id/textView13"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="TextView"
-                android:textAlignment="textEnd"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="24sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/stat_all_chart"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:orientation="vertical"
+            android:layout_height="300dp"
             android:visibility="visible">
 
+        </com.github.mikephil.charting.charts.LineChart>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
             <TextView
-                android:id="@+id/stat_title2"
-                android:layout_width="match_parent"
+                android:id="@+id/textView6"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="32dp"
-                android:text="Графики"
+                android:layout_weight="1"
+                android:text="График"
                 android:textColor="@color/text_color_main"
-                android:textSize="30sp"
                 android:textStyle="bold" />
 
-            <com.github.mikephil.charting.charts.LineChart
-                android:id="@+id/line_chart"
-                android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:visibility="visible">
-
-            </com.github.mikephil.charting.charts.LineChart>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/textView6"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="График"
-                    android:textColor="@color/text_color_main"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/textView8"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Единица измерения"
-                    android:textAlignment="viewEnd"
-                    android:textColor="@color/text_color_main"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/textView8"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:orientation="horizontal">
-
-                <RadioGroup
-                    android:id="@+id/stat_radio_group_chart"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:checkedButton="@+id/stat_radio_dist_time">
-
-                    <RadioButton
-                        android:id="@+id/stat_radio_dist_time"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Темп"
-                        android:textColor="@color/text_color_main" />
-
-                    <RadioButton
-                        android:id="@+id/stat_radio_cal"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Калории"
-                        android:textColor="@color/text_color_main" />
-
-                    <RadioButton
-                        android:id="@+id/stat_radio_speed"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Скорость"
-                        android:textColor="@color/text_color_main" />
-
-                </RadioGroup>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:visibility="gone">
-
-                    <CheckBox
-                        android:id="@+id/stat_check_box_1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_weight="1"
-                        android:button="@drawable/chart_checkbox_red"
-                        android:checked="true"
-                        android:ellipsize="start"
-                        android:text="CheckBox"
-                        android:textColor="@color/text_color_main"
-                        android:textStyle="bold" />
-
-                    <CheckBox
-                        android:id="@+id/stat_check_box_2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_weight="1"
-                        android:button="@drawable/chart_checkbox_blue"
-                        android:ellipsize="start"
-                        android:text="CheckBox"
-                        android:textColor="@color/text_color_main"
-                        android:textStyle="bold"
-                        android:theme="@style/CheckBoxBlue" />
-                </LinearLayout>
-
-                <RadioGroup
-                    android:id="@+id/stat_radio_group_type"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checkedButton="@+id/stat_radio_button_2"
-                    android:orientation="vertical">
-
-                    <RadioButton
-                        android:id="@+id/stat_radio_button_2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="start"
-                        android:text="Время"
-                        android:textColor="@color/text_color_main"
-                        android:textStyle="bold" />
-
-                    <RadioButton
-                        android:id="@+id/stat_radio_button_1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="start"
-                        android:text="Расстояние"
-                        android:textColor="@color/text_color_main"
-                        android:textStyle="bold" />
-
-                </RadioGroup>
-
-            </LinearLayout>
+                android:layout_weight="1"
+                android:text="Единица измерения"
+                android:textAlignment="viewEnd"
+                android:textColor="@color/text_color_main"
+                android:textStyle="bold" />
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
 
+            <RadioGroup
+                android:id="@+id/stat_radio_group_chart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:checkedButton="@+id/stat_radio_dist_time">
 
+                <RadioButton
+                    android:id="@+id/stat_radio_dist_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Темп"
+                    android:textColor="@color/text_color_main" />
+
+                <RadioButton
+                    android:id="@+id/stat_radio_cal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Калории"
+                    android:textColor="@color/text_color_main" />
+
+                <RadioButton
+                    android:id="@+id/stat_radio_speed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Скорость"
+                    android:textColor="@color/text_color_main" />
+
+            </RadioGroup>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <CheckBox
+                    android:id="@+id/stat_check_box_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:button="@drawable/chart_checkbox_red"
+                    android:checked="true"
+                    android:ellipsize="start"
+                    android:text="CheckBox"
+                    android:textColor="@color/text_color_main"
+                    android:textStyle="bold" />
+
+                <CheckBox
+                    android:id="@+id/stat_check_box_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:button="@drawable/chart_checkbox_blue"
+                    android:ellipsize="start"
+                    android:text="CheckBox"
+                    android:textColor="@color/text_color_main"
+                    android:textStyle="bold"
+                    android:theme="@style/CheckBoxBlue" />
+            </LinearLayout>
+
+            <RadioGroup
+                android:id="@+id/stat_radio_group_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkedButton="@+id/stat_radio_button_2"
+                android:orientation="vertical">
+
+                <RadioButton
+                    android:id="@+id/stat_radio_button_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:text="Время"
+                    android:textColor="@color/text_color_main"
+                    android:textStyle="bold" />
+
+                <RadioButton
+                    android:id="@+id/stat_radio_button_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:text="Расстояние"
+                    android:textColor="@color/text_color_main"
+                    android:textStyle="bold" />
+
+            </RadioGroup>
+
+        </LinearLayout>
     </LinearLayout>
-</ScrollView>
+
+
+</LinearLayout>
