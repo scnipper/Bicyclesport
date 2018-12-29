@@ -30,6 +30,7 @@ import me.creese.sport.map.Point;
 import me.creese.sport.models.RideModel;
 import me.creese.sport.models.RouteAndRide;
 import me.creese.sport.models.RouteModel;
+import me.creese.sport.ui.fragments.GoalsFragment;
 import me.creese.sport.ui.fragments.HistoryFragment;
 import me.creese.sport.ui.fragments.ListRoutesFragment;
 import me.creese.sport.ui.fragments.MainViewStatFragment;
@@ -226,7 +227,6 @@ public class StartActivity extends AppCompatActivity {
                 mapWork.setRouteMode(false);
                 mapWork.clearRoutes();
                 mapWork.showStartPosition();
-                findViewById(R.id.save_route_btn).setVisibility(View.GONE);
                 findViewById(R.id.routes_main_btn).setVisibility(View.VISIBLE);
 
                 clearAllFragments();
@@ -262,8 +262,8 @@ public class StartActivity extends AppCompatActivity {
      * @param v
      */
     public void startMakeRoute(View v) {
-        ImageButton button = findViewById(R.id.save_route_btn);
-        button.setVisibility(View.VISIBLE);
+/*        ImageButton button = findViewById(R.id.save_route_btn);
+        button.setVisibility(View.VISIBLE);*/
 
 
         mapWork.makeRoute();
@@ -285,6 +285,14 @@ public class StartActivity extends AppCompatActivity {
                 break;
             case R.id.stat_main_btn:
                 getSupportFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).addToBackStack(null).replace(R.id.main_content, StatFragment.newInstanse(null)).commit();
+                break;
+            case R.id.goals_btn:
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                        .addToBackStack(null)
+                        .replace(R.id.main_content, new GoalsFragment())
+                        .commit();
                 break;
         }
     }

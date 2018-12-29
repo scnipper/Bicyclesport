@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:isScrollContainer="true"
+        android:measureWithLargestChild="true"
         android:orientation="vertical"
         android:scrollbars="vertical">
 
@@ -128,12 +129,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
+                        android:measureWithLargestChild="true"
                         android:orientation="horizontal">
 
                         <ImageButton
                             android:id="@+id/settings_main_btn"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginLeft="15dp"
                             android:layout_weight="1"
                             android:background="@drawable/btn_main"
                             android:onClick="clickOnMainButton"
@@ -143,7 +146,7 @@
                             android:id="@+id/stat_main_btn"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="30dp"
+                            android:layout_marginStart="15dp"
                             android:layout_weight="1"
                             android:background="@drawable/btn_main"
                             android:onClick="clickOnMainButton"
@@ -153,7 +156,7 @@
                             android:id="@+id/history_main_btn"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="30dp"
+                            android:layout_marginLeft="15dp"
                             android:layout_weight="1"
                             android:background="@drawable/btn_main"
                             android:onClick="clickOnMainButton"
@@ -163,23 +166,21 @@
                             android:id="@+id/routes_main_btn"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="30dp"
+                            android:layout_marginLeft="15dp"
                             android:layout_weight="1"
                             android:background="@drawable/btn_main"
                             android:onClick="clickOnMainButton"
                             app:srcCompat="@drawable/routes_btn" />
 
                         <ImageButton
-                            android:id="@+id/save_route_btn"
+                            android:id="@+id/goals_btn"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="30dp"
-                            android:layout_marginBottom="36dp"
+                            android:layout_marginLeft="15dp"
                             android:layout_weight="1"
-                            android:background="@drawable/btn_main_3"
-                            android:onClick="saveRoute"
-                            android:visibility="gone"
-                            app:srcCompat="@drawable/save_icon" />
+                            android:background="@drawable/btn_main"
+                            android:onClick="clickOnMainButton"
+                            app:srcCompat="@drawable/goals_icon" />
                     </LinearLayout>
 
                 </me.creese.sport.ui.custom_view.BevelLayout>
