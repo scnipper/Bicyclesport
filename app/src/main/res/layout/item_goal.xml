@@ -5,7 +5,7 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/textView12"
+        android:id="@+id/goal_item_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="TextView"
@@ -17,18 +17,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="TextView"
+        android:text="Проезжать:"
         android:textColor="@color/text_color_main"
         android:textSize="13sp"
         android:textStyle="bold" />
 
     <SeekBar
-        android:id="@+id/progressBar2"
+        android:id="@+id/goal_item_progress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:background="@color/text_color_main"
+        android:clickable="false"
         android:progress="10"
-        android:progressDrawable="@drawable/progrees_draw" />
+        android:thumb="@drawable/thumb_progress" />
 
 </LinearLayout>

@@ -11,8 +11,12 @@ import android.support.v7.preference.PreferenceManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.util.ArrayList;
+
 import me.creese.sport.data.DataHelper;
+import me.creese.sport.data.GoalsTable;
 import me.creese.sport.data.UserTable;
+import me.creese.sport.models.GoalsModel;
 import me.creese.sport.models.RouteModel;
 import me.creese.sport.util.Files;
 import me.creese.sport.util.RouteModelConvert;
@@ -24,6 +28,7 @@ public class App extends Application {
     private Gson gson;
     private DataHelper data;
     private LocationManager locationManager;
+    private ArrayList<GoalsModel> goals;
 
     public App() {
         instanse = this;
@@ -45,18 +50,41 @@ public class App extends Application {
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        SQLiteDatabase db = data.getWritableDatabase();
+        setUserData(db);
+        loadGoals(db);
+        db.close();
+    }
 
-        setUserData();
+    /**
+     * Загрузка целей
+     * @param db
+     */
+    private void loadGoals(SQLiteDatabase db) {
+        goals = new ArrayList<>();
+        Cursor cursor = db.query(GoalsTable.NAME_TABLE,null,null,null,
+                null,null,null);
+        if(cursor.moveToFirst()) {
+            do {
+
+                GoalsModel goalsModel = new GoalsModel(cursor.getLong(cursor.getColumnIndex(GoalsTable.TIME)),
+                        cursor.getInt(cursor.getColumnIndex(GoalsTable.COUNT)),cursor.getInt(cursor.getColumnIndex(GoalsTable.TYPE)),
+                        cursor.getInt(cursor.getColumnIndex(DataHelper.ID)));
+                goalsModel.setPassCount(cursor.getInt(cursor.getColumnIndex(GoalsTable.PASS_COUNT)));
+                goals.add(goalsModel);
+
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
     }
 
     /**
      * Загрузка пользовательских данных и БД
+     * @param db
      */
-    public void setUserData() {
-
-        SQLiteDatabase readDb = data.getWritableDatabase();
-
-        Cursor cursor = readDb.query(UserTable.NAME_TABLE,null,null,
+    public void setUserData(SQLiteDatabase db) {
+        Cursor cursor = db.query(UserTable.NAME_TABLE,null,null,
                 null,null,null,null);
 
         if(cursor.moveToFirst()) {
@@ -67,10 +95,10 @@ public class App extends Application {
         } else {
             ContentValues contentValues = new ContentValues();
             contentValues.put(DataHelper.ID,1);
-            long i = readDb.insert(UserTable.NAME_TABLE,null,contentValues);
+            long i = db.insert(UserTable.NAME_TABLE,null,contentValues);
             if(i != -1) {
                 cursor.close();
-                setUserData();
+                setUserData(db);
             }
         }
 
@@ -93,4 +121,7 @@ public class App extends Application {
         return gson;
     }
 
+    public ArrayList<GoalsModel> getGoals() {
+        return goals;
+    }
 }

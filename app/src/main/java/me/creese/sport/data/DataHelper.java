@@ -1,5 +1,6 @@
 package me.creese.sport.data;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 
 import me.creese.sport.App;
 import me.creese.sport.map.Point;
+import me.creese.sport.models.GoalsModel;
 import me.creese.sport.models.RideModel;
 import me.creese.sport.models.RouteModel;
 
@@ -76,6 +78,13 @@ public class DataHelper extends SQLiteOpenHelper {
                 FullTable.MAX_SPEED+" INTEGER DEFAULT(0)," +
                 FullTable.TIME+" BIGINT DEFAULT(0));";
 
+        final String GOALS = "CREATE TABLE "+GoalsTable.NAME_TABLE+" (" +
+                ID+" INTEGER PRIMARY KEY AUTOINCREMENT," +
+                GoalsTable.TYPE+" INTEGER DEFAULT(0)," +
+                GoalsTable.COUNT+" BIGINT DEFAULT(0)," +
+                GoalsTable.PASS_COUNT+" BIGINT DEFAULT(0)," +
+                GoalsTable.TIME+" BIGINT DEFAULT(0));";
+
 
         db.execSQL(ROUTES);
         db.execSQL(FULL_STAT);
@@ -83,6 +92,7 @@ public class DataHelper extends SQLiteOpenHelper {
         db.execSQL(RIDES);
         db.execSQL(POINTS);
         db.execSQL(USER_DATA);
+        db.execSQL(GOALS);
     }
 
     @Override
@@ -161,4 +171,17 @@ public class DataHelper extends SQLiteOpenHelper {
     }
 
 
+    public void insertGoals(GoalsModel goalsModel) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(GoalsTable.COUNT,goalsModel.getCount());
+        cv.put(GoalsTable.TIME,goalsModel.getTime());
+        cv.put(GoalsTable.TYPE,goalsModel.getType());
+
+        long id = db.insert(GoalsTable.NAME_TABLE, null, cv);
+        if(id != -1) {
+            goalsModel.setId((int) id);
+            App.get().getGoals().add(goalsModel);
+        }
+    }
 }

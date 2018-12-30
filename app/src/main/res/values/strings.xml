@@ -18,7 +18,9 @@
     <string name="are_you_sure_to_exit">Вы уверены что хотите выйти?</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
-
+    <string name="enter_goal">Введите цель</string>
+    <string name="wrong_number">Неверный формат записи</string>
+    <string name="change_time">Выберите время</string>
 
 
 </resources>
