@@ -15,6 +15,8 @@ import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import java.util.Calendar;
+
 import me.creese.sport.App;
 import me.creese.sport.R;
 import me.creese.sport.models.GoalsModel;
@@ -72,12 +74,36 @@ public class GoalsFragment extends Fragment implements View.OnClickListener {
                     break;
             }
             if(checkDay.isChecked()) {
-                timeGoal = 24 * 60 * 60 * 1000;
+                timeGoal = System.currentTimeMillis()+(24 * 60 * 60 * 1000);
+
+                GoalsModel goalsModel = new GoalsModel(timeGoal, goalsCount, type, -1);
+                App.get().getData().insertGoals(goalsModel);
+            }
+            if(checkWeek.isChecked()) {
+                timeGoal = System.currentTimeMillis()+ (7 * 24 * 60 * 60 * 1000);
+
+                GoalsModel goalsModel = new GoalsModel(timeGoal, goalsCount, type, -1);
+                App.get().getData().insertGoals(goalsModel);
+            }
+            if(checkMonth.isChecked()) {
+                Calendar dateAfter = Calendar.getInstance();
+                dateAfter.add(Calendar.MONTH,1);
+
+                timeGoal = dateAfter.getTimeInMillis();
+
+                GoalsModel goalsModel = new GoalsModel(timeGoal, goalsCount, type, -1);
+                App.get().getData().insertGoals(goalsModel);
             }
 
-            GoalsModel goalsModel = new GoalsModel(timeGoal,goalsCount,type,-1);
+            if(checkYear.isChecked()) {
+                Calendar dateAfter = Calendar.getInstance();
+                dateAfter.add(Calendar.YEAR,1);
 
-            App.get().getData().insertGoals(goalsModel);
+                timeGoal = dateAfter.getTimeInMillis();
+
+                GoalsModel goalsModel = new GoalsModel(timeGoal, goalsCount, type, -1);
+                App.get().getData().insertGoals(goalsModel);
+            }
 
             updateRecycle(view);
 

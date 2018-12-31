@@ -184,4 +184,10 @@ public class DataHelper extends SQLiteOpenHelper {
             App.get().getGoals().add(goalsModel);
         }
     }
+
+    public void removeGoal(int id ) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        db.delete(GoalsTable.NAME_TABLE,ID+"="+id,null);
+    }
 }

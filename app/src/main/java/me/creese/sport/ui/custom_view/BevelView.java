@@ -8,12 +8,14 @@ import android.graphics.Path;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class BevelView extends FrameLayout {
+    private static final String TAG = BevelView.class.getSimpleName();
     private Paint paint;
     private Path path;
 
