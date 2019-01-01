@@ -71,7 +71,14 @@ public class App extends Application {
                         cursor.getInt(cursor.getColumnIndex(GoalsTable.COUNT)),cursor.getInt(cursor.getColumnIndex(GoalsTable.TYPE)),
                         cursor.getInt(cursor.getColumnIndex(DataHelper.ID)));
                 goalsModel.setPassCount(cursor.getInt(cursor.getColumnIndex(GoalsTable.PASS_COUNT)));
-                goals.add(goalsModel);
+
+                if(goalsModel.getTime() - System.currentTimeMillis() < 0
+                        || goalsModel.getPassCount() > goalsModel.getCount()) {
+                    data.removeGoal(goalsModel.getId());
+                } else {
+                    goals.add(goalsModel);
+                }
+
 
 
             } while (cursor.moveToNext());

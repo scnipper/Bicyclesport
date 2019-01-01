@@ -153,14 +153,13 @@ public class StartActivity extends AppCompatActivity {
 
         if (button.getTag().equals("pause")) {
             button.setTag("play");
-            button.setImageResource(id == R.id.play_button ? R.drawable.pause_icon :R.drawable.pause_icon_black);
+            button.setImageResource(id == R.id.play_button ? R.drawable.pause_icon : R.drawable.pause_icon_black);
             if (!mapWork.getGps().isPause()) {
-                if(id == R.id.play_button)
-                clearAllFragments();
+                if (id == R.id.play_button) clearAllFragments();
                 else {
                     MinMenuFragment fragment = (MinMenuFragment) getSupportFragmentManager().findFragmentById(R.id.sub_content);
 
-                    fragment.setType(MinMenuFragment.TYPE_MOVING,fragment.getView());
+                    fragment.setType(MinMenuFragment.TYPE_MOVING, fragment.getView());
                 }
                 mapWork.getGps().startUpdatePosition();
                 findViewById(R.id.stop_button).setVisibility(View.VISIBLE);
@@ -171,7 +170,7 @@ public class StartActivity extends AppCompatActivity {
             }
 
         } else {
-            button.setImageResource(id == R.id.play_button ? R.drawable.play_icon :R.drawable.play_icon_black);
+            button.setImageResource(id == R.id.play_button ? R.drawable.play_icon : R.drawable.play_icon_black);
             v.setTag("pause");
             mapWork.getGps().setPause(true);
             UpdateInfo.get().pause();
@@ -179,8 +178,13 @@ public class StartActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Кнопка остановки движения
+     *
+     * @param button
+     */
     public void stopGps(View button) {
-        if(button.getId() == R.id.stop_btn_minmenu) {
+        if (button.getId() == R.id.stop_btn_minmenu) {
             addMainButtons();
             clearAllFragments();
             findViewById(R.id.stop_button).setVisibility(View.GONE);
@@ -192,7 +196,10 @@ public class StartActivity extends AppCompatActivity {
         mapWork.getGps().stopUpdatePosition();
         RouteModel model = mapWork.getLastRoute().saveRoute();
         RideModel rideModel = UpdateInfo.get().saveRide(model.getId());
+        UpdateInfo.get().checkGoals();
         showStatFragment(new RouteAndRide(rideModel, model));
+
+
 
 
     }
@@ -210,7 +217,7 @@ public class StartActivity extends AppCompatActivity {
 
 
     public void clearMakeRoute(View v) {
-        if(v.getId() == R.id.clear_route_btn_minmenu && mapWork.getGps().isStartWay()) {
+        if (v.getId() == R.id.clear_route_btn_minmenu && mapWork.getGps().isStartWay()) {
             clearAllFragments();
             addMainView();
             UpdateInfo.get().createViews();
@@ -287,12 +294,7 @@ public class StartActivity extends AppCompatActivity {
                 getSupportFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).addToBackStack(null).replace(R.id.main_content, StatFragment.newInstanse(null)).commit();
                 break;
             case R.id.goals_btn:
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                        .addToBackStack(null)
-                        .replace(R.id.main_content, new GoalsFragment())
-                        .commit();
+                getSupportFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).addToBackStack(null).replace(R.id.main_content, new GoalsFragment()).commit();
                 break;
         }
     }
@@ -302,7 +304,7 @@ public class StartActivity extends AppCompatActivity {
         buttons.setVisibility(View.VISIBLE);
         ImageButton playBtn = findViewById(R.id.play_button);
 
-        if(UpdateInfo.get().isPause()) {
+        if (UpdateInfo.get().isPause()) {
             playBtn.setTag("pause");
             playBtn.setImageResource(R.drawable.play_icon);
         } else {
@@ -310,25 +312,19 @@ public class StartActivity extends AppCompatActivity {
             playBtn.setImageResource(R.drawable.pause_icon);
         }
     }
+
     public void addMainView() {
-        if(mapWork.getGps().isFirstFix())
-        addMainButtons();
+        if (mapWork.getGps().isFirstFix()) addMainButtons();
 
         MainViewStatFragment mainVIewStatFragment = new MainViewStatFragment();
-        getSupportFragmentManager().beginTransaction()
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .replace(R.id.main_content, mainVIewStatFragment, MainViewStatFragment.class.getSimpleName())
-                .commit();
+        getSupportFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).replace(R.id.main_content, mainVIewStatFragment, MainViewStatFragment.class.getSimpleName()).commit();
         getSupportFragmentManager().executePendingTransactions();
     }
 
     public void addMinMenu(int typeCreateRoute) {
-        getSupportFragmentManager().beginTransaction()
-        .add(R.id.sub_content,MinMenuFragment.instance(typeCreateRoute))
-        .commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.sub_content, MinMenuFragment.instance(typeCreateRoute)).commit();
         getSupportFragmentManager().executePendingTransactions();
-        if(typeCreateRoute == MinMenuFragment.TYPE_MOVING)
-        UpdateInfo.get().createViews();
+        if (typeCreateRoute == MinMenuFragment.TYPE_MOVING) UpdateInfo.get().createViews();
 
         findViewById(R.id.menu_buttons).setVisibility(View.GONE);
     }

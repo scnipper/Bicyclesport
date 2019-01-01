@@ -190,4 +190,5 @@ public class DataHelper extends SQLiteOpenHelper {
 
         db.delete(GoalsTable.NAME_TABLE,ID+"="+id,null);
     }
+
 }

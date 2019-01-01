@@ -17,6 +17,9 @@ public class GoalsModel {
         this.type = type;
         this.id = id;
     }
+    public void updatePassCount(int delta) {
+        passCount+=delta;
+    }
 
     public long getTime() {
         return time;

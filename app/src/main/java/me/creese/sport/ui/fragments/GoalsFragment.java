@@ -68,6 +68,7 @@ public class GoalsFragment extends Fragment implements View.OnClickListener {
                     break;
                 case R.id.goals_radio_time:
                     type = GoalsModel.TIME;
+                    goalsCount*=60;
                     break;
                 case R.id.goals_radio_calories:
                     type = GoalsModel.CALORIES;

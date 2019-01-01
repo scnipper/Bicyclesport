@@ -47,8 +47,8 @@ public class GoalsAdapter extends RecyclerView.Adapter<GoalsAdapter.GoalHolder> 
             text = (i + 1) + ". Проезжать расстояние " + textMaxGoal;
         }
         if(type == GoalsModel.TIME) {
-            textGoal = UpdateInfo.formatTime(passCount*60000);
-            textMaxGoal = UpdateInfo.formatTime(count*60000);
+            textGoal = UpdateInfo.formatTime(passCount);
+            textMaxGoal = UpdateInfo.formatTime(count);
             text = (i + 1) + ". Потратить время на тренировку " + textMaxGoal;
         }
         if(type == GoalsModel.CALORIES) {
@@ -57,7 +57,7 @@ public class GoalsAdapter extends RecyclerView.Adapter<GoalsAdapter.GoalHolder> 
             textMaxGoal = count+" ккал";
         }
 
-        goalHolder.goalLeftTime.setText("Осталось время - "+UpdateInfo.formatTime(time - System.currentTimeMillis()));
+        goalHolder.goalLeftTime.setText("Осталось время - "+UpdateInfo.formatTime((time - System.currentTimeMillis())/1000));
 
         goalHolder.goalTitle.setText(text);
         goalHolder.goalMaxValue.setText(textMaxGoal);

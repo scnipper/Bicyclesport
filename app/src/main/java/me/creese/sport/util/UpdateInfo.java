@@ -1,17 +1,10 @@
 package me.creese.sport.util;
 
-import android.content.ComponentName;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.IBinder;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
-import android.util.Log;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -23,11 +16,13 @@ import me.creese.sport.R;
 import me.creese.sport.data.ChartTable;
 import me.creese.sport.data.DataHelper;
 import me.creese.sport.data.FullTable;
+import me.creese.sport.data.GoalsTable;
 import me.creese.sport.data.RideTable;
 import me.creese.sport.map.MapWork;
 import me.creese.sport.map.Route;
 import me.creese.sport.map.gps.Gps;
 import me.creese.sport.models.ChartModel;
+import me.creese.sport.models.GoalsModel;
 import me.creese.sport.models.RideModel;
 import me.creese.sport.ui.activities.StartActivity;
 import me.creese.sport.ui.fragments.MainViewStatFragment;
@@ -71,6 +66,12 @@ public class UpdateInfo implements Runnable {
         return inst;
     }
 
+    /**
+     * From seconds to format hh:mm:ss
+     *
+     * @param time in sec
+     * @return
+     */
     public static String formatTime(long time) {
         long tmp = time;
         int hour = (int) (time / 3600);
@@ -101,7 +102,6 @@ public class UpdateInfo implements Runnable {
         }
 
 
-
     }
 
     public RideModel saveRide(int idRoute) {
@@ -118,8 +118,7 @@ public class UpdateInfo implements Runnable {
         final int idRide = (int) database.insert(RideTable.NAME_TABLE, null, contentValues);
 
 
-        Cursor cursor = database.query(FullTable.NAME_TABLE,
-                null, null, null, null, null, null);
+        Cursor cursor = database.query(FullTable.NAME_TABLE, null, null, null, null, null, null);
 
 
         contentValues.clear();
@@ -211,6 +210,40 @@ public class UpdateInfo implements Runnable {
         Intent startIntent = new Intent(startActivity, NotificationService.class);
         startIntent.setAction(NotificationService.ACTION_STOP_SERVICE);
         startActivity.startService(startIntent);
+
+
+
+    }
+
+    /**
+     * Обновление целей
+     */
+    public void checkGoals() {
+        ArrayList<GoalsModel> goals = App.get().getGoals();
+        if(goals.size() > 0) {
+            SQLiteDatabase db = App.get().getData().getWritableDatabase();
+            for (GoalsModel goal : goals) {
+                if(goal.getType() == GoalsModel.DISTANCE) {
+                    goal.updatePassCount((int) rideModel.getDistance());
+                }
+                if(goal.getType() == GoalsModel.TIME) {
+                    goal.updatePassCount((int) rideModel.getTimeRide());
+                }
+                if(goal.getType() == GoalsModel.CALORIES) {
+                    goal.updatePassCount(rideModel.getCalories());
+                }
+                updateGoals(goal,db);
+            }
+
+
+        }
+    }
+
+    private void updateGoals(GoalsModel goal, SQLiteDatabase db) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GoalsTable.PASS_COUNT,goal.getPassCount());
+
+        db.update(GoalsTable.NAME_TABLE,contentValues,DataHelper.ID+"="+goal.getId(),null);
     }
 
     public void pause() {
@@ -236,19 +269,17 @@ public class UpdateInfo implements Runnable {
             rideModel.setCalories((int) route.calculateCalories(gps.getSpeed()));
             rideModel.setMaxSpeed((int) gps.getMaxSpeed());
             rideModel.setTimeRide(time / 1000);
-            if(timeView != null)
-            timeView.setText(formatTime(time / 1000));
+            if (timeView != null) timeView.setText(formatTime(time / 1000));
 
             if (speedView != null)
-            speedView.setText(((int) gps.getSpeed()) + " " + startActivity.getString(R.string.km_peer_hour));
+                speedView.setText(((int) gps.getSpeed()) + " " + startActivity.getString(R.string.km_peer_hour));
             if (distanceView != null)
-            distanceView.setText(Route.makeDistance(rideModel.getDistance()));
-            if (kallView != null)
-            kallView.setText(rideModel.getCalories() + "");
+                distanceView.setText(Route.makeDistance(rideModel.getDistance()));
+            if (kallView != null) kallView.setText(rideModel.getCalories() + "");
         }
         Intent startIntent = new Intent(startActivity, NotificationService.class);
         startIntent.setAction(NotificationService.ACTION_UPDATE_INFO);
-        startIntent.putExtra(RideModel.class.getSimpleName(),rideModel);
+        startIntent.putExtra(RideModel.class.getSimpleName(), rideModel);
         startActivity.startService(startIntent);
     }
 
