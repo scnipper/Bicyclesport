@@ -7,10 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.location.LocationManager;
 import android.support.v7.preference.PreferenceManager;
 
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import java.util.ArrayList;
 
 import me.creese.sport.data.DataHelper;
@@ -19,13 +15,11 @@ import me.creese.sport.data.UserTable;
 import me.creese.sport.models.GoalsModel;
 import me.creese.sport.models.RouteModel;
 import me.creese.sport.util.Files;
-import me.creese.sport.util.RouteModelConvert;
 import me.creese.sport.util.UserData;
 
 public class App extends Application {
     private static App instanse;
     private Files files;
-    private Gson gson;
     private DataHelper data;
     private LocationManager locationManager;
     private ArrayList<GoalsModel> goals;
@@ -42,10 +36,6 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         files = new Files(this);
-        gson = new GsonBuilder()
-                .setPrettyPrinting()
-                .registerTypeAdapter(RouteModel.class,new RouteModelConvert())
-                .create();
         data = new DataHelper(this);
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
@@ -122,10 +112,6 @@ public class App extends Application {
 
     public Files getFiles() {
         return files;
-    }
-
-    public Gson getGson() {
-        return gson;
     }
 
     public ArrayList<GoalsModel> getGoals() {

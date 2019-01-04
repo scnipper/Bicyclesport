@@ -1,5 +1,9 @@
 package me.creese.sport.map;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -91,10 +95,7 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
      * @param route
      */
     public void addRoute(Route route) {
-
-
         route.setGoogleMap(googleMap);
-
         routes.add(route);
     }
 
@@ -102,25 +103,13 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
      * Функция создания маршрута
      */
     public void makeRoute() {
-
         clearRoutes();
         googleMap.clear();
         isRouteMode = true;
         Route route = new Route(context);
         route.setMarker(true);
         addRoute(route);
-
         context.addMinMenu(MinMenuFragment.TYPE_CREATE_ROUTE);
-
-
-        /*context.findViewById(R.id.routes_main_btn).setVisibility(View.GONE);
-
-        ImageButton btnSave = context.findViewById(R.id.save_route_btn);
-        btnSave.setScaleX(0);
-        btnSave.setScaleY(0);
-        btnSave.setVisibility(View.VISIBLE);
-        btnSave.animate().scaleX(1).scaleY(1).start();*/
-
     }
 
 
@@ -129,7 +118,26 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
      * Определение стартовой позиции
      */
     public void showStartPosition() {
-        gps.getStartPosition(this);
+        if(requestPermission(StartActivity.REQUEST_PERMISIONS_GPS)) {
+            gps.addListeners();
+            gps.getStartPosition(this);
+        }
+    }
+
+    public boolean requestPermission(int requestCode) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ActivityCompat.checkSelfPermission(context,
+                    Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(context,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},
+                        requestCode);
+                return false;
+            }
+        }
+        return true;
     }
 
     public void clearRoutes() {
@@ -193,14 +201,6 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
         googleMap.setOnMarkerDragListener(this);
         googleMap.setOnPolylineClickListener(this);
         googleMap.setOnCameraMoveListener(this);
-/*        if (App.get().getModel() != null) {
-            showRoute(App.get().getModel());
-            App.get().setModel(null);
-        }
-        if (showRouteWhenReady != null) {
-            showRouteWhenReady.run();
-            showRouteWhenReady = null;
-        }*/
 
         if (routes.size() == 0) {
             if (startMarker != null) {
@@ -232,8 +232,6 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
 
     @Override
     public void onMapClick(LatLng latLng) {
-       // LinearLayout distView = context.findViewById(R.id.distance_panel);
-
         if(gps.isStartWay()) {
             isRouteMode = false;
             Fragment fragment = context.getSupportFragmentManager().findFragmentById(R.id.sub_content);
@@ -245,6 +243,7 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
 
         }
         if (routes.size() == 0) {
+            context.clearAllFragments();
             makeRoute();
 
         }

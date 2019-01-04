@@ -61,6 +61,7 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
     private float maxSpeed;
     private boolean pause;
     private boolean autoPause;
+    private boolean isAddListeners;
 
 
     public Gps(MapWork mapWork) {
@@ -72,12 +73,17 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
         locationRequest.setFastestInterval(500);
 
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            App.get().getLocationManager().registerGnssStatusCallback(new GNSSListener(this));
-        } else {
-            App.get().getLocationManager().addGpsStatusListener(this);
-        }
+    }
 
+    public void addListeners() {
+        if(!isAddListeners) {
+            isAddListeners = true;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                App.get().getLocationManager().registerGnssStatusCallback(new GNSSListener(this));
+            } else {
+                App.get().getLocationManager().addGpsStatusListener(this);
+            }
+        }
     }
 
 
@@ -128,18 +134,13 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
         });
     }
 
-
+    /**
+     * Получение начальной позиции
+     *
+     * @param gpsListener
+     */
     public void getStartPosition(final GpsListener gpsListener) {
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Сделать разрешения на позицию
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
+
         this.gpsListener = gpsListener;
         client.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
             @SuppressLint("MissingPermission")
@@ -147,10 +148,6 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
             public void onSuccess(Location location) {
                 if (location == null) return;
                 long time = System.currentTimeMillis() - location.getTime();
-
-                Log.w(TAG, "onSuccess: time " + time);
-
-
                 if (time > DELTA_TIME) {
                     client.requestLocationUpdates(locationRequest, Gps.this, null);
                 } else
@@ -181,8 +178,6 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
         for (Route route : mapWork.getRoutes()) {
             route.clearMarkers();
         }
-
-
 
     }
 

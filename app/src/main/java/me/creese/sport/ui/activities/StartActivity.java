@@ -4,7 +4,9 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -42,9 +44,13 @@ import me.creese.sport.util.UpdateInfo;
 public class StartActivity extends AppCompatActivity {
 
     public static final int CHECK_GPS_ENABLED = 1122;
+
+    public static final int REQUEST_PERMISIONS_GPS = 1010;
+    public static final int REQUEST_PERMISIONS_GPS_PLAY_BTN = 1011;
     private static final String TAG = StartActivity.class.getSimpleName();
     private MapView map;
     private MapWork mapWork;
+    private int saveIdPlayBtn;
 
 
     @Override
@@ -67,12 +73,6 @@ public class StartActivity extends AppCompatActivity {
         map.getMapAsync(mapWork);
 
         setIndicator();
-
-
-        /*findViewById(R.id.distance_panel).setVisibility(mapWork.isRouteMode() ? View.VISIBLE : View.GONE);
-        findViewById(R.id.routes_main_btn).setVisibility(mapWork.isRouteMode() ? View.GONE : View.VISIBLE);
-        findViewById(R.id.save_route_btn).setVisibility(mapWork.isRouteMode() ? View.VISIBLE : View.GONE);
-        findViewById(R.id.stop_button).setVisibility(mapWork.getGps().isStartWay() ? View.VISIBLE : View.GONE);*/
         ((ImageButton) findViewById(R.id.play_button)).setImageResource(mapWork.getGps().isStartWay() ? R.drawable.pause_icon : R.drawable.play_icon);
 
     }
@@ -151,6 +151,13 @@ public class StartActivity extends AppCompatActivity {
         ImageButton button = (ImageButton) v;
         int id = button.getId();
 
+        if(!mapWork.requestPermission(REQUEST_PERMISIONS_GPS_PLAY_BTN)){
+            saveIdPlayBtn = id;
+            return;
+        }
+
+        mapWork.getGps().addListeners();
+
         if (button.getTag().equals("pause")) {
             button.setTag("play");
             button.setImageResource(id == R.id.play_button ? R.drawable.pause_icon : R.drawable.pause_icon_black);
@@ -198,8 +205,6 @@ public class StartActivity extends AppCompatActivity {
         RideModel rideModel = UpdateInfo.get().saveRide(model.getId());
         UpdateInfo.get().checkGoals();
         showStatFragment(new RouteAndRide(rideModel, model));
-
-
 
 
     }
@@ -393,18 +398,34 @@ public class StartActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        Log.w(TAG, "onStop: ");
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
         map.onDestroy();
         UpdateInfo.get().stop();
 
 
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case REQUEST_PERMISIONS_GPS:
+                if(grantResults.length > 0) {
+                    if(grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                        mapWork.showStartPosition();
+                    }
+                }
+                break;
+
+            case REQUEST_PERMISIONS_GPS_PLAY_BTN:
+                if(grantResults.length > 0) {
+                    if(grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                        playSport(findViewById(saveIdPlayBtn));
+                    }
+                }
+                break;
+        }
     }
 
     @Override

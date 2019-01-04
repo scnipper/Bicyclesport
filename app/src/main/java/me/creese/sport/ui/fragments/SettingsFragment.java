@@ -29,21 +29,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
         Preference version_app = findPreference("version_app");
 
         version_app.setSummary(BuildConfig.VERSION_NAME);
-
-
-        SwitchPreference goal = (SwitchPreference) findPreference(getString(R.string.pref_goal_switch));
-
-        checkGoal(goal);
-
     }
 
-    private void checkGoal(SwitchPreference goal) {
-        EditTextPreference dist = (EditTextPreference) findPreference(getString(R.string.pref_goal_cal));
-        EditTextPreference cal = (EditTextPreference) findPreference(getString(R.string.pref_goal_dist));
-
-        dist.setEnabled(goal.isChecked());
-        cal.setEnabled(goal.isChecked());
-    }
 
     @Override
     public boolean onPreferenceTreeClick(Preference preference) {
@@ -74,10 +61,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         Preference preference = findPreference(key);
-
-        if (key.equals(getString(R.string.pref_goal_switch))) {
-            checkGoal((SwitchPreference) preference);
-        }
 
         String value = null;
 
