@@ -40,7 +40,7 @@ import me.creese.sport.ui.fragments.ListRoutesFragment;
 import me.creese.sport.ui.fragments.MainViewStatFragment;
 import me.creese.sport.ui.fragments.MinMenuFragment;
 import me.creese.sport.ui.fragments.StatFragment;
-import me.creese.sport.util.Settings;
+import me.creese.sport.util.AppSettings;
 import me.creese.sport.util.UpdateInfo;
 
 public class StartActivity extends AppCompatActivity {
@@ -82,7 +82,7 @@ public class StartActivity extends AppCompatActivity {
     private void setIndicator() {
         ImageView indicator = findViewById(R.id.indicator_sport);
 
-        if (Settings.TYPE_SPORT == Settings.TypeSport.BIKE) {
+        if (AppSettings.TYPE_SPORT == AppSettings.TypeSport.BIKE) {
             indicator.setImageResource(R.drawable.bike_indicator);
         } else {
             indicator.setImageResource(R.drawable.run_indicator);
@@ -99,7 +99,7 @@ public class StartActivity extends AppCompatActivity {
 
         for (Object obj : all.entrySet()) {
             Map.Entry pair = (Map.Entry) obj;
-            Settings.init(String.valueOf(pair.getKey()), String.valueOf(pair.getValue()), this);
+            AppSettings.init(String.valueOf(pair.getKey()), String.valueOf(pair.getValue()), this);
 
         }
     }
@@ -394,10 +394,10 @@ public class StartActivity extends AppCompatActivity {
         super.onResume();
         map.onResume();
 
-        while (Settings.listChanges.size() > 0) {
-            switch (Settings.listChanges.pop()) {
+        while (AppSettings.listChanges.size() > 0) {
+            switch (AppSettings.listChanges.pop()) {
                 case CHANGE_TYPE_MAP:
-                    mapWork.getGoogleMap().setMapType(Settings.TYPE_MAP);
+                    mapWork.getGoogleMap().setMapType(AppSettings.TYPE_MAP);
                     break;
                 case CHANGE_TYPE_SPORT:
                     setIndicator();

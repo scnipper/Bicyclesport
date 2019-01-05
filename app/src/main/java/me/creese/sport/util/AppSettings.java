@@ -8,11 +8,13 @@ import java.util.LinkedList;
 
 import me.creese.sport.R;
 
-public class Settings {
+public class AppSettings {
     public static int TYPE_MAP = GoogleMap.MAP_TYPE_NORMAL;
     public static int ZOOM = 17;
     public static boolean AUTO_PAUSE = false;
     public static TypeSport TYPE_SPORT = TypeSport.BIKE;
+    public static UnitsSystem UNIT_SYSTEM = UnitsSystem.METRIC;
+    public static final double IMP_COEF = 0.000621371d;
 
     public static LinkedList<Changes> listChanges = new LinkedList<>();
 
@@ -40,6 +42,15 @@ public class Settings {
             listChanges.add(Changes.CHANGE_TYPE_SPORT);
         }
 
+        if(key.equals(context.getResources().getString(R.string.pref_unit_sys))) {
+            if(value.equals("m")) {
+                UNIT_SYSTEM = UnitsSystem.METRIC;
+            }
+            if(value.equals("im")) {
+                UNIT_SYSTEM = UnitsSystem.IMPERIAL;
+            }
+        }
+
     }
     public enum TypeSport {
         BIKE,
@@ -49,5 +60,10 @@ public class Settings {
     public enum Changes {
         CHANGE_TYPE_MAP,
         CHANGE_TYPE_SPORT
+    }
+
+    public enum UnitsSystem {
+        METRIC,
+        IMPERIAL
     }
 }

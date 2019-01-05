@@ -24,6 +24,13 @@
             android:key="@string/pref_autopause"
             android:summary="Ставить на паузу когда нет активности"
             android:title="Автопауза" />
+        <ListPreference
+            android:defaultValue="m"
+            android:entries="@array/entires_units"
+            android:entryValues="@array/values_units"
+            android:key="@string/pref_unit_sys"
+            android:summary="Метрическая или имперская"
+            android:title="Единицы измерения" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Архивация данных">

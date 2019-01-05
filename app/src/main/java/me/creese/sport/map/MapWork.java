@@ -5,14 +5,8 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.View;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -33,7 +27,7 @@ import me.creese.sport.map.gps.GpsListener;
 import me.creese.sport.models.RouteModel;
 import me.creese.sport.ui.activities.StartActivity;
 import me.creese.sport.ui.fragments.MinMenuFragment;
-import me.creese.sport.util.Settings;
+import me.creese.sport.util.AppSettings;
 
 
 public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMapClickListener, GoogleMap.OnMarkerDragListener, GoogleMap.OnPolylineClickListener, GoogleMap.OnCameraMoveListener {
@@ -191,7 +185,7 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
 
         this.googleMap = googleMap;
 
-        googleMap.setMapType(Settings.TYPE_MAP);
+        googleMap.setMapType(AppSettings.TYPE_MAP);
 
         for (Route route : routes) {
             route.setGoogleMap(googleMap);
@@ -205,7 +199,7 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
         if (routes.size() == 0) {
             if (startMarker != null) {
                 startMarker = googleMap.addMarker(new MarkerOptions().position(startMarker.getPosition()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startMarker.getPosition(), Settings.ZOOM));
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startMarker.getPosition(), AppSettings.ZOOM));
             } else showStartPosition();
         } else {
 
@@ -225,7 +219,7 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
     @Override
     public void whenFindStartPos(LatLng pos) {
         startMarker = googleMap.addMarker(new MarkerOptions().position(pos).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pos, Settings.ZOOM));
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pos, AppSettings.ZOOM));
 
     }
 

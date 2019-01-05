@@ -12,7 +12,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v14.preference.SwitchPreference;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
@@ -27,9 +26,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import me.creese.sport.App;
 import me.creese.sport.BuildConfig;
@@ -37,7 +33,7 @@ import me.creese.sport.R;
 import me.creese.sport.data.DataHelper;
 import me.creese.sport.ui.activities.EnterDataUserActivity;
 import me.creese.sport.ui.activities.SettingsActivity;
-import me.creese.sport.util.Settings;
+import me.creese.sport.util.AppSettings;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener,DirectoryChooserFragment.OnFragmentInteractionListener {
 
@@ -47,13 +43,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
         addPreferencesFromResource(R.xml.preferences);
-
-
         Preference version_app = findPreference("version_app");
-
         version_app.setSummary(BuildConfig.VERSION_NAME);
     }
 
@@ -155,7 +146,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
         }
 
 
-        Settings.init(key, value, getContext(), true);
+        AppSettings.init(key, value, getContext(), true);
 
     }
 

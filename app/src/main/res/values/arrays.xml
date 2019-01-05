@@ -37,4 +37,12 @@
         <item>bike</item>
         <item>run</item>
     </string-array>
+    <string-array name="entires_units">
+        <item>Метрическая</item>
+        <item>Имперская</item>
+    </string-array>
+    <string-array name="values_units">
+        <item>m</item>
+        <item>im</item>
+    </string-array>
 </resources>

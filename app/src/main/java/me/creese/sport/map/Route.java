@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
-import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -29,19 +28,18 @@ import me.creese.sport.R;
 import me.creese.sport.data.PointsTable;
 import me.creese.sport.data.RoutesTable;
 import me.creese.sport.models.RouteModel;
-import me.creese.sport.util.Settings;
+import me.creese.sport.util.AppSettings;
 import me.creese.sport.util.UserData;
 
 public class Route {
 
     private static final String TAG = Route.class.getSimpleName();
     private final MarkerOptions focusMarkerOptions;
-    private List<PatternItem> patternPauseLine = Arrays.asList(new Dash(20), new Gap(30));
-
     private final MarkerOptions markerOptions;
     private final ArrayList<Point> points;
     private final PolylineOptions lineOptions;
     private final ArrayList<Polyline> lines;
+    private List<PatternItem> patternPauseLine = Arrays.asList(new Dash(20), new Gap(30));
     private int colorLine;
     private double distance = 0.0D;
     private GoogleMap googleMap;
@@ -67,10 +65,9 @@ public class Route {
 
         lineOptions = new PolylineOptions();
 
-        focusMarkerOptions = new MarkerOptions()
-                .anchor(0.5f,1);
+        focusMarkerOptions = new MarkerOptions().anchor(0.5f, 1);
 
-        if(Settings.TYPE_SPORT == Settings.TypeSport.BIKE) {
+        if (AppSettings.TYPE_SPORT == AppSettings.TypeSport.BIKE) {
             focusMarkerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_bike));
         } else {
             focusMarkerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_run));
@@ -83,11 +80,20 @@ public class Route {
     }
 
     public static String makeDistance(double distance) {
-        if (distance < 1000) {
-            return (int) distance + " m";
-        } else {
-            return Math.round((distance / 1000) * 10) / 10D + " km";
+        if (AppSettings.UNIT_SYSTEM.equals(AppSettings.UnitsSystem.METRIC)) {
+            if (distance < 1000) {
+                return (int) distance + " m";
+            } else {
+                return Math.round((distance / 1000) * 10) / 10D + " km";
+            }
         }
+        if (AppSettings.UNIT_SYSTEM.equals(AppSettings.UnitsSystem.IMPERIAL)) {
+            double milDistance = distance * AppSettings.IMP_COEF;
+
+            return Math.round(milDistance * 10) / 10D + " mil";
+
+        }
+        return "";
     }
 
 
@@ -240,7 +246,7 @@ public class Route {
     }
 
     public void focusOnPoint(LatLng point) {
-        focusOnPoint(point, Settings.ZOOM);
+        focusOnPoint(point, AppSettings.ZOOM);
     }
 
     /**
@@ -251,7 +257,7 @@ public class Route {
     public void focusOnPoint(LatLng point, int zoom) {
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, zoom));
 
-        if(isFocusRoute) {
+        if (isFocusRoute) {
             if (focusMarker == null) {
                 focusMarkerOptions.position(point);
                 focusMarker = googleMap.addMarker(focusMarkerOptions);
@@ -281,6 +287,7 @@ public class Route {
 
         return saveRoute(new String(bytes));
     }
+
     public void remove() {
         clearMarkers();
         removeLines();
@@ -289,6 +296,7 @@ public class Route {
         }
 
     }
+
     /**
      * Сохранение маршрута
      *

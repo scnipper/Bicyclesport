@@ -271,8 +271,14 @@ public class UpdateInfo implements Runnable {
             rideModel.setTimeRide(time / 1000);
             if (timeView != null) timeView.setText(formatTime(time / 1000));
 
-            if (speedView != null)
-                speedView.setText(((int) gps.getSpeed()) + " " + startActivity.getString(R.string.km_peer_hour));
+            if (speedView != null) {
+                if(AppSettings.UNIT_SYSTEM.equals(AppSettings.UnitsSystem.METRIC))
+                    speedView.setText(((int) gps.getSpeed()) + " " + startActivity.getString(R.string.km_peer_hour));
+
+                if(AppSettings.UNIT_SYSTEM.equals(AppSettings.UnitsSystem.IMPERIAL))
+                    speedView.setText(((int) (gps.getSpeed() * (AppSettings.IMP_COEF * 1000))) + " миль/ч");
+
+            }
             if (distanceView != null)
                 distanceView.setText(Route.makeDistance(rideModel.getDistance()));
             if (kallView != null) kallView.setText(rideModel.getCalories() + "");
@@ -303,7 +309,7 @@ public class UpdateInfo implements Runnable {
                 }
             });
 
-            if (Settings.AUTO_PAUSE) {
+            if (AppSettings.AUTO_PAUSE) {
                 if ((int) mapWork.getGps().getSpeed() == 0 && startWaitTime == 0) {
                     startWaitTime = time;
                 } else if ((int) mapWork.getGps().getSpeed() > 0) startWaitTime = 0;

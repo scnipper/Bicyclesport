@@ -1,5 +1,6 @@
 package me.creese.sport.ui.fragments;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -38,6 +39,7 @@ import me.creese.sport.models.RideModel;
 import me.creese.sport.models.RouteAndRide;
 import me.creese.sport.models.RouteModel;
 import me.creese.sport.ui.activities.StartActivity;
+import me.creese.sport.util.AppSettings;
 import me.creese.sport.util.UpdateInfo;
 import me.creese.sport.util.chartformat.AxisFormat;
 
@@ -242,6 +244,7 @@ public class StatFragment extends Fragment implements RadioGroup.OnCheckedChange
         }
     }
 
+    @SuppressLint("SetTextI18n")
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -266,16 +269,33 @@ public class StatFragment extends Fragment implements RadioGroup.OnCheckedChange
 
 
         ((TextView) view.findViewById(R.id.stat_ride_time)).setText(UpdateInfo.formatTime(model.getRideModel().getTimeRide()));
+        int avSpeed = (int) ((model.getRideModel().getDistance() / model.getRideModel().getTimeRide()) * 3.6f);
 
-        ((TextView) view.findViewById(R.id.stat_av_speed)).setText(((int) ((model.getRideModel().getDistance() / model.getRideModel().getTimeRide()) * 3.6f)) + " " + getString(R.string.km_peer_hour));
+
         ((TextView) view.findViewById(R.id.stat_cal)).setText(model.getRideModel().getCalories() + "");
-        ((TextView) view.findViewById(R.id.stat_max_speed)).setText(model.getRideModel().getMaxSpeed() + " " + getString(R.string.km_peer_hour));
+        if(AppSettings.UNIT_SYSTEM.equals(AppSettings.UnitsSystem.METRIC)) {
+            ((TextView) view.findViewById(R.id.stat_max_speed)).setText(model.getRideModel().getMaxSpeed() + " " + getString(R.string.km_peer_hour));
+            ((TextView) view.findViewById(R.id.stat_av_speed)).setText(avSpeed + " " + getString(R.string.km_peer_hour));
+            double temp = ((model.getRideModel().getTimeRide() / model.getRideModel().getDistance()) * 1000) / 60;
+            temp = Math.round(temp * 10) / 10D;
+            ((TextView) view.findViewById(R.id.stat_temp)).setText(temp + " мин/км");
+        }
+        if(AppSettings.UNIT_SYSTEM.equals(AppSettings.UnitsSystem.IMPERIAL)) {
+            ((TextView) view.findViewById(R.id.stat_av_speed)).setText(((int) (avSpeed * AppSettings.IMP_COEF * 1000)) + " миль/ч");
+            ((TextView) view.findViewById(R.id.stat_max_speed)).setText(((int) (model.getRideModel().getMaxSpeed() * AppSettings.IMP_COEF * 1000)) + " миль/ч");
+            double temp = ((model.getRideModel().getTimeRide() / (model.getRideModel().getDistance()*AppSettings.IMP_COEF))) / 60;
+            temp = Math.round(temp * 10) / 10D;
+            ((TextView) view.findViewById(R.id.stat_temp)).setText(temp + " мин/миль");
+        }
 
 
-        double temp = ((model.getRideModel().getTimeRide() / model.getRideModel().getDistance()) * 1000) / 60;
-        temp = Math.round(temp * 10) / 10D;
 
-        ((TextView) view.findViewById(R.id.stat_temp)).setText(temp + " мин/км");
+
+
+
+
+
+
 
         loadChart(view);
 

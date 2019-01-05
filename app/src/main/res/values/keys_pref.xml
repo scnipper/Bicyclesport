@@ -7,4 +7,5 @@
     <string name="pref_sport_type">p_sport_type</string>
     <string name="pref_save_data">save_data</string>
     <string name="pref_restore_data">restore_data</string>
+    <string name="pref_unit_sys">unit_sys</string>
 </resources>
