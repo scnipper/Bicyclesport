@@ -5,9 +5,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NotificationManagerCompat;
@@ -151,7 +153,7 @@ public class StartActivity extends AppCompatActivity {
         ImageButton button = (ImageButton) v;
         int id = button.getId();
 
-        if(!mapWork.requestPermission(REQUEST_PERMISIONS_GPS_PLAY_BTN)){
+        if (!mapWork.requestPermission(REQUEST_PERMISIONS_GPS_PLAY_BTN)) {
             saveIdPlayBtn = id;
             return;
         }
@@ -343,6 +345,13 @@ public class StartActivity extends AppCompatActivity {
         getSupportFragmentManager().popBackStack();
     }
 
+    private void doWithRequestCodePermissions(int requestCode) {
+        if (requestCode == REQUEST_PERMISIONS_GPS) mapWork.showStartPosition();
+
+        if (requestCode == REQUEST_PERMISIONS_GPS_PLAY_BTN)
+            playSport(findViewById(saveIdPlayBtn));
+    }
+
     public MapWork getMapWork() {
         return mapWork;
     }
@@ -407,24 +416,54 @@ public class StartActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(final int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case REQUEST_PERMISIONS_GPS:
-                if(grantResults.length > 0) {
-                    if(grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                        mapWork.showStartPosition();
+        if (requestCode == REQUEST_PERMISIONS_GPS || requestCode == REQUEST_PERMISIONS_GPS_PLAY_BTN) {
+            if (grantResults.length > 0) {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                    doWithRequestCodePermissions(requestCode);
+                } else {
+                    if(ActivityCompat.shouldShowRequestPermissionRationale(this,permissions[0])
+                            || ActivityCompat.shouldShowRequestPermissionRationale(this,permissions[1])) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                        builder.setMessage("Для работы данного приложения требуется принять разрешение о доступе к местоположению иначе приложение будет закрыто!")
+                                .setPositiveButton("Согласен", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                        finish();
+                                    }
+                                })
+                                .setNegativeButton("Повторить", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                        doWithRequestCodePermissions(requestCode);
+                                    }
+                                }).setCancelable(false).show();
+                    } else {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                        builder.setMessage("Дать разрешение приложению к местоположению можно только в настройках")
+                                .setPositiveButton("Перейти", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                        Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                        Uri uri = Uri.fromParts("package", getPackageName(), null);
+                                        intent.setData(uri);
+                                        startActivityForResult(intent, requestCode);
+                                    }
+                                })
+                                .setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                        finish();
+                                    }
+                                }).setCancelable(false).show();
                     }
                 }
-                break;
-
-            case REQUEST_PERMISIONS_GPS_PLAY_BTN:
-                if(grantResults.length > 0) {
-                    if(grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                        playSport(findViewById(saveIdPlayBtn));
-                    }
-                }
-                break;
+            }
         }
     }
 
@@ -439,6 +478,10 @@ public class StartActivity extends AppCompatActivity {
         }
         if (requestCode == CHECK_GPS_ENABLED && resultCode == 0) {
             stopGps(findViewById(R.id.stop_button));
+        }
+
+        if(requestCode == REQUEST_PERMISIONS_GPS || requestCode == REQUEST_PERMISIONS_GPS_PLAY_BTN) {
+            doWithRequestCodePermissions(requestCode);
         }
 
     }
