@@ -13,7 +13,6 @@ import me.creese.sport.data.DataHelper;
 import me.creese.sport.data.GoalsTable;
 import me.creese.sport.data.UserTable;
 import me.creese.sport.models.GoalsModel;
-import me.creese.sport.models.RouteModel;
 import me.creese.sport.util.Files;
 import me.creese.sport.util.UserData;
 
@@ -48,27 +47,23 @@ public class App extends Application {
 
     /**
      * Загрузка целей
+     *
      * @param db
      */
     private void loadGoals(SQLiteDatabase db) {
         goals = new ArrayList<>();
-        Cursor cursor = db.query(GoalsTable.NAME_TABLE,null,null,null,
-                null,null,null);
-        if(cursor.moveToFirst()) {
+        Cursor cursor = db.query(GoalsTable.NAME_TABLE, null, null, null, null, null, null);
+        if (cursor.moveToFirst()) {
             do {
 
-                GoalsModel goalsModel = new GoalsModel(cursor.getLong(cursor.getColumnIndex(GoalsTable.TIME)),
-                        cursor.getInt(cursor.getColumnIndex(GoalsTable.COUNT)),cursor.getInt(cursor.getColumnIndex(GoalsTable.TYPE)),
-                        cursor.getInt(cursor.getColumnIndex(DataHelper.ID)));
+                GoalsModel goalsModel = new GoalsModel(cursor.getLong(cursor.getColumnIndex(GoalsTable.TIME)), cursor.getInt(cursor.getColumnIndex(GoalsTable.COUNT)), cursor.getInt(cursor.getColumnIndex(GoalsTable.TYPE)), cursor.getInt(cursor.getColumnIndex(DataHelper.ID)));
                 goalsModel.setPassCount(cursor.getInt(cursor.getColumnIndex(GoalsTable.PASS_COUNT)));
 
-                if(goalsModel.getTime() - System.currentTimeMillis() < 0
-                        || goalsModel.getPassCount() > goalsModel.getCount()) {
+                if (goalsModel.getTime() - System.currentTimeMillis() < 0 || goalsModel.getPassCount() > goalsModel.getCount()) {
                     data.removeGoal(goalsModel.getId());
                 } else {
                     goals.add(goalsModel);
                 }
-
 
 
             } while (cursor.moveToNext());
@@ -78,22 +73,22 @@ public class App extends Application {
 
     /**
      * Загрузка пользовательских данных и БД
+     *
      * @param db
      */
     public void setUserData(SQLiteDatabase db) {
-        Cursor cursor = db.query(UserTable.NAME_TABLE,null,null,
-                null,null,null,null);
+        Cursor cursor = db.query(UserTable.NAME_TABLE, null, null, null, null, null, null);
 
-        if(cursor.moveToFirst()) {
+        if (cursor.moveToFirst()) {
             UserData.WEIGHT = cursor.getDouble(cursor.getColumnIndex(UserTable.WIEGHT));
             UserData.SEX = cursor.getInt(cursor.getColumnIndex(UserTable.SEX));
             UserData.BIRTH_DATE = cursor.getLong(cursor.getColumnIndex(UserTable.TIME_BIRTH));
             UserData.HEIGHT = cursor.getLong(cursor.getColumnIndex(UserTable.HEIGHT));
         } else {
             ContentValues contentValues = new ContentValues();
-            contentValues.put(DataHelper.ID,1);
-            long i = db.insert(UserTable.NAME_TABLE,null,contentValues);
-            if(i != -1) {
+            contentValues.put(DataHelper.ID, 1);
+            long i = db.insert(UserTable.NAME_TABLE, null, contentValues);
+            if (i != -1) {
                 cursor.close();
                 setUserData(db);
             }
@@ -102,6 +97,7 @@ public class App extends Application {
         cursor.close();
 
     }
+
     public DataHelper getData() {
         return data;
     }

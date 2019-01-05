@@ -1,21 +1,14 @@
 package me.creese.sport.map.gps;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.IntentSender;
-import android.content.pm.PackageManager;
 import android.location.GpsSatellite;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Build;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
-import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -37,9 +30,8 @@ import me.creese.sport.App;
 import me.creese.sport.R;
 import me.creese.sport.map.MapWork;
 import me.creese.sport.map.Route;
-import me.creese.sport.ui.DialogFindGps;
+import me.creese.sport.ui.fragments.DialogFindGps;
 import me.creese.sport.ui.activities.StartActivity;
-import me.creese.sport.ui.fragments.MainViewStatFragment;
 import me.creese.sport.util.UpdateInfo;
 
 
@@ -76,7 +68,7 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
     }
 
     public void addListeners() {
-        if(!isAddListeners) {
+        if (!isAddListeners) {
             isAddListeners = true;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 App.get().getLocationManager().registerGnssStatusCallback(new GNSSListener(this));
@@ -166,10 +158,10 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
 
         DialogFindGps dialogWait = new DialogFindGps();
 
-        if (!dialogWait.isAdded()) dialogWait.show(context.getSupportFragmentManager(), DialogFindGps.TAG);
+        if (!dialogWait.isAdded())
+            dialogWait.show(context.getSupportFragmentManager(), DialogFindGps.TAG);
 
         //mapWork.getGoogleMap().clear();
-
 
 
         gpsListener = null;
@@ -211,10 +203,10 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
      */
     public void firstFixGps() {
         Log.w(TAG, "onGpsStatusChanged: gps first fix");
-        if(!isStartWay) return;
+        if (!isStartWay) return;
 
         Fragment fragment = context.getSupportFragmentManager().findFragmentById(R.id.sub_content);
-        if(fragment == null) {
+        if (fragment == null) {
 
             context.addMainView();
         }
@@ -279,16 +271,17 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
     public float getMaxSpeed() {
         return maxSpeed;
     }
-    public void setPause(boolean pause) {
-        this.pause = pause;
-        if(pause) {
-            autoPause = false;
-            speed = 0;
-        }
-    }
 
     public boolean isPause() {
         return pause;
+    }
+
+    public void setPause(boolean pause) {
+        this.pause = pause;
+        if (pause) {
+            autoPause = false;
+            speed = 0;
+        }
     }
 
     public void setAutoPause(boolean autoPause) {
@@ -303,8 +296,8 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
     @Override
     public void onLocationResult(LocationResult locationResult) {
         Location location = locationResult.getLastLocation();
-        if(pause || autoPause)  {
-            if(autoPause && location.getSpeed() > 0) {
+        if (pause || autoPause) {
+            if (autoPause && location.getSpeed() > 0) {
                 autoPause = false;
                 UpdateInfo.get().resume();
             }

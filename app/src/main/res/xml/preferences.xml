@@ -26,6 +26,17 @@
             android:title="Автопауза" />
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="Архивация данных">
+        <Preference
+            android:key="@string/pref_save_data"
+            android:title="Архивировать"
+            android:summary="Сохранить данные в память телефона"/>
+
+        <Preference
+            android:key="@string/pref_restore_data"
+            android:title="Восстановить"
+            android:summary="Восстановить данные из памяти телефона"/>
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/user_data">
 
         <Preference

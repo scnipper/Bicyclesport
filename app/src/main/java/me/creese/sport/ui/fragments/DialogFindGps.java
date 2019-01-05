@@ -1,4 +1,4 @@
-package me.creese.sport.ui;
+package me.creese.sport.ui.fragments;
 
 import android.app.Dialog;
 import android.os.Bundle;

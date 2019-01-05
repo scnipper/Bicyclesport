@@ -5,4 +5,6 @@
     <string name="pref_zoom">zoom</string>
     <string name="pref_autopause">autopause</string>
     <string name="pref_sport_type">p_sport_type</string>
+    <string name="pref_save_data">save_data</string>
+    <string name="pref_restore_data">restore_data</string>
 </resources>

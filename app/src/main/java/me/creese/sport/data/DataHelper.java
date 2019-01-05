@@ -22,7 +22,7 @@ public class DataHelper extends SQLiteOpenHelper {
 
 
     private static final int DATABASE_VERSION = 1;
-    private static final String DATA_BASE_FILE = "sport_data";
+    public static final String DATA_BASE_FILE = "sport_data";
 
     public final static String ID = "_id";
 
