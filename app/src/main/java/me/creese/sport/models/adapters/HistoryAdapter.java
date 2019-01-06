@@ -80,7 +80,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryH
             }
         }
         historyHolder.name.setText(items.get(i).getRideModel().getRideAdress());
-        historyHolder.idModel = i;
 
 
     }
@@ -95,17 +94,12 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryH
         private final TextView date;
         private final TextView dist;
         private final TextView name;
-        private int idModel;
 
         public HistoryHolder(@NonNull final View itemView) {
             super(itemView);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    /*Intent intent = new Intent(itemView.getContext(),StartActivity.class);
-                    intent.putExtra(RouteAndRide.class.getSimpleName(),items.get(idModel));
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    itemView.getContext().startActivity(intent);*/
                     ((StartActivity) historyFragment.getActivity()).showStatFragment(items.get(getAdapterPosition()));
                 }
             });
@@ -114,6 +108,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryH
             date = itemView.findViewById(R.id.item_route_date_route);
             dist = itemView.findViewById(R.id.item_route_dist_route);
             name = itemView.findViewById(R.id.item_route_name_route);
+            itemView.findViewById(R.id.delete_route_btn).setVisibility(View.GONE);
+
         }
     }
 }

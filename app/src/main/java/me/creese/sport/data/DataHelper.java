@@ -191,4 +191,12 @@ public class DataHelper extends SQLiteOpenHelper {
         db.delete(GoalsTable.NAME_TABLE,ID+"="+id,null);
     }
 
+    public boolean removeRoute(int id) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        int r = db.delete(RoutesTable.NAME_TABLE,ID+"="+id,null);
+        int p = db.delete(PointsTable.NAME_TABLE,PointsTable.ID_ROUTE+"="+id,null);
+
+        return r > 0 && p >0;
+    }
 }
