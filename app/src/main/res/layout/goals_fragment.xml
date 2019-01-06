@@ -12,6 +12,7 @@
         android:id="@+id/goals_current_goals"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
         android:orientation="vertical"
         android:visibility="gone">
 
@@ -27,7 +28,8 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/goals_recycle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="35dp" />
     </LinearLayout>
 
     <TextView
@@ -43,8 +45,8 @@
         android:id="@+id/textView11"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="Проезжать:"
+        android:layout_marginTop="35dp"
+        android:text="Укажите свою цель:"
         android:textColor="@color/text_color_main"
         android:textSize="13sp"
         android:textStyle="bold" />
@@ -174,6 +176,7 @@
         android:layout_marginTop="10dp"
         android:background="@drawable/btn_goals_add"
         android:text="Добавить"
+        android:textColor="@android:color/white"
         android:textSize="13sp" />
 
 </LinearLayout>

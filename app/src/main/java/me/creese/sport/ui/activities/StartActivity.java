@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,21 +14,30 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.view.OnApplyWindowInsetsListener;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.WindowInsetsCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowInsets;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 
 import java.util.List;
 import java.util.Map;
 
+import me.creese.sport.App;
 import me.creese.sport.R;
 import me.creese.sport.map.MapWork;
 import me.creese.sport.map.Point;
@@ -53,6 +63,7 @@ public class StartActivity extends AppCompatActivity {
     private MapView map;
     private MapWork mapWork;
     private int saveIdPlayBtn;
+    private View subStatus;
 
 
     @Override
@@ -73,6 +84,8 @@ public class StartActivity extends AppCompatActivity {
 
         mapWork.setContext(this);
         map.getMapAsync(mapWork);
+
+        subStatus = findViewById(R.id.sub_status_bar);
 
         setIndicator();
         ((ImageButton) findViewById(R.id.play_button)).setImageResource(mapWork.getGps().isStartWay() ? R.drawable.pause_icon : R.drawable.play_icon);
@@ -304,6 +317,15 @@ public class StartActivity extends AppCompatActivity {
                 getSupportFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).addToBackStack(null).replace(R.id.main_content, new GoalsFragment()).commit();
                 break;
         }
+        getSupportFragmentManager().executePendingTransactions();
+        final ScrollView scrollView = findViewById(R.id.root_scroll);
+        scrollView.post(new Runnable() {
+            @Override
+            public void run() {
+                scrollView.fullScroll(ScrollView.FOCUS_FORWARD);
+            }
+        });
+
     }
 
     private void addMainButtons() {
@@ -344,12 +366,19 @@ public class StartActivity extends AppCompatActivity {
         }
         getSupportFragmentManager().popBackStack();
     }
+    private int getStatusBarHeight() {
+        int result = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
 
     private void doWithRequestCodePermissions(int requestCode) {
         if (requestCode == REQUEST_PERMISIONS_GPS) mapWork.showStartPosition();
 
-        if (requestCode == REQUEST_PERMISIONS_GPS_PLAY_BTN)
-            playSport(findViewById(saveIdPlayBtn));
+        if (requestCode == REQUEST_PERMISIONS_GPS_PLAY_BTN) playSport(findViewById(saveIdPlayBtn));
     }
 
     public MapWork getMapWork() {
@@ -394,6 +423,18 @@ public class StartActivity extends AppCompatActivity {
         super.onResume();
         map.onResume();
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            Window w = getWindow();
+            w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+            if(AppSettings.TYPE_MAP == GoogleMap.MAP_TYPE_NORMAL ) {
+                subStatus.setVisibility(View.VISIBLE);
+                subStatus.getLayoutParams().height = getStatusBarHeight();
+            } else {
+                subStatus.setVisibility(View.GONE);
+            }
+
+
+        }
         while (AppSettings.listChanges.size() > 0) {
             switch (AppSettings.listChanges.pop()) {
                 case CHANGE_TYPE_MAP:
@@ -423,44 +464,39 @@ public class StartActivity extends AppCompatActivity {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                     doWithRequestCodePermissions(requestCode);
                 } else {
-                    if(ActivityCompat.shouldShowRequestPermissionRationale(this,permissions[0])
-                            || ActivityCompat.shouldShowRequestPermissionRationale(this,permissions[1])) {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[0]) || ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[1])) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                        builder.setMessage("Для работы данного приложения требуется принять разрешение о доступе к местоположению иначе приложение будет закрыто!")
-                                .setPositiveButton("Согласен", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                        finish();
-                                    }
-                                })
-                                .setNegativeButton("Повторить", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                        doWithRequestCodePermissions(requestCode);
-                                    }
-                                }).setCancelable(false).show();
+                        builder.setMessage("Для работы данного приложения требуется принять разрешение о доступе к местоположению иначе приложение будет закрыто!").setPositiveButton("Согласен", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                finish();
+                            }
+                        }).setNegativeButton("Повторить", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                doWithRequestCodePermissions(requestCode);
+                            }
+                        }).setCancelable(false).show();
                     } else {
                         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                        builder.setMessage("Дать разрешение приложению к местоположению можно только в настройках")
-                                .setPositiveButton("Перейти", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                        Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                        Uri uri = Uri.fromParts("package", getPackageName(), null);
-                                        intent.setData(uri);
-                                        startActivityForResult(intent, requestCode);
-                                    }
-                                })
-                                .setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                        finish();
-                                    }
-                                }).setCancelable(false).show();
+                        builder.setMessage("Дать разрешение приложению к местоположению можно только в настройках").setPositiveButton("Перейти", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                Uri uri = Uri.fromParts("package", getPackageName(), null);
+                                intent.setData(uri);
+                                startActivityForResult(intent, requestCode);
+                            }
+                        }).setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                finish();
+                            }
+                        }).setCancelable(false).show();
                     }
                 }
             }
@@ -480,7 +516,7 @@ public class StartActivity extends AppCompatActivity {
             stopGps(findViewById(R.id.stop_button));
         }
 
-        if(requestCode == REQUEST_PERMISIONS_GPS || requestCode == REQUEST_PERMISIONS_GPS_PLAY_BTN) {
+        if (requestCode == REQUEST_PERMISIONS_GPS || requestCode == REQUEST_PERMISIONS_GPS_PLAY_BTN) {
             doWithRequestCodePermissions(requestCode);
         }
 

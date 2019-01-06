@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3f51b5</color>
-    <color name="colorPrimaryDark">#39be86</color>
+    <color name="colorPrimary">#9eabf4</color>
+    <color name="colorPrimaryDark">#4d61d1</color>
     <color name="colorAccent">#fa507d</color>
     <color name="navigationMenuBack">#871ea440</color>
     <color name="text_color_main">#393737</color>
     <color name="blue">#4285f4</color>
     <color name="text_color_red">#fa507d</color>
+    <color name="trans_status_bar">#6a4d61d1</color>
 </resources>

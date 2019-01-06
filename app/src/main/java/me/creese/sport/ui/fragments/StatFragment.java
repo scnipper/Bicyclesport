@@ -164,7 +164,7 @@ public class StatFragment extends Fragment implements RadioGroup.OnCheckedChange
 
 
         } else {
-            chart.setVisibility(View.GONE);
+            view.findViewById(R.id.stat_all_chart).setVisibility(View.GONE);
         }
 
         cursor.close();
