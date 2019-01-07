@@ -45,7 +45,9 @@ public class BevelLayout extends FrameLayout {
             View view = buttons.getChildAt(i);
             float x = view.getX() + view.getWidth() / 2;
             float y = view.getHeight() / 2;
-            ((LinearLayout.LayoutParams) view.getLayoutParams()).topMargin = (int) (bevel.calcY(x) + y);
+            int margin = (int) (bevel.calcY(x) + y);
+            ((LinearLayout.LayoutParams) view.getLayoutParams()).topMargin = margin;
+            view.requestLayout();
         }
 
     }

@@ -50,7 +50,7 @@ public class BevelView extends FrameLayout {
     }
 
     public float calcY(float x) {
-        float y1 = getHeight() * 0.6f;
+        float y1 = getHeight() * 0.75f;
         float m = (y1 * -1) / getWidth();
         return m * x + y1;
     }
