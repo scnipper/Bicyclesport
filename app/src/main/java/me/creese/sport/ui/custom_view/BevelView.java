@@ -9,6 +9,9 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.DragEvent;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -47,6 +50,10 @@ public class BevelView extends FrameLayout {
         paint.setColor(Color.WHITE);
         paint.setStyle(Paint.Style.FILL);
         path = new Path();
+
+
+
+
     }
 
     public float calcY(float x) {

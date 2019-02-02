@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import android.support.v4.view.WindowInsetsCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +53,7 @@ import me.creese.sport.ui.fragments.MainViewStatFragment;
 import me.creese.sport.ui.fragments.MinMenuFragment;
 import me.creese.sport.ui.fragments.StatFragment;
 import me.creese.sport.util.AppSettings;
+import me.creese.sport.util.P;
 import me.creese.sport.util.UpdateInfo;
 
 public class StartActivity extends AppCompatActivity {
@@ -71,7 +74,7 @@ public class StartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Log.w(TAG, "onCreate: ");
         setContentView(R.layout.content);
-
+        setParams();
         initPrefs();
 
         UpdateInfo.get().setStartActivity(this);
@@ -89,6 +92,20 @@ public class StartActivity extends AppCompatActivity {
 
         setIndicator();
         ((ImageButton) findViewById(R.id.play_button)).setImageResource(mapWork.getGps().isStartWay() ? R.drawable.pause_icon : R.drawable.play_icon);
+
+    }
+
+    /**
+     * Установка размера экрана и плотность пикселей
+     */
+    private void setParams() {
+
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        P.WIDTH = dm.widthPixels;
+        P.HEIGHT = dm.heightPixels;
+        P.DENSITY = getResources().getDisplayMetrics().density;
+
 
     }
 
@@ -534,5 +551,11 @@ public class StartActivity extends AppCompatActivity {
     @Override
     public Object onRetainCustomNonConfigurationInstance() {
         return mapWork;
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        setParams();
     }
 }
