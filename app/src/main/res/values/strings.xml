@@ -21,6 +21,15 @@
     <string name="enter_goal">Введите цель</string>
     <string name="wrong_number">Неверный формат записи</string>
     <string name="change_time">Выберите время</string>
+    <string name="rationale_text_write_storage">Для архивирования или восстановления данных требуется разрешить приложению работать с памятью.</string>
+    <string name="again">Повторить</string>
+    <string name="agree">Согласен</string>
+    <string name="no_rationale_text_write_storage">Дать разрешение на запись в память можно только в настройках.</string>
+    <string name="go_to">Перейти</string>
+    <string name="cancel">Отмена</string>
+    <string name="rationale_text_gps">Для работы данного приложения требуется принять разрешение о доступе к местоположению иначе приложение будет закрыто!</string>
+    <string name="no_rationale_text_gps">Дать разрешение приложению к местоположению можно только в настройках</string>
+    <string name="is_remove_route">Удалить мрашрут?</string>
 
 
 </resources>

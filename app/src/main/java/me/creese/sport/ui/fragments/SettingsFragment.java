@@ -46,6 +46,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
         addPreferencesFromResource(R.xml.preferences);
         Preference version_app = findPreference("version_app");
         version_app.setSummary(BuildConfig.VERSION_NAME);
+
     }
 
 
@@ -73,7 +74,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
                 getActivity().getIntent().putExtra(SettingsActivity.FILE_OR_DIRECTORY,isFile);
                 ActivityCompat.requestPermissions(
                         getActivity(),new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        SettingsActivity.REQUEST_CODE_WRITE_TO_SD);
+                        isFile ? SettingsActivity.REQUEST_CODE_WRITE_TO_SD_RESTORE : SettingsActivity.REQUEST_CODE_WRITE_TO_SD_ARCHIVE);
 
                 return;
             }

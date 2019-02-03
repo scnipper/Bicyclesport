@@ -9,15 +9,13 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.view.OnApplyWindowInsetsListener;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.WindowInsetsCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
@@ -26,7 +24,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -39,7 +36,6 @@ import com.google.android.gms.maps.MapView;
 import java.util.List;
 import java.util.Map;
 
-import me.creese.sport.App;
 import me.creese.sport.R;
 import me.creese.sport.map.MapWork;
 import me.creese.sport.map.Point;
@@ -280,20 +276,20 @@ public class StartActivity extends AppCompatActivity {
 
         if (isShowDialog) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
+            builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
                 }
             });
-            builder.setPositiveButton("Да", new DialogInterface.OnClickListener() {
+            builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     deleteRun.run();
                     dialog.dismiss();
                 }
             });
-            builder.setTitle("Удалить мрашрут?").create().show();
+            builder.setTitle(R.string.is_remove_route).create().show();
         } else {
             deleteRun.run();
         }
@@ -306,10 +302,6 @@ public class StartActivity extends AppCompatActivity {
      * @param v
      */
     public void startMakeRoute(View v) {
-/*        ImageButton button = findViewById(R.id.save_route_btn);
-        button.setVisibility(View.VISIBLE);*/
-
-
         mapWork.makeRoute();
     }
 
@@ -383,6 +375,12 @@ public class StartActivity extends AppCompatActivity {
         }
         getSupportFragmentManager().popBackStack();
     }
+
+    /**
+     * Получение высоты статус бара
+     *
+     * @return
+     */
     private int getStatusBarHeight() {
         int result = 0;
         int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
@@ -443,7 +441,7 @@ public class StartActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             Window w = getWindow();
             w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-            if(AppSettings.TYPE_MAP == GoogleMap.MAP_TYPE_NORMAL ) {
+            if (AppSettings.TYPE_MAP == GoogleMap.MAP_TYPE_NORMAL) {
                 subStatus.setVisibility(View.VISIBLE);
                 subStatus.getLayoutParams().height = getStatusBarHeight();
             } else {
@@ -483,13 +481,13 @@ public class StartActivity extends AppCompatActivity {
                 } else {
                     if (ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[0]) || ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[1])) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                        builder.setMessage("Для работы данного приложения требуется принять разрешение о доступе к местоположению иначе приложение будет закрыто!").setPositiveButton("Согласен", new DialogInterface.OnClickListener() {
+                        builder.setMessage(R.string.rationale_text_gps).setPositiveButton(R.string.agree, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
                                 finish();
                             }
-                        }).setNegativeButton("Повторить", new DialogInterface.OnClickListener() {
+                        }).setNegativeButton(R.string.again, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
@@ -498,16 +496,16 @@ public class StartActivity extends AppCompatActivity {
                         }).setCancelable(false).show();
                     } else {
                         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                        builder.setMessage("Дать разрешение приложению к местоположению можно только в настройках").setPositiveButton("Перейти", new DialogInterface.OnClickListener() {
+                        builder.setMessage(R.string.no_rationale_text_gps).setPositiveButton(R.string.go_to, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
-                                Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                                 Uri uri = Uri.fromParts("package", getPackageName(), null);
                                 intent.setData(uri);
                                 startActivityForResult(intent, requestCode);
                             }
-                        }).setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+                        }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
