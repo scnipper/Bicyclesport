@@ -28,6 +28,7 @@ import me.creese.sport.models.RouteModel;
 import me.creese.sport.ui.activities.StartActivity;
 import me.creese.sport.ui.fragments.MinMenuFragment;
 import me.creese.sport.util.AppSettings;
+import me.creese.sport.util.P;
 
 
 public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMapClickListener, GoogleMap.OnMarkerDragListener, GoogleMap.OnPolylineClickListener, GoogleMap.OnCameraMoveListener {
@@ -140,6 +141,7 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
             route.removeLines();
         }
         routes.clear();
+        googleMap.setPadding(0,0,0, P.getPixelFromDP(47));
     }
 
     public GoogleMap getGoogleMap() {
@@ -184,6 +186,8 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
     public void onMapReady(final GoogleMap googleMap) {
 
         this.googleMap = googleMap;
+        googleMap.setPadding(0,0,0, P.getPixelFromDP(47));
+        googleMap.getUiSettings().setCompassEnabled(false);
 
         googleMap.setMapType(AppSettings.TYPE_MAP);
 
@@ -239,6 +243,7 @@ public class MapWork implements OnMapReadyCallback, GpsListener, GoogleMap.OnMap
         if (routes.size() == 0) {
             context.clearAllFragments();
             makeRoute();
+            googleMap.setPadding(0,0,0, 0);
 
         }
         if (isRouteMode) {

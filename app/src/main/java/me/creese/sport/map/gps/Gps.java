@@ -1,12 +1,15 @@
 package me.creese.sport.map.gps;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.IntentSender;
 import android.location.GpsSatellite;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Build;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -82,7 +85,7 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
     /**
      * Проверка на то что включен gps или нет
      */
-    private void checkAccessGps() {
+    private void startGpsUpdate() {
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
         builder.addLocationRequest(locationRequest);
 
@@ -99,10 +102,12 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
                     client.requestLocationUpdates(locationRequest, Gps.this, null);
 
                 } catch (ApiException exception) {
+                    isStartWay = false;
                     switch (exception.getStatusCode()) {
                         case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
                             // Location settings are not satisfied. But could be fixed by showing the
                             // user a dialog.
+
                             try {
                                 // Cast to a resolvable exception.
                                 ResolvableApiException resolvable = (ResolvableApiException) exception;
@@ -118,7 +123,15 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
                         case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
                             // Location settings are not satisfied. However, we have no way to fix the
                             // settings so we won't show the dialog.
+                            AlertDialog.Builder b = new AlertDialog.Builder(context);
 
+                            b.setMessage(R.string.no_gps_function)
+                                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.dismiss();
+                                        }
+                                    }).show();
                             break;
                     }
                 }
@@ -156,16 +169,16 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
 
     public void startUpdatePosition() {
 
+        findAndDismisDialog();
         DialogFindGps dialogWait = new DialogFindGps();
 
         if (!dialogWait.isAdded())
             dialogWait.show(context.getSupportFragmentManager(), DialogFindGps.TAG);
 
-        //mapWork.getGoogleMap().clear();
 
 
         gpsListener = null;
-        checkAccessGps();
+        startGpsUpdate();
 
         for (Route route : mapWork.getRoutes()) {
             route.clearMarkers();
@@ -193,7 +206,6 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
         }
 
         if (levelSignal > 10) gpsStatusView.setImageResource(R.drawable.one_gps);
-        //else gpsStatusView.setImageResource(R.drawable.no_gps);
         if (levelSignal > 20) gpsStatusView.setImageResource(R.drawable.half_gps);
         if (levelSignal > 30) gpsStatusView.setImageResource(R.drawable.full_gps);
     }
@@ -225,10 +237,15 @@ public class Gps extends LocationCallback implements GpsStatus.Listener {
 
     }
 
+    /**
+     * Поиск и удаление диалога "поиск gps"
+     */
     private void findAndDismisDialog() {
-        DialogFindGps findGps = (DialogFindGps) context.getSupportFragmentManager().findFragmentByTag(DialogFindGps.TAG);
+        FragmentManager fragmentManager = context.getSupportFragmentManager();
+        DialogFindGps findGps = (DialogFindGps) fragmentManager.findFragmentByTag(DialogFindGps.TAG);
         if (findGps != null) {
             findGps.dismiss();
+            fragmentManager.beginTransaction().remove(findGps).commit();
         }
     }
 

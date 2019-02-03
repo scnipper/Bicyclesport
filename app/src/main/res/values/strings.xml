@@ -30,6 +30,8 @@
     <string name="rationale_text_gps">Для работы данного приложения требуется принять разрешение о доступе к местоположению иначе приложение будет закрыто!</string>
     <string name="no_rationale_text_gps">Дать разрешение приложению к местоположению можно только в настройках</string>
     <string name="is_remove_route">Удалить мрашрут?</string>
+    <string name="ok">Ок</string>
+    <string name="no_gps_function">Невозможно включить gps функцию</string>
 
 
 </resources>

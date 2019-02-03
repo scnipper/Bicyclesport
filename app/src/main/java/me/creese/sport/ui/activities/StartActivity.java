@@ -39,6 +39,7 @@ import java.util.Map;
 import me.creese.sport.R;
 import me.creese.sport.map.MapWork;
 import me.creese.sport.map.Point;
+import me.creese.sport.map.Route;
 import me.creese.sport.models.RideModel;
 import me.creese.sport.models.RouteAndRide;
 import me.creese.sport.models.RouteModel;
@@ -75,6 +76,7 @@ public class StartActivity extends AppCompatActivity {
 
         UpdateInfo.get().setStartActivity(this);
         map = findViewById(R.id.route_map);
+
         map.onCreate(savedInstanceState);
 
         if (getLastNonConfigurationInstance() == null) mapWork = new MapWork();
@@ -184,6 +186,7 @@ public class StartActivity extends AppCompatActivity {
             return;
         }
 
+        Log.w(TAG, "playSport: play" );
         mapWork.getGps().addListeners();
 
         if (button.getTag().equals("pause")) {
@@ -229,10 +232,14 @@ public class StartActivity extends AppCompatActivity {
         ((ImageButton) findViewById(R.id.play_button)).setImageResource(R.drawable.play_icon);
         findViewById(R.id.play_button).setTag("pause");
         mapWork.getGps().stopUpdatePosition();
-        RouteModel model = mapWork.getLastRoute().saveRoute();
-        RideModel rideModel = UpdateInfo.get().saveRide(model.getId());
-        UpdateInfo.get().checkGoals();
-        showStatFragment(new RouteAndRide(rideModel, model));
+        Route lastRoute = mapWork.getLastRoute();
+        if (lastRoute != null) {
+            RouteModel model = lastRoute.saveRoute();
+            RideModel rideModel = UpdateInfo.get().saveRide(model.getId());
+            UpdateInfo.get().checkGoals();
+            showStatFragment(new RouteAndRide(rideModel, model));
+        }
+
 
 
     }
@@ -307,22 +314,26 @@ public class StartActivity extends AppCompatActivity {
 
     public void clickOnMainButton(View view) {
         int id = view.getId();
-
+        if(!mapWork.getGps().isStartWay())
         clearAllFragments();
         switch (id) {
             case R.id.routes_main_btn:
+                if(!mapWork.getGps().isStartWay())
                 getSupportFragmentManager().beginTransaction().replace(R.id.main_content, new ListRoutesFragment()).addToBackStack(null).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).commit();
                 break;
             case R.id.settings_main_btn:
                 startActivity(new Intent(this, SettingsActivity.class));
                 break;
             case R.id.history_main_btn:
+                if(!mapWork.getGps().isStartWay())
                 getSupportFragmentManager().beginTransaction().replace(R.id.main_content, new HistoryFragment()).addToBackStack(null).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).commit();
                 break;
             case R.id.stat_main_btn:
+                if(!mapWork.getGps().isStartWay())
                 getSupportFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).addToBackStack(null).replace(R.id.main_content, StatFragment.newInstanse(null)).commit();
                 break;
             case R.id.goals_btn:
+                if(!mapWork.getGps().isStartWay())
                 getSupportFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).addToBackStack(null).replace(R.id.main_content, new GoalsFragment()).commit();
                 break;
         }
